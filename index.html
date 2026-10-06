@@ -373,8 +373,8 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
 @media (prefers-reduced-motion:reduce){#boot{transition:none}}
 
 /* home: the bush fills the screen, game buttons float on top */
-#screen.homemode{background:linear-gradient(rgba(5,10,7,.45),rgba(5,10,7,0) 26%,rgba(5,10,7,0) 58%,rgba(5,10,7,.55));padding:0;align-items:stretch;justify-content:center;pointer-events:none}
-.home{width:100%;max-width:1100px;height:100%;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);pointer-events:none}
+#screen.homemode{height:100dvh;bottom:auto;background:linear-gradient(rgba(5,10,7,.45),rgba(5,10,7,0) 26%,rgba(5,10,7,0) 58%,rgba(5,10,7,.55));padding:0;align-items:stretch;justify-content:center;pointer-events:none}
+.home{box-sizing:border-box;width:100%;max-width:1100px;height:100%;max-height:100dvh;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);pointer-events:none}
 .home button,.home .hpill,.home .hchamp{pointer-events:auto}
 .htop{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .hpills{display:flex;gap:8px;min-width:0}
@@ -398,7 +398,8 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
 .htoday em{font-style:normal;font-size:12px;font-weight:800;margin-top:auto;padding-top:6px;opacity:.8}
 .htoday svg{position:absolute;right:10px;top:10px;width:44px;height:44px}
 .htoday.done{background:#d9cfb6;box-shadow:inset 0 -4px 0 #b8ad92,0 8px 18px rgba(0,0,0,.35)}
-.hbottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:10px}
+.hbottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:10px;flex:none;padding-bottom:4px}
+.hcols,.htop,.hevent{flex:none}
 .hchamp{background:rgba(9,18,13,.8);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;backdrop-filter:blur(6px);text-align:center;max-width:100%}
 .hchamp b{color:var(--danfo)}
 .hsign{display:grid;grid-template-columns:54px minmax(0,1fr) 54px;width:min(100%,470px);background:#0b6b3a;border:3px solid #f4ecd9;border-radius:14px;box-shadow:0 0 0 3px #0b6b3a,0 10px 22px rgba(0,0,0,.45);color:#fff;pointer-events:auto}
@@ -425,7 +426,9 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
   .hnav{gap:7px}.hnav button{font-size:14px;padding:7px 2px 9px}.hnav svg{width:32px;height:32px}
   .hpill{font-size:16px;padding:6px 10px}
 }
-@media (max-height:640px){.hleft .htile:nth-child(3){display:none}.hchamp{display:none}}
+@media (max-height:820px){.hplay{font-size:clamp(32px,8.5vw,46px);padding:0 18px}.hsignin{padding:5px 8px 6px}.hsignin b{font-size:23px}.hnav button{padding:6px 4px 9px}.hnav svg{width:32px;height:32px}.home{gap:8px}}
+@media (max-height:700px){.hleft .htile:nth-child(3){display:none}.hchamp{display:none}.hevent{display:none}.hplay{font-size:34px}.hnav button{font-size:14px}.hnav svg{width:28px;height:28px}}
+@media (max-height:560px){.hcols{display:none}}
 
 /* in-game HUD: one slim bar across the top, venom bar under it */
 #hud{display:block;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 0;background:linear-gradient(rgba(5,10,7,.55),rgba(5,10,7,0));pointer-events:none}
@@ -1425,7 +1428,6 @@ function pickWeather(L){
   if(L.boss||THEMES[L.theme].night)return'clear';
   const r=Math.random();
   if(['swamp','forest','wild','farm','court'].includes(L.theme)&&r<.3)return'rain';
-  if(['savanna','farm','den','yard'].includes(L.theme)&&r>.68)return'harmattan';
   return'clear';
 }
 function weatherSky(){G.fogBase=[scene.fog.near,scene.fog.far];paintSky(THEMES[G.L.theme].night,G.weather==='harmattan');if(cityG)cityG.visible=G.weather!=='harmattan'}
