@@ -310,6 +310,17 @@ http.createServer((req, res) => {
     if (!isAdmin(req, url)) return send(res, 401, { error: 'Wrong password' });
     return send(res, 200, playersCsv(), 'text/csv; charset=utf-8', { 'Content-Disposition': 'attachment; filename="ejo-players.csv"' });
   }
+  // images, icons and the app manifest (the link-preview thumbnail lives here)
+  if (req.method === 'GET' && url.pathname.startsWith('/assets/')) {
+    const dir = path.join(ROOT, 'assets'), file = path.join(ROOT, url.pathname);
+    const type = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon' }[path.extname(file).toLowerCase()];
+    if (!file.startsWith(dir + path.sep) || !type || !fs.existsSync(file)) return send(res, 404, 'Not found', 'text/plain');
+    return send(res, 200, fs.readFileSync(file), type, { 'Cache-Control': 'public, max-age=86400' });
+  }
+  if (req.method === 'GET' && url.pathname === '/favicon.ico') {
+    const f = path.join(ROOT, 'assets', 'favicon-32.png');
+    if (fs.existsSync(f)) return send(res, 200, fs.readFileSync(f), 'image/png', { 'Cache-Control': 'public, max-age=86400' });
+  }
   if (url.pathname === '/admin' || url.pathname === '/admin/') {
     return send(res, 200, fs.readFileSync(path.join(__dirname, 'admin.html')), 'text/html; charset=utf-8', { 'X-Robots-Tag': 'noindex' });
   }
