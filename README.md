@@ -34,7 +34,7 @@ All of these are near the top of the script in `index.html`.
 | Setting | What it does |
 |---|---|
 | `PAY.publicKey` | Your Paystack public key (`pk_live_...`). Empty means demo mode: purchases are free. |
-| `PAY.verifyUrl` | An endpoint on your server that checks a Paystack reference with your secret key and returns `{"ok":true}`. Never put the secret key in this file. |
+| `PAY.verifyUrl` | An endpoint that checks a Paystack reference and returns `{"ok":true}`. When you run `server.js` with `PAYSTACK_SECRET_KEY`, set this to `/api/paystack/verify`. Never put the secret key in this file. |
 | `CONFIG.gameUrl` | The address used in share and challenge links. Defaults to the page's own address. |
 | `CONFIG.sponsor` | Sponsor name and tagline for the in-game billboards. Empty shows "Your brand here". |
 | `CONFIG.giftSalt` | Secret used to check gift codes. Change it, because this repo is public. |
@@ -49,6 +49,28 @@ All of these are near the top of the script in `index.html`.
 The game finds the API at `/api` on the same site automatically, and shows "Top players right now" on the menu, a "score to beat" before each level and a live ranking while you play. To use one API from another site (for example GitHub Pages), set `CONFIG.scoresApi` to its full URL; CORS is open.
 
 Scores are saved to `DATA_DIR/scores.json` (default `./data`). Point `DATA_DIR` at a persistent disk, or scores reset when the server restarts. Scores are reported by the browser, so a determined player could fake one.
+
+## Sign-up and the admin dashboard
+
+Before their first game, players sign up with their name and a username (email is optional). On a host running `server.js`, usernames are checked so no two players share one. Without a server (GitHub Pages, the Claude artifact), sign-up is saved in the player's browser only.
+
+Open `/admin` on your server to see:
+
+- players online now and what they are doing, total players, sign-ups today and this week
+- daily active players, sign-ups, runs and revenue for the last 30 days, and the hours people play
+- revenue: confirmed with Paystack, unconfirmed, by item, paying players and average spend
+- a level funnel (started, finished, clear rate, the most common way to lose), favourite snakes, game modes and areas
+- recent sign-ups, recent purchases and top players, plus a CSV download of all players
+
+Set these environment variables on the server:
+
+| Variable | What it does |
+|---|---|
+| `ADMIN_PASSWORD` | Password for `/admin`. The dashboard stays locked until it is set. Use a long one. |
+| `PAYSTACK_SECRET_KEY` | Your Paystack secret key (`sk_live_...`). The server uses it to confirm each payment and its amount, so revenue counts as confirmed. |
+| `DATA_DIR` | Where players, scores and events are saved (default `./data`). Point it at a persistent disk. |
+
+The `data/` folder holds names and emails, so it is in `.gitignore`. Never commit it.
 
 ## Things that need a server
 

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ejo Admin</title>
+<style>
+:root{
+  --bg:#0b1510;--panel:#122119;--panel2:#16291f;--line:rgba(244,236,217,.12);
+  --ink:#f4ecd9;--ink2:rgba(244,236,217,.72);--muted:rgba(244,236,217,.5);
+  --accent:#f5c518;--accent2:rgba(245,197,24,.18);--good:#5fc46a;--bad:#ff6b57;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--body);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+header h1{font-size:22px;margin:0;letter-spacing:-.01em}
+header h1 span{color:var(--accent)}
+.sp{flex:1}
+.meta{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.btn{background:transparent;border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#14110a;border-color:var(--accent);font-weight:700}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;box-shadow:0 0 0 3px rgba(95,196,106,.2)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.kpi small{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.kpi b{display:block;font-size:28px;line-height:1.15;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi em{display:block;font-style:normal;color:var(--ink2);font-size:13px;margin-top:2px}
+.kpi.hero{background:linear-gradient(180deg,var(--panel2),var(--panel));border-color:rgba(245,197,24,.35)}
+.kpi.hero b{color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0;grid-column:span 6}
+.card.w4{grid-column:span 4}.card.w8{grid-column:span 8}.card.w12{grid-column:span 12}
+.card h2{font-size:15px;margin:0 0 2px}
+.card .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+.kpis{}
+@media (max-width:700px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi b{font-size:24px}}
+@media (max-width:900px){.card,.card.w4,.card.w8{grid-column:span 12}}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .bar{fill:var(--accent)}
+.chart .bar.dim{fill:rgba(245,197,24,.45)}
+.chart .hit{fill:transparent;cursor:default}
+.chart .hit:hover+.bar,.chart g:hover .bar{fill:#ffe27a}
+.chart .axis{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.tip{position:absolute;pointer-events:none;background:#fffaf0;color:#14110a;border-radius:8px;padding:6px 9px;font-size:12px;white-space:nowrap;transform:translate(-50%,-110%);box-shadow:0 4px 14px rgba(0,0,0,.35);font-variant-numeric:tabular-nums;z-index:2}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right}
+.scroll{max-height:340px;overflow:auto}
+#levels,#items,#top,#signups,#buys,#online{overflow-x:auto}
+#levels table,#top table{min-width:560px}
+.pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;border:1px solid var(--line);color:var(--ink2)}
+.pill.play{border-color:rgba(95,196,106,.6);color:var(--good)}
+.pill.ok{border-color:rgba(95,196,106,.6);color:var(--good)}
+.pill.warn{border-color:rgba(245,197,24,.6);color:var(--accent)}
+.meter{height:8px;border-radius:4px;background:rgba(244,236,217,.08);overflow:hidden;min-width:60px}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.rank{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;font-size:14px}
+.rank .meter{grid-column:1/-1;margin-bottom:6px}
+.empty{color:var(--muted);font-size:14px;padding:8px 0}
+.note{background:var(--accent2);border:1px solid rgba(245,197,24,.4);border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+.login{max-width:360px;margin:12vh auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.login h1{margin:0;font-size:22px}
+.login input{background:rgba(244,236,217,.06);border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:16px}
+.err{color:var(--bad);font-size:14px;margin:0}
+</style>
+</head>
+<body>
+<form class="login" id="login">
+  <h1>Ejo <span style="color:var(--accent)">Admin</span></h1>
+  <p class="meta" style="margin:0">Enter the admin password set on your server.</p>
+  <input id="pw" type="password" autocomplete="current-password" placeholder="Admin password" required>
+  <p class="err" id="loginErr" hidden></p>
+  <button class="btn primary" type="submit">Open dashboard</button>
+</form>
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <h1>Ejo <span>Admin</span></h1>
+    <span class="meta" id="updated"></span>
+    <span class="sp"></span>
+    <button class="btn" id="csv" type="button">Download players (CSV)</button>
+    <button class="btn" id="refresh" type="button">Refresh</button>
+    <button class="btn" id="logout" type="button">Log out</button>
+  </header>
+  <div id="notes"></div>
+  <section class="kpis" id="kpis"></section>
+  <section class="grid">
+    <div class="card w8"><h2>Daily active players</h2><p class="sub">Players who opened the game each day, last 30 days</p><div class="chart" id="cActive"></div></div>
+    <div class="card w4"><h2><span class="dot"></span>Online now</h2><p class="sub" id="onlineSub">Seen in the last 90 seconds</p><div class="scroll" id="online"></div></div>
+    <div class="card"><h2>New sign-ups</h2><p class="sub">Per day, last 30 days</p><div class="chart" id="cSignups"></div></div>
+    <div class="card"><h2>Revenue</h2><p class="sub">Confirmed naira per day, last 30 days</p><div class="chart" id="cRevenue"></div></div>
+    <div class="card"><h2>When people play</h2><p class="sub">Runs started by hour of day, Lagos time</p><div class="chart" id="cHours"></div></div>
+    <div class="card"><h2>Runs per day</h2><p class="sub">Games started, last 30 days</p><div class="chart" id="cRuns"></div></div>
+    <div class="card w12"><h2>Level funnel</h2><p class="sub">How far players get, and what stops them</p><div id="levels"></div></div>
+    <div class="card w4"><h2>Favourite snakes</h2><p class="sub">Runs by snake</p><div id="snakes"></div></div>
+    <div class="card w4"><h2>Game modes</h2><p class="sub">Runs by mode</p><div id="modes"></div></div>
+    <div class="card w4"><h2>Players by area</h2><p class="sub">From sign-up and settings</p><div id="areas"></div></div>
+    <div class="card"><h2>What kills players</h2><p class="sub">Most common ways a run ends</p><div id="deaths"></div></div>
+    <div class="card"><h2>Shop items</h2><p class="sub">Paid purchases by item</p><div id="items"></div></div>
+    <div class="card"><h2>Recent sign-ups</h2><p class="sub">Newest first</p><div class="scroll" id="signups"></div></div>
+    <div class="card"><h2>Recent purchases</h2><p class="sub">Newest first</p><div class="scroll" id="buys"></div></div>
+    <div class="card w12"><h2>Top players</h2><p class="sub">By best Endless Bush score</p><div id="top"></div></div>
+  </section>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('en-NG');
+const naira=n=>'₦'+fmt(Math.round(n||0));
+const LEVELS=['Bush Farm','Lekki Swamp','Ikorodu Backyard','Night Market','Omo Forest','Savanna Edge',"Ojola's Den",'Mongoose King\'s Court','Oga Ratel'];
+const SNAKES={mamba:'Green Mamba',python:'Rock Python',cobra:'Spitting Cobra',viper:'Gaboon Viper',royal:'Royal Python'};
+const MODES={levels:'Levels',endless:'Endless Bush',daily:'Daily challenge',duel:'Duel',friend:'Friend challenge'};
+const ago=t=>{const s=Math.max(0,(Date.now()-t)/1000);if(s<60)return Math.round(s)+'s ago';if(s<3600)return Math.round(s/60)+' min ago';if(s<86400)return Math.round(s/3600)+' h ago';return Math.round(s/86400)+' d ago'};
+const dur=s=>{s=Math.round(s||0);return s<60?s+'s':Math.floor(s/60)+'m '+String(s%60).padStart(2,'0')+'s'};
+const when=t=>new Date(t).toLocaleString('en-NG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+let pw='';try{pw=sessionStorage.getItem('ejo.admin')||''}catch(e){}
+let timer=null;
+
+async function load(){
+  let r;try{r=await fetch(base()+'api/admin/stats',{headers:{Authorization:'Bearer '+pw},cache:'no-store'})}catch(e){return showErr('Could not reach the server.')}
+  if(r.status===401){logout();return showErr('Wrong password.')}
+  if(!r.ok){const j=await r.json().catch(()=>({}));logout();return showErr(j.error||'The server returned an error.')}
+  const d=await r.json();$('login').hidden=true;$('app').hidden=false;render(d);
+}
+function base(){return location.pathname.replace(/\/admin\/?$/,'/')}
+function showErr(m){$('loginErr').textContent=m;$('loginErr').hidden=false;$('login').hidden=false;$('app').hidden=true}
+function logout(){pw='';try{sessionStorage.removeItem('ejo.admin')}catch(e){}clearInterval(timer);$('app').hidden=true;$('login').hidden=false}
+
+/* single-series bar chart with a hover tooltip; no legend needed, the card title names it */
+function bars(el,data,{label,value,tick,fmtV=fmt,every=5,minTop=4}){
+  const W=Math.max(280,Math.round(el.clientWidth||560)),H=180,P={l:40,r:6,t:8,b:24},n=data.length,max=Math.max(1,...data.map(value));
+  const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;return (m<=1?1:m<=2?2:m<=5?5:10)*p};
+  const top=Math.max(nice(max),minTop),iw=W-P.l-P.r,ih=H-P.t-P.b,bw=iw/n,gap=Math.min(4,bw*.25);every=Math.max(every,Math.ceil(n/Math.max(1,iw/58)));
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(el.previousElementSibling.previousElementSibling.textContent)}">`;
+  [0,.5,1].forEach(f=>{const y=P.t+ih-ih*f;s+=`<line class="grid" x1="${P.l}" x2="${W-P.r}" y1="${y}" y2="${y}"/><text class="axis" x="${P.l-6}" y="${y+4}" text-anchor="end">${fmtV(top*f)}</text>`});
+  data.forEach((d,i)=>{const v=value(d),h=Math.max(v>0?2:0,ih*v/top),x=P.l+i*bw+gap/2,w=bw-gap,y=P.t+ih-h,r=Math.min(4,w/2,h);
+    s+=`<g data-i="${i}"><rect class="hit" x="${P.l+i*bw}" y="${P.t}" width="${bw}" height="${ih}"/>`;
+    if(h>0)s+=`<path class="bar${i===n-1?'':''}" d="M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z"/>`;
+    s+='</g>';
+    if((i%every===0&&n-1-i>=every*.7)||i===n-1)s+=`<text class="axis" x="${x+w/2}" y="${H-6}" text-anchor="middle">${esc(tick(d,i))}</text>`});
+  el.innerHTML=s+'</svg><div class="tip" hidden></div>';
+  const tip=el.querySelector('.tip'),svg=el.querySelector('svg');
+  svg.addEventListener('mousemove',ev=>{const g=ev.target.closest('g[data-i]');if(!g){tip.hidden=true;return}const d=data[+g.dataset.i];const rc=el.getBoundingClientRect();tip.hidden=false;tip.innerHTML=`<b>${esc(label(d))}</b><br>${fmtV(value(d))}`;tip.style.left=(ev.clientX-rc.left)+'px';tip.style.top=(ev.clientY-rc.top)+'px'});
+  svg.addEventListener('mouseleave',()=>tip.hidden=true);
+}
+function rank(el,rows,{name=r=>r[0],val=r=>r[1],fmtV=fmt}={}){
+  if(!rows.length){el.innerHTML='<p class="empty">Nothing yet.</p>';return}
+  const max=Math.max(1,...rows.map(val));
+  el.innerHTML='<div class="rank">'+rows.map(r=>`<span>${esc(name(r))}</span><b>${fmtV(val(r))}</b><span class="meter"><i style="width:${val(r)/max*100}%"></i></span>`).join('')+'</div>';
+}
+function table(el,cols,rows,empty){
+  if(!rows.length){el.innerHTML=`<p class="empty">${empty||'Nothing yet.'}</p>`;return}
+  el.innerHTML=`<table><thead><tr>${cols.map(c=>`<th class="${c.n?'n':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td class="${c.n?'n':''}">${c.v(r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+const dayTick=d=>new Date(d.day+'T12:00:00Z').toLocaleDateString('en-NG',{day:'numeric',month:'short'});
+
+function render(d){
+  const t=d.totals;
+  $('updated').textContent='Updated '+new Date(d.generated).toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' · refreshes every 15 seconds';
+  const notes=[];
+  if(!d.paystackVerify)notes.push('Payments are not being confirmed with Paystack yet. Set <b>PAYSTACK_SECRET_KEY</b> on the server so revenue counts as confirmed; until then paid purchases show as "unconfirmed".');
+  $('notes').innerHTML=notes.map(n=>`<div class="note">${n}</div>`).join('');
+  const k=(label,val,sub,hero)=>`<div class="kpi${hero?' hero':''}"><small>${label}</small><b>${val}</b>${sub?`<em>${sub}</em>`:''}</div>`;
+  $('kpis').innerHTML=[
+    k('Online now',fmt(t.online),`${fmt(t.playing)} playing a level`,true),
+    k('Total players',fmt(t.users),`+${fmt(t.signupsToday)} today · +${fmt(t.signups7d)} this week`),
+    k('Active today',fmt(t.activeToday),`${fmt(t.active7d)} in the last 7 days`),
+    k('Revenue (confirmed)',naira(t.revenueVerified),`${naira(t.revenueToday)} today`,true),
+    k('Unconfirmed payments',naira(t.revenueUnverified),'Check these in Paystack'),
+    k('Paying players',fmt(t.payers),t.payers?`${naira(t.arppu)} each on average`:'No purchases yet'),
+    k('Runs played',fmt(t.runs),`${fmt(t.runsToday)} today`),
+    k('Average run',dur(t.avgRunSecs),`${fmt(t.withEmail)} players gave an email`)
+  ].join('');
+  bars($('cActive'),d.daily,{label:dayTick,value:x=>x.active,tick:dayTick});
+  bars($('cSignups'),d.daily,{label:dayTick,value:x=>x.signups,tick:dayTick});
+  bars($('cRevenue'),d.daily,{label:dayTick,value:x=>x.revenue,tick:dayTick,fmtV:naira,minTop:1000});
+  bars($('cRuns'),d.daily,{label:dayTick,value:x=>x.runs,tick:dayTick});
+  bars($('cHours'),d.hours.map((v,h)=>({h,v})),{label:x=>`${String(x.h).padStart(2,'0')}:00 to ${String((x.h+1)%24).padStart(2,'0')}:00`,value:x=>x.v,tick:x=>String(x.h).padStart(2,'0'),every:3});
+  $('onlineSub').textContent=t.online?`${fmt(t.online)} seen in the last 90 seconds`:'Seen in the last 90 seconds';
+  table($('online'),[{h:'Player',v:r=>`<b>${esc(r.username)}</b><br><span class="meta">${esc(r.name)} · ${esc(r.area||'')}</span>`},{h:'Doing',v:r=>r.state==='play'?`<span class="pill play">Playing</span><br><span class="meta">${esc(r.level||'')}</span>`:'<span class="pill">In menus</span>'},{h:'For',n:1,v:r=>dur((r.lastSeen-r.since)/1000)}],d.online,'Nobody is online right now.');
+  table($('levels'),[
+    {h:'Level',v:r=>`${r.li+1}. ${esc(LEVELS[r.li]||'')}`},{h:'Started',n:1,v:r=>fmt(r.starts)},{h:'Finished',n:1,v:r=>fmt(r.clears)},
+    {h:'Clear rate',v:r=>r.ends?`<div style="display:flex;gap:8px;align-items:center"><span class="meter" style="flex:1"><i style="width:${r.clearRate*100}%"></i></span><span style="min-width:38px;text-align:right">${Math.round(r.clearRate*100)}%</span></div>`:'<span class="meta">No runs yet</span>'},
+    {h:'Avg score',n:1,v:r=>fmt(r.avgScore)},{h:'Top way to lose',v:r=>r.topDeath?`${esc(r.topDeath[0])} <span class="meta">(${fmt(r.topDeath[1])})</span>`:'<span class="meta">-</span>'}],d.levels);
+  rank($('snakes'),d.snakes,{name:r=>SNAKES[r[0]]||r[0]});
+  rank($('modes'),d.modes,{name:r=>MODES[r[0]]||r[0]});
+  rank($('areas'),d.areas);
+  rank($('deaths'),d.deaths);
+  table($('items'),[{h:'Item',v:r=>esc(r.item)},{h:'Sold',n:1,v:r=>fmt(r.count)},{h:'Revenue',n:1,v:r=>naira(r.revenue)}],d.items,'No paid purchases yet.');
+  table($('signups'),[{h:'Player',v:r=>`<b>${esc(r.username)}</b><br><span class="meta">${esc(r.name)}</span>`},{h:'Email',v:r=>r.email?esc(r.email):'<span class="meta">-</span>'},{h:'Area',v:r=>esc(r.area||'')},{h:'Joined',n:1,v:r=>`<span title="${esc(when(r.created))}">${ago(r.created)}</span>`}],d.recentSignups,'No sign-ups yet.');
+  table($('buys'),[{h:'When',v:r=>esc(when(r.t))},{h:'Player',v:r=>esc(r.username)},{h:'Item',v:r=>esc(r.item)},{h:'Amount',n:1,v:r=>r.demo?'<span class="meta">demo</span>':naira(r.verified?r.amount:r.price)},{h:'Status',v:r=>r.demo?'<span class="pill">Demo</span>':r.verified?'<span class="pill ok">Confirmed</span>':`<span class="pill warn" title="Paystack reference ${esc(r.ref)}">Unconfirmed</span>`}],d.recentPurchases,'No purchases yet.');
+  table($('top'),[{h:'#',v:(r)=>''},{h:'Player',v:r=>`<b>${esc(r.username)}</b> <span class="meta">${esc(r.name)}</span>`},{h:'Area',v:r=>esc(r.area||'')},{h:'Best endless',n:1,v:r=>fmt(r.endless)},{h:'Runs',n:1,v:r=>fmt(r.runs)},{h:'Spent',n:1,v:r=>naira(r.spent)}],d.topPlayers,'No players yet.');
+  $('top').querySelectorAll('tbody tr').forEach((tr,i)=>tr.firstChild.textContent=i+1);
+}
+
+$('login').addEventListener('submit',e=>{e.preventDefault();pw=$('pw').value;try{sessionStorage.setItem('ejo.admin',pw)}catch(e){}$('loginErr').hidden=true;load().then(()=>{clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&pw)load()},15000)})});
+$('refresh').addEventListener('click',load);
+$('logout').addEventListener('click',logout);
+$('csv').addEventListener('click',async()=>{const r=await fetch(base()+'api/admin/players.csv',{headers:{Authorization:'Bearer '+pw}});if(!r.ok){$('notes').insertAdjacentHTML('afterbegin','<div class="note">Could not download the player list. Try again.</div>');return}const b=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ejo-players.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
+if(pw){load().then(()=>{timer=setInterval(()=>{if(!document.hidden&&pw)load()},15000)})}
+})();
+</script>
+</body>
+</html>

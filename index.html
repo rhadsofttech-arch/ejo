@@ -1854,6 +1854,7 @@ function go(){
   if(G.useVenom&&inv.venom>0){inv.venom--;G.venom=100;G.venomOn=true;G.venomT=G.vt}
   G.maxLives=G.lives;G.useLife=G.useVenom=false;save();
   resetSnake();screen('');showPlayUI(true);G.state='play';G.grace=6;acc=0;G.elapsed=0;G.live=null;hud();
+  track('run_start',{mode:G.mode,li:G.li,snake:G.key});ping();
   const bd=boardOf();if(bd&&G.mode!=='duel'){const g=G;topFor(bd[0],bd[1]).then(r=>{if(G===g&&r){G.live=r;renderLive()}})}
   const tip=G.sp.spit?(coarse?' Tap Spit to spit.':' Space to spit.'):'';
   let msg=`Eat ${G.L.goal} animals, then follow the road north through the checkpoint.`;if(G.L.boss)msg=`Defeat ${BOSS[G.L.boss].name}.`;if(G.L.endless)msg='Stay alive.';if(G.mode==='daily')msg=G.daily.label+'.';
@@ -1865,6 +1866,7 @@ function pause(){if(G.state!=='play')return;G.state='paused';screen(`<div class=
 function overScreen(){endScreen(false,0)}
 function endScreen(won,bonus){
   G.state=won?'cleared':'over';showPlayUI(false);
+  track('run_end',{mode:G.mode,li:G.li,snake:G.key,score:G.score,eaten:G.eaten,secs:Math.round(G.elapsed/1000),won:!!won,reason:won?'':(G.lastMsg||'')});setTimeout(ping,50);
   if(G.score>best){best=G.score}
   const sec=G.elapsed/1000;
   if(G.mode==='endless'){if(sec>(stats().endlessBest||0))stats().endlessBest=sec;recordBest('endless',G.score,{endlessTime:Math.floor(sec)})}
@@ -1917,7 +1919,9 @@ function renderMissions(){
 /* ---------- settings ---------- */
 function renderSettings(msg){
   screen(`<div class="panel"><div class="eyebrow">Settings</div><h2>You and your area</h2>
-    <label class="field">Your name on the leaderboard<input id="setNick" maxlength="14" value="${esc(inv.nick||'')}" placeholder="e.g. Tunde_Ikd" autocomplete="nickname"></label>
+    <label class="field">Your name<input id="setName" maxlength="40" value="${esc((inv.profile&&inv.profile.name)||'')}" placeholder="e.g. Tunde Bakare" autocomplete="name"></label>
+    <label class="field">Username <small class="muted">(shows on the leaderboard)</small><input id="setNick" maxlength="14" value="${esc(inv.nick||'')}" placeholder="e.g. Tunde_Ikd" autocomplete="username" autocapitalize="off" spellcheck="false"></label>
+    <label class="field">Email <small class="muted">(optional)</small><input id="setEmail" type="email" inputmode="email" maxlength="80" value="${esc((inv.profile&&inv.profile.email)||'')}" placeholder="you@example.com" autocomplete="email"></label>
     <label class="field">Your area<select id="setArea">${AREAS.map(a=>`<option${(inv.area||'')===a?' selected':''}>${a}</option>`).join('')}</select></label>
     <div class="boosts"><label class="tog"><input type="checkbox" id="setChat" ${chatOn?'checked':''}> Animal chatter bubbles</label>
     <label class="tog"><input type="checkbox" id="setVoice" ${voiceOn?'checked':''}> Read chatter out loud <small>(uses your device's voice)</small></label>
@@ -1925,16 +1929,87 @@ function renderSettings(msg){
     ${msg?`<p class="event">${msg}</p>`:''}
     <div class="btns"><button class="btn primary" type="button" data-act="saveset" data-primary>Save</button><button class="btn" type="button" data-act="menu">Back</button></div></div>`);
 }
-function saveSettings(){
-  const n=($('setNick').value||'').replace(/[^A-Za-z0-9 _-]/g,'').trim().slice(0,14);
-  inv.nick=n;inv.area=$('setArea').value;
+async function saveSettings(){
+  const f=readProfile('setName','setNick','setEmail');
+  inv.area=$('setArea').value;
+  if(f.error)return f.error;
+  const r=await register(f);if(r.error)return r.error;
+  setProfile(f,r);
   chatOn=$('setChat').checked;voiceOn=$('setVoice').checked;muted=!$('setSound').checked;
   try{localStorage.setItem('ejo.chat',chatOn?'on':'off');localStorage.setItem('ejo.voice',voiceOn?'on':'off')}catch(e){}
   syncChat();$('muteBtn').textContent=muted?'Sound off':'Sound on';
   NET.dirty=true;save();syncScores();
   if(voiceOn&&window.speechSynthesis)speak('Welcome to the bush!',SNAKE_T);
-  return n;
+  return 'Saved.';
 }
+
+/* ---------- sign-up: name and username before the first game, email optional ---------- */
+let signupAfter=null,signingUp=false;
+function readProfile(nId,uId,eId){
+  const name=($(nId).value||'').replace(/[<>"`\\]/g,'').replace(/\s+/g,' ').trim().slice(0,40);
+  const username=($(uId).value||'').trim().replace(/\s+/g,'_');
+  const email=($(eId).value||'').trim().toLowerCase();
+  const f={name,username,email};
+  if(name.length<2)f.error='Please enter your name.';
+  else if(!/^[A-Za-z0-9_-]{3,14}$/.test(username))f.error='Usernames are 3 to 14 letters, numbers or underscores, with no spaces.';
+  else if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))f.error='That email address does not look right. Leave it empty if you prefer.';
+  return f;
+}
+// tell the game server about this player; if there is no server (or no signal) they still get to play
+async function register(f){
+  if(!API.base||API.ok===false)return{local:true};
+  try{
+    const r=await fetch(API.base+'/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pid:pid(),key:inv.pkey,name:f.name,username:f.username,email:f.email,area:inv.area||'Other'})});
+    if(r.status===404||r.status===405){API.ok=false;return{local:true}}
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)return r.status>=500||r.status===429?{local:true,pending:true}:{error:j.error||'Sign-up did not go through. Try again.'};
+    API.ok=true;return{};
+  }catch(e){return{local:true,pending:true}}
+}
+function setProfile(f,r){
+  const old=inv.profile||{};
+  inv.profile={name:f.name,username:f.username,email:f.email,created:old.created||Date.now(),pending:!!(r&&r.pending)};
+  inv.nick=f.username;
+  if(f.email){payEmail=payEmail||f.email;try{if(!localStorage.getItem('ejo.email'))localStorage.setItem('ejo.email',f.email)}catch(e){}}
+  NET.dirty=true;save();syncScores();ping();
+}
+function renderSignup(msg,after,draft){
+  if(after)signupAfter=after;
+  const p=draft||inv.profile||{};
+  screen(`<div class="panel"><div class="eyebrow">Welcome to Ejo</div><h2>Sign up to play</h2>
+    <p class="muted">Just your name and a username. Your username is how other players see you on the leaderboard.</p>
+    <label class="field">Your name<input id="suName" maxlength="40" autocomplete="name" placeholder="e.g. Tunde Bakare" value="${esc(p.name||'')}"></label>
+    <label class="field">Username<input id="suUser" maxlength="14" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="e.g. Tunde_Ikd" value="${esc(p.username||inv.nick||'')}"></label>
+    <label class="field">Email <small class="muted">(optional, for receipts and game news)</small><input id="suEmail" type="email" inputmode="email" maxlength="80" autocomplete="email" placeholder="you@example.com" value="${esc(p.email||'')}"></label>
+    ${msg?`<p class="err" role="alert">${msg}</p>`:''}
+    <div class="btns"><button class="btn primary" type="button" data-act="signup" id="suGo">${signingUp?'Signing you up…':'Start playing'}</button></div></div>`);
+  setTimeout(()=>{const el=!$('suName').value?$('suName'):!$('suUser').value||msg?$('suUser'):$('suGo');if(el)el.focus({preventScroll:true})},40);
+}
+async function doSignup(){
+  if(signingUp)return;
+  const f=readProfile('suName','suUser','suEmail');
+  if(f.error)return renderSignup(f.error,null,f);
+  signingUp=true;const b=$('suGo');if(b){b.disabled=true;b.textContent='Signing you up…'}
+  const r=await register(f);signingUp=false;
+  if(r.error)return renderSignup(r.error,null,f);
+  setProfile(f,r);
+  const after=signupAfter;signupAfter=null;
+  if(after)after();else menu();
+  toast(`<big>Welcome, ${esc(f.name.split(' ')[0])}!</big>You play as ${esc(f.username)}.`,'good');
+}
+/* "I'm online" heartbeat and game events for the admin dashboard (only when hosted with server.js) */
+function apiOn(){return !!(inv.profile&&API.base&&API.ok!==false)}
+function ping(){
+  if(!apiOn()||document.hidden)return;
+  fetch(API.base+'/ping',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({pid:pid(),key:inv.pkey,state:G&&G.state==='play'?'play':'menu',level:G&&G.L&&G.state==='play'?G.L.name:''})})
+    .then(async r=>{if(r.status===404){const j=await r.json().catch(()=>({}));if(j.error==='Sign up first')register(inv.profile);else API.ok=false}}).catch(()=>{});
+}
+function track(type,data){
+  if(!apiOn())return;
+  try{fetch(API.base+'/event',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({pid:pid(),key:inv.pkey,type},data))}).catch(()=>{})}catch(e){}
+}
+setInterval(ping,45000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)ping()});
 
 /* ---------- leaderboard ---------- */
 let boardTab='endless',boardLi=0;
@@ -2052,7 +2127,7 @@ function doPay(){
   try{localStorage.setItem('ejo.email',payEmail)}catch(e){}
   c.stage='busy';c.err='';renderSheet();
   const p=PAY.publicKey?payWithPaystack(c.item,payEmail):new Promise(r=>setTimeout(r,900));
-  p.then(()=>{grant(c.item);c.stage='done';sfx(784,.08);setTimeout(()=>sfx(1046,.14),90);renderSheet()})
+  p.then(r=>{track('purchase',{item:c.item.id,price:c.item.price,ref:(r&&r.reference)||'',demo:!PAY.publicKey});grant(c.item);c.stage='done';sfx(784,.08);setTimeout(()=>sfx(1046,.14),90);renderSheet()})
    .catch(e=>{c.stage='form';c.err=e.message;renderSheet()});
 }
 function copyText(text,el){
@@ -2110,7 +2185,8 @@ $('screen').addEventListener('click',async ev=>{const b=ev.target.closest('[data
   else if(a==='board'){if(!inv.nick)return renderSettings('Choose a name and area first, so your scores show up on the board.');renderBoard()}
   else if(a==='tab'){boardTab=b.dataset.k;renderBoard()}
   else if(a==='settings')renderSettings();
-  else if(a==='saveset'){const n=saveSettings();renderSettings(n?'Saved.':'Saved. Add a name to appear on the leaderboard.')}
+  else if(a==='saveset'){saveSettings().then(m=>renderSettings(m))}
+  else if(a==='signup')doSignup();
   else if(a==='share')openShare();
   else if(a==='shop'){shopFrom=b.dataset.from||'menu';renderShop()}
   else if(a==='back')back(shopFrom);
@@ -2137,6 +2213,7 @@ addEventListener('keydown',e=>{
   if(k==='v'&&!checkout&&!(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))){cycleView();return}
   if(k===' '&&G&&G.state==='play'){e.preventDefault();if(G.sp.spit)spit();else pause();return}
   if(checkout)return;
+  if(k==='Enter'&&e.target&&/^su(Name|User|Email)$/.test(e.target.id)){e.preventDefault();doSignup();return}
   if(k==='p'||k==='Escape'){if(G&&G.state==='play'){e.preventDefault();pause()}else if(G&&G.state==='paused'){e.preventDefault();screen('');G.state='play';acc=0}}
   if(k==='m')toggleMute();
 });
@@ -2162,11 +2239,16 @@ menu();
 requestAnimationFrame(frame);
 addEventListener('hashchange',()=>{const c=readChallenge();if(c&&G&&G.state!=='play')challengeScreen(c)});
 (function startup(){
+  if(!inv.profile){renderSignup('',()=>{menu();welcome()});return}
+  if(inv.profile.pending)register(inv.profile).then(r=>{if(r.error){inv.profile.pending=false;save();if(G&&G.state!=='play')renderSignup(r.error+' Pick another username.',()=>menu())}else if(!r.pending){inv.profile.pending=false;save()}});
+  welcome();
+})();
+function welcome(){
   const c=readChallenge();if(c){const st=checkStreak();challengeScreen(c);if(st)toast(`<big>Day ${st.day} streak</big>You got ${st.reward.text}.`,'good');return}
   const st=checkStreak();if(st){const sh=$('sheet');sh.hidden=false;
     sh.innerHTML=`<div class="sheet" role="dialog" aria-label="Daily reward"><div class="eyebrow">Login streak · day ${st.day}</div><h3>Welcome back to the bush</h3><p>Today's reward: <b>${st.reward.text}</b>.${st.day<7?` Come back tomorrow for day ${st.day+1}.`:' Your streak starts a new week tomorrow.'}</p>${streakStrip()}<div class="btns"><button class="btn primary" type="button" data-sh="close">Collect</button></div></div>`;
     setTimeout(()=>{const b=sh.querySelector('button');if(b)b.focus()},50);menu()}
-})();
+}
 })();
 </script>
 
