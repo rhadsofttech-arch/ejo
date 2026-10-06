@@ -38,9 +38,19 @@ All of these are near the top of the script in `index.html`.
 | `CONFIG.sponsor` | Sponsor name and tagline for the in-game billboards. Empty shows "Your brand here". |
 | `CONFIG.giftSalt` | Secret used to check gift codes. Change it, because this repo is public. |
 
+## Live scores
+
+`npm start` runs `server.js`, which serves the game and a small scores API:
+
+- `GET /api/scores?board=endless|daily|l0..l8|all&date=YYYY-MM-DD` returns the top scores
+- `POST /api/scores` saves a player's bests (each player gets a private key, so nobody can overwrite someone else's scores)
+
+The game finds the API at `/api` on the same site automatically, and shows "Top players right now" on the menu, a "score to beat" before each level and a live ranking while you play. To use one API from another site (for example GitHub Pages), set `CONFIG.scoresApi` to its full URL; CORS is open.
+
+Scores are saved to `DATA_DIR/scores.json` (default `./data`). Point `DATA_DIR` at a persistent disk, or scores reset when the server restarts. Scores are reported by the browser, so a determined player could fake one.
+
 ## Things that need a server
 
-- **Leaderboards**: online boards use the Claude artifact database. On your own hosting the game falls back to each player's own bests until you connect a backend.
 - **Payments**: verify every Paystack payment on your server before granting items.
 - **Gift codes**: they are checked in the browser; record redeemed codes on your server to stop reuse.
 - **Rewarded ads**: the game calls Google's H5 Games Ads `adBreak()` when that script is on the page; otherwise it shows a placeholder.
