@@ -337,9 +337,112 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
   h1{font-size:clamp(48px,15vw,96px)}
 }
 @media (max-width:460px){.menuhead .tag{display:none}.levels.mini .lv small{display:none}}
+
+/* loading intro */
+#boot{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(ellipse at 50% 42%,#173826,#0a140e 70%);color:var(--cream);transition:opacity .6s ease,transform .6s ease}
+#boot.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#bootSnake{width:min(360px,86vw);height:auto;aspect-ratio:360/130}
+.bootlogo{font-family:var(--display);font-size:clamp(72px,22vw,128px);line-height:.85;color:var(--danfo);text-shadow:0 6px 0 var(--laterite),0 12px 24px rgba(0,0,0,.5);letter-spacing:.04em;transform:rotate(-3deg);margin-top:-6px}
+.boottag{font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.bootbar{width:min(400px,72vw);height:10px;border-radius:6px;background:rgba(244,236,217,.12);overflow:hidden}
+.bootbar i{display:block;height:100%;width:4%;background:var(--danfo);border-radius:6px;box-shadow:0 0 12px rgba(245,197,24,.6)}
+#bootMsg{font-size:14px;font-weight:700;color:rgba(244,236,217,.7);min-height:20px;text-align:center;padding:0 16px}
+@media (prefers-reduced-motion:reduce){#boot{transition:none}}
+
+/* home: the bush fills the screen, game buttons float on top */
+#screen.homemode{background:linear-gradient(rgba(5,10,7,.45),rgba(5,10,7,0) 26%,rgba(5,10,7,0) 58%,rgba(5,10,7,.55));padding:0;align-items:stretch;justify-content:center;pointer-events:none}
+.home{width:100%;max-width:1100px;height:100%;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);pointer-events:none}
+.home button,.home .hpill,.home .hchamp{pointer-events:auto}
+.htop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hpills{display:flex;gap:8px;min-width:0}
+.hpill{display:inline-flex;gap:7px;align-items:center;background:rgba(9,18,13,.8);border:1px solid var(--line);border-radius:14px;padding:7px 12px;font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums;backdrop-filter:blur(6px);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.hpill.user{font-family:var(--body);font-size:14px;font-weight:800;color:var(--muted)}
+.hicon{width:46px;height:46px;border-radius:14px;background:rgba(9,18,13,.8);border:1px solid var(--line);display:grid;place-items:center;flex:none;backdrop-filter:blur(6px)}
+.hicon svg{width:26px;height:26px}
+.hevent{align-self:center;background:rgba(245,197,24,.92);color:var(--ink);border-radius:999px;padding:4px 14px;font-size:12px;font-weight:800;text-align:center;max-width:100%;pointer-events:auto}
+.hcols{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.hleft,.hright{display:flex;flex-direction:column;gap:8px;width:min(47%,270px)}
+.htile{display:flex;align-items:center;gap:10px;background:rgba(9,18,13,.8);border:1px solid var(--line);border-radius:16px;padding:7px 12px 7px 7px;text-align:left;position:relative;backdrop-filter:blur(6px);min-width:0;transition:transform .1s}
+.htile .ic{width:48px;height:48px;border-radius:12px;background:#fffaf0;box-shadow:inset 0 -3px 0 #d9cfb6;display:grid;place-items:center;flex:none}
+.htile .ic svg{width:34px;height:34px}
+.htile span.tx{min-width:0;display:flex;flex-direction:column}
+.htile small{font-size:12px;color:var(--muted);font-weight:800;white-space:nowrap}
+.htile b{font-family:var(--display);font-weight:400;font-size:20px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdot{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;border-radius:11px;background:var(--laterite);color:var(--cream);font-style:normal;font-size:12px;font-weight:800;display:grid;place-items:center;padding:0 6px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.htoday{position:relative;background:var(--danfo);color:var(--ink);border:0;border-radius:18px;padding:12px 14px;text-align:left;box-shadow:inset 0 -4px 0 #c99a00,0 8px 18px rgba(0,0,0,.35);min-height:100px;display:flex;flex-direction:column;transition:transform .1s}
+.htoday small{font-weight:800;font-size:13px;opacity:.7}
+.htoday b{font-family:var(--display);font-weight:400;font-size:24px;line-height:1.05;padding-right:46px}
+.htoday em{font-style:normal;font-size:12px;font-weight:800;margin-top:auto;padding-top:6px;opacity:.8}
+.htoday svg{position:absolute;right:10px;top:10px;width:44px;height:44px}
+.htoday.done{background:#d9cfb6;box-shadow:inset 0 -4px 0 #b8ad92,0 8px 18px rgba(0,0,0,.35)}
+.hbottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:10px}
+.hchamp{background:rgba(9,18,13,.8);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;backdrop-filter:blur(6px);text-align:center;max-width:100%}
+.hchamp b{color:var(--danfo)}
+.hsign{display:grid;grid-template-columns:54px minmax(0,1fr) 54px;width:min(100%,470px);background:#0b6b3a;border:3px solid #f4ecd9;border-radius:14px;box-shadow:0 0 0 3px #0b6b3a,0 10px 22px rgba(0,0,0,.45);color:#fff;pointer-events:auto}
+.harrow{font-family:var(--display);font-size:38px;line-height:1;color:#fff;background:none;border:0;padding:0 0 4px}
+.harrow:first-child{border-right:2px solid rgba(244,236,217,.45)}.harrow:last-child{border-left:2px solid rgba(244,236,217,.45)}
+.harrow:disabled{opacity:.25}
+.hsignin{text-align:center;padding:7px 8px 8px;min-width:0}
+.hsignin small{display:block;font-size:12px;font-weight:800;color:#bfe8c8;letter-spacing:.04em}
+.hsignin b{display:block;font-family:var(--display);font-weight:400;font-size:27px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hsignin em{display:block;font-style:normal;font-size:13px;font-weight:800;color:var(--danfo)}
+.hplay{font-family:var(--display);font-size:clamp(38px,10vw,58px);line-height:1;color:#fff;background:none;border:0;padding:4px 18px;text-shadow:0 4px 0 rgba(0,0,0,.45),0 0 22px rgba(0,0,0,.4);animation:hpulse 1.7s ease-in-out infinite}
+.hplay:disabled{animation:none;font-size:20px;opacity:.9;font-family:var(--body);font-weight:800}
+@keyframes hpulse{50%{transform:scale(1.06)}}
+.hnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:min(100%,580px)}
+.hnav button{background:#fffaf0;color:var(--ink);border:0;border-radius:16px;box-shadow:inset 0 -4px 0 #d9cfb6,0 8px 16px rgba(0,0,0,.3);padding:8px 4px 11px;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:var(--display);font-size:17px;transition:transform .1s}
+.hnav svg{width:38px;height:38px}
+.hnav button:active,.htile:active,.htoday:active{transform:translateY(2px)}
+.hnav button:focus-visible,.htile:focus-visible,.htoday:focus-visible,.hplay:focus-visible,.harrow:focus-visible,.hicon:focus-visible{outline:3px solid var(--danfo);outline-offset:2px}
+@media (max-width:460px){
+  .home{gap:8px;padding-left:10px;padding-right:10px}
+  .htile{gap:8px;padding:6px 9px 6px 6px;border-radius:14px}.htile .ic{width:40px;height:40px}.htile .ic svg{width:28px;height:28px}.htile b{font-size:16px}.htile small{font-size:11px}
+  .htoday{min-height:86px;padding:10px 12px}.htoday b{font-size:19px;padding-right:34px}.htoday svg{width:34px;height:34px}
+  .hsign{grid-template-columns:44px minmax(0,1fr) 44px}.hsignin b{font-size:22px}
+  .hnav{gap:7px}.hnav button{font-size:14px;padding:7px 2px 9px}.hnav svg{width:32px;height:32px}
+  .hpill{font-size:16px;padding:6px 10px}
+}
+@media (max-height:640px){.hleft .htile:nth-child(3){display:none}.hchamp{display:none}}
 </style>
 </head>
 <body>
+<div id="boot" role="status" aria-label="Loading Ejo">
+  <canvas id="bootSnake" width="360" height="130" aria-hidden="true"></canvas>
+  <div class="bootlogo">EJO</div>
+  <div class="boottag">A Lagos bush game</div>
+  <div class="bootbar"><i id="bootFill"></i></div>
+  <div id="bootMsg">Waking up the bush…</div>
+</div>
+<script>
+(function(){
+  var c=document.getElementById('bootSnake'),x=c.getContext('2d'),fill=document.getElementById('bootFill'),msg=document.getElementById('bootMsg'),boot=document.getElementById('boot');
+  var t0=performance.now(),p=4,target=58,done=false,fixed=0;
+  var lines=['Waking up the bush…','Chasing rats out of Ikorodu…','Counting cowries…','Sharpening mongoose teeth…','Filling the swamp in Lekki…','Clearing the road to Lagos…','Loading the hunters’ dane guns…','Telling the market women to watch out…'],li=0;
+  var dpr=Math.min(2,window.devicePixelRatio||1);c.width=360*dpr;c.height=130*dpr;x.scale(dpr,dpr);
+  function snake(t){
+    x.clearRect(0,0,360,130);var n=38,pts=[];
+    for(var i=0;i<n;i++){var u=i/(n-1),amp=16*Math.min(1,i/5);pts.push([292-i*6.4,66+Math.sin(t*5.2-i*.42)*amp,12*(1-Math.pow(u,1.5))+2.2])}
+    x.fillStyle='rgba(0,0,0,.28)';for(i=n-1;i>=0;i--){x.beginPath();x.ellipse(pts[i][0],pts[i][1]+10,pts[i][2],pts[i][2]*.45,0,0,7);x.fill()}
+    for(i=n-1;i>=0;i--){var q=pts[i];x.fillStyle=i%6<2?'#1b7a32':'#2fae48';x.beginPath();x.arc(q[0],q[1],q[2],0,7);x.fill();x.fillStyle='rgba(190,255,150,.35)';x.beginPath();x.arc(q[0]-q[2]*.15,q[1]-q[2]*.35,q[2]*.45,0,7);x.fill()}
+    var h=pts[0],hy=h[1];x.fillStyle='#2fae48';x.beginPath();x.ellipse(h[0]+9,hy,17,12,0,0,7);x.fill();
+    x.fillStyle='rgba(190,255,150,.4)';x.beginPath();x.ellipse(h[0]+7,hy-5,10,5,0,0,7);x.fill();
+    x.fillStyle='#fff';x.beginPath();x.arc(h[0]+15,hy-5,4.2,0,7);x.fill();x.fillStyle='#111';x.beginPath();x.arc(h[0]+16.5,hy-5,2.3,0,7);x.fill();
+    var fl=(t%1.4)<.28;if(fl){x.strokeStyle='#e8423a';x.lineWidth=2.2;x.lineCap='round';x.beginPath();x.moveTo(h[0]+25,hy+2);x.lineTo(h[0]+36,hy+2);x.lineTo(h[0]+41,hy-2);x.moveTo(h[0]+36,hy+2);x.lineTo(h[0]+41,hy+6);x.stroke()}
+  }
+  function loop(now){if(done)return;var t=(now-t0)/1000;snake(t);p+=(target-p)*.035;fill.style.width=p.toFixed(1)+'%';requestAnimationFrame(loop)}
+  requestAnimationFrame(loop);
+  var rot=setInterval(function(){if(performance.now()<fixed)return;li=(li+1)%lines.length;msg.textContent=lines[li]},1300);
+  var slow=setTimeout(function(){msg.textContent='Still loading… a slow connection can take a little longer.';fixed=performance.now()+60000},25000);
+  window.__boot={
+    set:function(v,m){target=Math.max(target,v);if(m){msg.textContent=m;fixed=performance.now()+1100}},
+    finish:function(){
+      var wait=Math.max(0,1900-(performance.now()-t0));target=100;
+      setTimeout(function(){p=100;fill.style.width='100%';msg.textContent='Enter the bush';clearInterval(rot);clearTimeout(slow);
+        setTimeout(function(){boot.classList.add('out');setTimeout(function(){done=true;boot.remove()},700)},380)},wait);
+    }
+  };
+})();
+</script>
 <div id="app"></div>
 
 <div id="hud" hidden>
@@ -368,6 +471,7 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (()=>{
+if(window.__boot)__boot.set(72,'Building the bush…');
 let W=30,H=30;const SPIT_CD=35;
 const line=(n,head)=>{const cx=W>>1,cz=H>>1;return Array.from({length:n},(_,i)=>[cx+head-i,cz])};
 const inSpawnZone=(x,z)=>{const cx=W>>1,cz=H>>1;return x>=cx-11&&x<=cx+6&&z>=cz-1&&z<=cz+1};
@@ -1597,7 +1701,7 @@ function cleared(){
   addXP(10);
   if(!G.run.lostSkin)stats().flawless++;
   stats().snakes[G.key]=1;
-  if(G.mode==='levels'){if(G.li+1>unlocked)unlocked=Math.min(LEVELS.length-1,G.li+1);recordBest('l'+G.li,G.score)}
+  if(G.mode==='levels'){if(G.li+1>unlocked)unlocked=Math.min(LEVELS.length-1,G.li+1);recordBest('l'+G.li,G.score);homeLi=Math.min(G.li+1,LEVELS.length-1)}
   if(G.score>best)best=G.score;save();
   sfx(523,.1);setTimeout(()=>sfx(659,.1),120);setTimeout(()=>sfx(784,.1),240);setTimeout(()=>sfx(1046,.25),360);
   setTimeout(()=>endScreen(true,bonus),500);
@@ -1865,7 +1969,13 @@ function frame(now){
     // camera: close orbit around the snake in menus, whole board in play
     const close=G.state==='menu'||G.state==='select'||G.state==='intro';
     let tgt,pos;
-    if(G.state==='intro'&&ROAD){
+    if(G.state==='menu'&&ROAD){
+      // home screen: the snake up front, the road and the city behind it
+      orbit=0;const gx=ROAD.gate[0],gz=ROAD.gate[1],sway=Math.sin(now/5200)*.9;
+      const port=camera.aspect<.9;
+      tgt=port?new THREE.Vector3(headPose.x-1.2,-2.2,headPose.z-12):new THREE.Vector3(lerp(headPose.x-2,gx,.35),-2,headPose.z-14);
+      pos=port?new THREE.Vector3(headPose.x-1+sway*.5,2.5,headPose.z+7.5):new THREE.Vector3(headPose.x-1.5+sway,1.9,headPose.z+5.4);
+    }else if(G.state==='intro'&&ROAD){
       // look up the road toward the city before the run starts
       orbit=0;const gx=ROAD.gate[0],gz=ROAD.gate[1];
       tgt=new THREE.Vector3(lerp(headPose.x,gx,.7),2.2,gz-14);
@@ -1889,6 +1999,7 @@ function frame(now){
       tgt=new THREE.Vector3(headPose.x+G.dir[0]*1.5,0,headPose.z+G.dir[1]*1.5+.5);
       pos=new THREE.Vector3(tgt.x,Math.sin(tilt)*d,tgt.z+Math.cos(tilt)*d);
     }
+    {const wf=G.state==='menu'?52:40;if(Math.abs(camera.fov-wf)>.05){camera.fov+=(wf-camera.fov)*Math.min(1,dt*.004);camera.updateProjectionMatrix()}}
     const k0=!close&&view==='rear'?.1:.06,k=1-Math.pow(1-k0,Math.min(6,dt/16.7));camT.lerp(tgt,k);camP.lerp(pos,k);
     const sh=G.shake>0?(G.shake*=.9,G.shake*.25):0;
     camera.position.set(camP.x+(Math.random()-.5)*sh,camP.y,camP.z+(Math.random()-.5)*sh);
@@ -1899,7 +2010,9 @@ function frame(now){
   parts=parts.filter(p=>{p.life-=dt/700;p.v[1]-=dt*.012;p.m.position.x+=p.v[0]*dt/1000;p.m.position.y=Math.max(.05,p.m.position.y+p.v[1]*dt/1000);p.m.position.z+=p.v[2]*dt/1000;p.m.scale.multiplyScalar(.985);if(p.life<=0){world.remove(p.m);return false}return true});
   dome.position.copy(camera.position);
   renderer.render(scene,camera);
+  if(!booted){booted=true;if(window.__boot)__boot.finish()}
 }
+let booted=false;
 const mini=$('mini'),mctx=mini.getContext('2d');
 function drawMini(){
   if(!miniBase||mini.hidden)return;
@@ -1945,7 +2058,7 @@ let toastTimer;
 function toast(html,kind){const t=$('toast');t.innerHTML=html;t.className='show '+(kind||'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.className=kind||'',2200)}
 const coarse=matchMedia('(pointer:coarse)').matches;
 function showPlayUI(on){$('hud').hidden=!on;if(!on)$('live').hidden=true;$('bubbles').hidden=!on;$('mini').hidden=!on;$('pad').hidden=!(on&&coarse);$('pauseBtn').hidden=!(on&&coarse);$('pad').querySelector('.sp').hidden=!(G&&G.sp.spit)}
-function screen(html,side){const s=$('screen');s.innerHTML=html;s.hidden=!html;s.classList.toggle('side',!!side);s.scrollTop=0;const p=s.querySelector('[data-primary]');if(p)setTimeout(()=>p.focus({preventScroll:true}),30)}
+function screen(html,side){const s=$('screen');s.innerHTML=html;s.hidden=!html;s.classList.toggle('side',side===true);s.classList.toggle('homemode',side==='home');s.scrollTop=0;const p=s.querySelector('[data-primary]');if(p)setTimeout(()=>p.focus({preventScroll:true}),30)}
 const chip=t=>`<span style="--c:${DOT[t]||'#f5c518'}"><i></i>${(NAME[t]||t)[0].toUpperCase()+(NAME[t]||t).slice(1)}</span>`;
 const pips=v=>`<span class="pips">${[1,2,3,4,5].map(i=>`<i class="${i<=v?'f':''}"></i>`).join('')}</span>`;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1960,22 +2073,65 @@ function getDaily(){
 }
 function missionsReady(){const s=stats();inv.mclaimed=inv.mclaimed||{};return MISSIONS.filter(m=>!inv.mclaimed[m.id]&&m.stat(s)>=m.n).length}
 
+
+/* hand-made icons for the home screen */
+const ICON={
+  star:`<svg viewBox="0 0 40 40"><path d="M20 4l4.8 10 11 1.4-8.1 7.6 2.1 10.9L20 28.6l-9.8 5.3 2.1-10.9L4.2 15.4l11-1.4z" fill="#f5c518" stroke="#c99a00" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  jobs:`<svg viewBox="0 0 40 40"><rect x="7" y="6" width="26" height="30" rx="4" fill="#e9dcc0" stroke="#8a6a3a" stroke-width="2"/><rect x="14" y="3" width="12" height="7" rx="2" fill="#8a6a3a"/><path d="M12 19l4 4 8-9" fill="none" stroke="#e8423a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 29h14" stroke="#b9a782" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  sand:`<svg viewBox="0 0 40 40"><path d="M10 4h20M10 36h20" stroke="#c4532d" stroke-width="3.4" stroke-linecap="round"/><path d="M12 5c0 9 7 10 7 15s-7 6-7 15h16c0-9-7-10-7-15s7-6 7-15z" fill="#fff3d6" stroke="#8a6a3a" stroke-width="2" stroke-linejoin="round"/><path d="M14.5 33c1-4 5-5 5.5-8 .5 3 4.5 4 5.5 8z" fill="#f5c518"/><path d="M15.5 10h9l-4.5 6z" fill="#f5c518"/></svg>`,
+  duel:`<svg viewBox="0 0 40 40"><path d="M6 30c4-10 10-2 13-12" stroke="#2fae48" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="20" cy="15" r="5" fill="#2fae48"/><path d="M34 30c-4-10-10-2-13-12" stroke="#f5c518" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="21" cy="16" r="5" fill="#f5c518" opacity=".9"/><circle cx="18" cy="13.5" r="1.4" fill="#111"/><circle cx="23" cy="14.5" r="1.4" fill="#111"/></svg>`,
+  sun:`<svg viewBox="0 0 44 44"><g stroke="#c4532d" stroke-width="3" stroke-linecap="round"><path d="M22 3v6M22 35v6M3 22h6M35 22h6M8.5 8.5l4.2 4.2M31.3 31.3l4.2 4.2M8.5 35.5l4.2-4.2M31.3 12.7l4.2-4.2"/></g><circle cx="22" cy="22" r="9" fill="#e8742c" stroke="#c4532d" stroke-width="2.4"/></svg>`,
+  snake:`<svg viewBox="0 0 40 40"><path d="M8 32c0-6 6-7 12-7s12-1 12-7-6-7-12-7-8 2-8 5" fill="none" stroke="#2fae48" stroke-width="6.5" stroke-linecap="round"/><path d="M8 32c0-6 6-7 12-7s12-1 12-7" fill="none" stroke="#1b7a32" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round"/><ellipse cx="12" cy="16" rx="5.5" ry="4.2" fill="#2fae48"/><circle cx="13.5" cy="14.8" r="1.4" fill="#111"/><path d="M7 17l-4 1m4-1l-3-2" stroke="#e8423a" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  basket:`<svg viewBox="0 0 40 40"><circle cx="14" cy="13" r="5" fill="#f08a24"/><circle cx="23" cy="11" r="5.5" fill="#e8423a"/><circle cx="29" cy="15" r="4.5" fill="#f5c518"/><path d="M5 17h30l-3.4 17a3 3 0 0 1-3 2.4H11.4a3 3 0 0 1-3-2.4z" fill="#b5793a" stroke="#7a4e22" stroke-width="2" stroke-linejoin="round"/><path d="M10 22h20M11 28h18M15 17l1.5 19M25 17l-1.5 19M20 17v19" stroke="#7a4e22" stroke-width="1.6"/></svg>`,
+  trophy:`<svg viewBox="0 0 40 40"><path d="M12 5h16v9a8 8 0 0 1-16 0z" fill="#f5c518" stroke="#c99a00" stroke-width="2"/><path d="M12 8H6c0 6 3 9 7 9M28 8h6c0 6-3 9-7 9" fill="none" stroke="#c99a00" stroke-width="2.4"/><path d="M17 22h6v6h-6z" fill="#c99a00"/><rect x="11" y="28" width="18" height="7" rx="2" fill="#8a6a3a"/></svg>`,
+  book:`<svg viewBox="0 0 40 40"><path d="M5 9c5-2 10-2 15 1v24c-5-3-10-3-15-1z" fill="#2f8fd8" stroke="#1f5f9a" stroke-width="2" stroke-linejoin="round"/><path d="M35 9c-5-2-10-2-15 1v24c5-3 10-3 15-1z" fill="#5aa9ea" stroke="#1f5f9a" stroke-width="2" stroke-linejoin="round"/><text x="27" y="26" font-size="12" font-weight="900" text-anchor="middle" fill="#fff" font-family="Arial">?</text></svg>`,
+  gear:`<svg viewBox="0 0 32 32"><path d="M16 3l2.2 3.3 3.9-.9.8 3.9 3.6 1.6-1.5 3.7 2.2 3.3-3.4 2 .1 4-4-.3-2 3.5-3.9-1.7-3.9 1.7-2-3.5-4 .3.1-4-3.4-2 2.2-3.3L3.5 11l3.6-1.6.8-3.9 3.9.9z" fill="#d9cfb6" stroke="#f4ecd9" stroke-width="1.2" stroke-linejoin="round"/><circle cx="16" cy="16.5" r="4.6" fill="#122119"/></svg>`
+};
+let homeLi=null;
+const isLocked=i=>i>unlocked&&!(LEVELS[i].boss==='ratel'&&passActive());
+function untilMidnight(){const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const mins=Math.max(1,Math.round((m-n)/60000));return mins>=60?`${Math.floor(mins/60)}h ${mins%60}m`:`${mins}m`}
 function menu(){
-  startLevel(0,0,{mode:'levels',weather:'clear'});G.state='menu';showPlayUI(false);
-  const nextUp=Math.min(unlocked,LEVELS.length-1),d=getDaily(),done=inv.dailyDone===d.date,mr=missionsReady(),b=bests();
-  screen(`<div class="panel wide">
-    <div class="menuhead"><div><div class="eyebrow">A Lagos bush game</div><h1>Ejo</h1></div>
-    <p class="tag">Snake like the old Nokia, in 3D in the Nigerian bush. Eat what runs, run from what bites, then fill your bar and bite back.</p></div>
-    ${EVENT?`<p class="event">${EVENT.name}: ${EVENT.banner.replace(/^[^:!]*[:!]\s*/,'')}</p>`:''}
-    <div class="modes mini">
-      <button class="mode daily${done?' done':''}" type="button" data-act="daily"><span class="n">Daily</span><b>${d.label}</b><small>${done?'Done today':`+${DAILY_REWARD} cowries`}</small></button>
-      <button class="mode" type="button" data-act="endless"><span class="n">Endless</span><b>How long can you last?</b><small>${b.endlessTime?`Best ${fmtTime(b.endlessTime)} · ${b.endless} pts`:'Gets busier every 40s'}</small></button>
-      <button class="mode" type="button" data-act="duel"><span class="n">Duel</span><b>Two players, one device</b><small>Take turns, same level</small></button>
+  if(homeLi==null||homeLi>=LEVELS.length)homeLi=Math.min(unlocked,LEVELS.length-1);
+  startLevel(homeLi,0,{mode:'levels',weather:'clear'});G.state='menu';showPlayUI(false);
+  renderHome();
+}
+function renderHome(){
+  const i=homeLi,L=LEVELS[i],lock=isLocked(i),d=getDaily(),done=inv.dailyDone===d.date,mr=missionsReady(),b=bests(),n=v=>Number(v||0).toLocaleString('en-NG');
+  const why=L.boss==='ratel'?'Clear level 8 or get the Bush Pass':`Clear level ${i} first`;
+  const tile=(act,ic,label,val,extra)=>`<button class="htile" type="button" data-act="${act}"><span class="ic">${ic}</span><span class="tx"><small>${label}</small><b>${val}</b></span>${extra||''}</button>`;
+  screen(`<div class="home">
+    <div class="htop">
+      <div class="hpills"><span class="hpill" title="Your cowries"><span class="cw"></span>${n(inv.cowries)}</span><span class="hpill user">${esc(inv.nick||'Guest')}</span></div>
+      <button class="hicon" type="button" data-act="settings" aria-label="Settings">${ICON.gear}</button>
     </div>
-    <div class="levels mini">${LEVELS.map((l,i)=>{const lock=i>unlocked&&!(l.boss==='ratel'&&passActive());const why=l.boss==='ratel'?'Clear level 8, or get the Bush Pass':'Clear level '+i+' to unlock';return`<button class="lv${l.boss?' final':''}" type="button" data-act="level" data-i="${i}" ${lock?`disabled title="${why}"`:''} ${i===nextUp?'data-primary':''}><span class="n">${lock?'🔒 ':''}Level ${i+1}${l.boss?' · Boss':''}</span><b>${l.name}</b><small>${lock?'Locked':l.boss?'Defeat the boss':'Eat '+l.goal}${b['l'+i]?` · best ${b['l'+i]}`:''}</small></button>`}).join('')}</div>
-    <div id="topNow" class="topnow" hidden></div>
-    <div class="btns menubtns"><button class="btn" type="button" data-act="missions">Missions${mr?` <span class="dot">${mr}</span>`:''}</button><button class="btn" type="button" data-act="board">Leaderboard</button><button class="btn shopcta" type="button" data-act="shop" data-from="menu">Shop</button><button class="btn" type="button" data-act="guide">How to play</button><button class="btn" type="button" data-act="settings">Settings</button></div>
-  </div>`);
+    ${EVENT?`<div class="hevent">${EVENT.name}: ${EVENT.banner.replace(/^[^:!]*[:!]\s*/,'')}</div>`:''}
+    <div class="hcols">
+      <div class="hleft">
+        ${tile('board',ICON.star,'Best score',n(best))}
+        ${tile('missions',ICON.jobs,'Missions',mr?`${mr} to claim`:'Jobs in the bush',mr?`<i class="hdot">${mr}</i>`:'')}
+        ${tile('endless',ICON.sand,'Endless Bush',b.endlessTime?fmtTime(b.endlessTime):'How long?')}
+      </div>
+      <div class="hright">
+        <button class="htoday${done?' done':''}" type="button" data-act="daily"><small>Today</small><b>${d.label}</b><em>${done?`Done · new one in ${untilMidnight()}`:`+${DAILY_REWARD} cowries · ${untilMidnight()} left`}</em>${ICON.sun}</button>
+        ${tile('duel',ICON.duel,'Duel','2 players')}
+      </div>
+    </div>
+    <div class="hbottom">
+      <div class="hchamp" id="topNow" hidden></div>
+      <div class="hsign">
+        <button class="harrow" type="button" data-act="hprev" aria-label="Previous level" ${i===0?'disabled':''}>‹</button>
+        <div class="hsignin"><small>LEVEL ${i+1}${L.boss?' · BOSS':''}</small><b>${L.name}</b><em>${lock?'🔒 '+why:(L.boss?'Defeat the boss':`Eat ${L.goal}`)+(b['l'+i]?` · best ${n(b['l'+i])}`:' · no score yet')}</em></div>
+        <button class="harrow" type="button" data-act="hnext" aria-label="Next level" ${i===LEVELS.length-1?'disabled':''}>›</button>
+      </div>
+      <button class="hplay" type="button" data-act="level" data-i="${i}" ${lock?'disabled':''}>${lock?'Locked':'Tap to play'}</button>
+      <nav class="hnav" aria-label="Main">
+        <button type="button" data-act="snakes">${ICON.snake}Snakes</button>
+        <button type="button" data-act="shop" data-from="menu">${ICON.basket}Shop</button>
+        <button type="button" data-act="board">${ICON.trophy}Leaders</button>
+        <button type="button" data-act="guide">${ICON.book}Guide</button>
+      </nav>
+    </div>
+  </div>`,'home');
   fillTopNow();
 }
 function renderGuide(){
@@ -2059,9 +2215,8 @@ const rowLi=(r,i,extra)=>`<li${r.me?' class="me"':''}><span class="rk">${i}</spa
 async function fillTopNow(){
   const [e,d]=await Promise.all([topFor('endless'),topFor('daily')]);
   const el=$('topNow');if(!el||!G||G.state!=='menu')return;
-  if(!e&&!d){el.hidden=true;return}
-  const list=(rows,n,timeOn)=>rows&&rows.length?`<ol>${rows.slice(0,n).map((r,i)=>`<li${r.id===myId()?' class="me"':''}><span class="rk">${i+1}</span><span>${esc(r.nick)} <small>${esc(r.area)}</small></span><b>${r.score.toLocaleString('en-NG')}${timeOn&&r.time?` <small>${fmtTime(r.time)}</small>`:''}</b></li>`).join('')}</ol>`:'<p class="none">No scores yet. Play now and take the top spot.</p>';
-  el.innerHTML=`<div><h3>Top players right now · Endless</h3>${list(e,3,true)}</div><div><h3>Today's challenge</h3>${list(d,3,false)}</div>`;el.hidden=false;
+  const top=e&&e[0],today=d&&d[0];if(!top&&!today){el.hidden=true;return}
+  el.innerHTML=[top?`🏆 Top player now: <b>${esc(top.nick)}</b> · ${top.score.toLocaleString('en-NG')}`:'',today?`Today: <b>${esc(today.nick)}</b> · ${today.score.toLocaleString('en-NG')}`:''].filter(Boolean).join(' &nbsp;·&nbsp; ');el.hidden=false;
 }
 async function fillBeat(){
   const bd=boardOf();const el=$('beat');if(!bd||!el)return;
@@ -2409,6 +2564,8 @@ $('screen').addEventListener('click',async ev=>{const b=ev.target.closest('[data
   const a=b.dataset.act;
   if(a==='level')startRun(+b.dataset.i,0,{mode:'levels'});
   else if(a==='guide')renderGuide();
+  else if(a==='hprev'||a==='hnext'){homeLi=Math.max(0,Math.min(LEVELS.length-1,homeLi+(a==='hnext'?1:-1)));menu();const f=$('screen').querySelector(`[data-act="${a}"]`);if(f&&!f.disabled)f.focus({preventScroll:true})}
+  else if(a==='snakes')startRun(isLocked(homeLi)?Math.min(unlocked,LEVELS.length-1):homeLi,0,{mode:'levels'});
   else if(a==='shoptab'){shopTab=b.dataset.k;renderShop();const t=$('screen').querySelector('.tab.on');if(t)t.scrollIntoView({inline:'nearest',block:'nearest'})}
   else if(a==='sp'){const q=b.dataset.k,t=SPECIES[q];if(t.paid&&!inv.owned[t.paid])viewK=q;else{viewK=null;setSpecies(q)}renderPick();const f=$('screen').querySelector(`[data-k="${b.dataset.k}"]`);if(f)f.focus({preventScroll:true})}
   else if(a==='toIntro')intro();
@@ -2460,6 +2617,8 @@ addEventListener('keydown',e=>{
   if(k===' '&&G&&G.state==='play'){e.preventDefault();if(G.sp.spit)spit();else pause();return}
   if(checkout)return;
   if(k==='Enter'&&e.target&&/^su(Name|User|Email)$/.test(e.target.id)){e.preventDefault();doSignup();return}
+  if(G&&G.state==='menu'&&$('screen').classList.contains('homemode')&&k==='Enter'&&$('sheet').hidden&&!(e.target&&e.target.closest&&e.target.closest('button'))){const b=$('screen').querySelector('.hplay');if(b&&!b.disabled){e.preventDefault();b.click()}return}
+  if(G&&G.state==='menu'&&$('screen').classList.contains('homemode')&&(k==='ArrowLeft'||k==='ArrowRight')&&$('sheet').hidden){e.preventDefault();const b=$('screen').querySelector(`[data-act="${k==='ArrowLeft'?'hprev':'hnext'}"]`);if(b&&!b.disabled)b.click();return}
   if(k==='p'||k==='Escape'){if(G&&G.state==='play'){e.preventDefault();pause()}else if(G&&G.state==='paused'){e.preventDefault();screen('');G.state='play';acc=0}}
   if(k==='m')toggleMute();
 });
