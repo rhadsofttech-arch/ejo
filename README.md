@@ -25,6 +25,9 @@ On ZevCloud: Add Service → Web Application → Import from GitHub → this rep
 - 5 snakes, each with its own strengths, weaknesses and XP levels
 - Endless Bush, a daily challenge, a pass-and-play duel and friend challenge links
 - Talking animals, cowries, missions, login streaks, weather and festive events
+- People walk the road between the bush and the city. When they see the snake they scream in Yoruba, Igbo, Hausa, Pidgin or English and scatter (20 points per scare)
+- Hunters with dane guns in the later bush levels and Endless: line up with one and he aims (a red line shows where), then fires. Move off the line, or chase him off with a full venom bar
+- Compact menus: the shop has tabs, the snake picker shows one snake at a time, and action buttons stay pinned to the bottom of every popup
 - A shop priced in naira and cowries: boosts, skins, the Bush Pass, gift codes and rewarded ads
 
 ## Settings to change before going live

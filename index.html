@@ -68,7 +68,7 @@ button:focus-visible{outline:3px solid var(--danfo);outline-offset:2px}
 
 #screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:4;background:radial-gradient(ellipse at center,rgba(8,16,11,.3),rgba(8,16,11,.78))}
 #screen.side{background:linear-gradient(90deg,rgba(8,16,11,.8),rgba(8,16,11,.15) 70%)}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;width:100%;max-width:560px;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:16px;backdrop-filter:blur(8px)}
+.panel{--pp:24px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:var(--pp);width:100%;max-width:560px;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:16px;backdrop-filter:blur(8px)}
 .panel.wide{max-width:720px}
 @media (min-width:1100px){#screen.side{justify-content:flex-start;padding-left:4vw}}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(64px,18vw,112px);line-height:.85;margin:0;color:var(--danfo);text-shadow:0 5px 0 var(--laterite),0 9px 18px rgba(0,0,0,.45);letter-spacing:.02em}
@@ -272,6 +272,71 @@ a.btn.primary{color:var(--ink)}
 .cwbuy{display:inline-flex;gap:6px;align-items:center}
 .earn{font-size:13px;color:var(--muted);line-height:1.45}
 @media (prefers-reduced-motion:reduce){#toast,.bar i{transition:none}.pop{animation-name:fadeonly}@keyframes fadeonly{from{opacity:1}to{opacity:0}}}
+
+/* compact popups: action buttons stay pinned to the bottom, so nobody scrolls to find them */
+.panel>.btns:last-child{position:sticky;bottom:calc(-1 * var(--pp));margin:0 calc(-1 * var(--pp)) calc(-1 * var(--pp));padding:12px var(--pp) var(--pp);background:linear-gradient(rgba(11,22,16,0),rgba(11,22,16,.97) 22%);z-index:2}
+.tabs.scrollx{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--pp));padding:0 var(--pp) 2px}
+.tabs.scrollx::-webkit-scrollbar{display:none}
+.tabs.scrollx .tab{flex:none}
+.menuhead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.menuhead .tag{flex:1;min-width:220px;margin:0 0 4px;font-size:14px;color:var(--muted)}
+.levels.mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.levels.mini .lv{padding:9px 11px;gap:0}
+.levels.mini .lv.final{grid-column:auto}
+.levels.mini .lv b{font-size:17px;line-height:1.15}
+.levels.mini .lv small{font-size:12px}
+.modes.mini .mode{padding:10px 12px}
+.modes.mini .mode b{font-size:15px}
+.snchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--pp));padding:2px var(--pp)}
+.snchips::-webkit-scrollbar{display:none}
+.snchip{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;width:108px;border:1px solid var(--line);border-radius:12px;padding:6px 6px 8px;background:rgba(244,236,217,.04);font-size:12px;line-height:1.2;text-align:center}
+.snchip img,.snchip .sw{width:94px;height:auto;aspect-ratio:400/210;border-radius:8px}
+.snchip.on{border-color:var(--danfo);background:rgba(245,197,24,.1);box-shadow:inset 0 0 0 1px var(--danfo)}
+.snchip.view{border-color:rgba(245,197,24,.55);border-style:dashed}
+.snchip small{color:var(--muted);font-size:11px}
+.sn.sndetail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 14px;align-items:start;cursor:default}
+.sn.sndetail:hover{border-color:var(--line)}
+.sndetail>div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.sndetail .pc{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sndetail .buy{align-self:flex-start}
+.shoplist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.shoplist .item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:10px 12px;align-content:start}
+.shoplist .item>.shopimg{grid-row:span 3;width:96px}
+.shoplist .item>:not(.shopimg){grid-column:2}
+.shoplist .item.nopic{grid-template-columns:minmax(0,1fr)}
+.shoplist .item.nopic>*{grid-column:1}
+.shoplist .item>p{font-size:12.5px;line-height:1.35;margin:0}
+.shoplist .item>.buy,.shoplist .item>.btns{justify-self:start;margin-top:2px}
+.shoplist .item .buy{padding:7px 11px}
+details.earn{border:0;padding:0;font-size:13px;color:var(--muted);line-height:1.5}
+details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
+.compactmuted{font-size:13px;color:var(--muted);margin:0}
+.intro-sub{margin:0;font-size:14px;color:var(--muted);line-height:1.5}
+.yours.slim{grid-template-columns:auto 1fr;align-items:center;padding:8px 10px}
+.yours.slim .yourimg{width:96px}
+.chiprow{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center}
+.chiprow .eyebrow{margin:0}
+@media (min-width:640px){.mlist{display:grid;grid-template-columns:1fr 1fr}}
+.panel>*{flex-shrink:0}
+.shoplist .item .btns{gap:6px!important;flex-wrap:nowrap}
+.mis b{font-size:14.5px;line-height:1.3}
+@media (max-width:640px){
+  .panel{--pp:16px;gap:12px;border-radius:16px}
+  #screen{padding:10px}
+  .modes.mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .modes.mini .mode{padding:8px 9px}.modes.mini .mode small{display:none}.modes.mini .mode b{font-size:13px;line-height:1.2}
+  .levels.mini{gap:6px}.levels.mini .lv{padding:8px 9px}.levels.mini .lv b{font-size:15px}.levels.mini .lv small{font-size:11px}
+  .shoplist,.sn.sndetail,.sndetail .pc{grid-template-columns:minmax(0,1fr)}
+  .sndetail .snakeimg{max-width:200px;justify-self:center}
+  .sn.sndetail{padding:12px;gap:8px}
+  .shoplist .item>.shopimg{width:76px}
+  .panel h2{font-size:24px}
+  .stats b{font-size:22px}
+  .mis{padding:7px 10px;gap:8px}.mis>div{gap:3px}.mis small{font-size:11px}.mis .buy{padding:6px 10px}.missub{display:none}
+  .menubtns .btn{padding:9px 13px;font-size:14px}
+  h1{font-size:clamp(48px,15vw,96px)}
+}
+@media (max-width:460px){.menuhead .tag{display:none}.levels.mini .lv small{display:none}}
 </style>
 </head>
 <body>
@@ -373,7 +438,7 @@ const naira=n=>'₦'+n.toLocaleString('en-NG');
 const PAY={publicKey:'',verifyUrl:''};
 let inv={life:0,venom:0,revive:0,cowries:0,owned:{},equipped:''};
 /* cowries dropped by each animal; golden animals add 10 more */
-const COWRIE={grasshopper:0,rat:1,frog:1,agama:2,egg:3,mongoose:5,monitor:8};
+const COWRIE={grasshopper:0,rat:1,frog:1,agama:2,egg:3,mongoose:5,monitor:8,gunman:10};
 const CW='<i class="cw" aria-hidden="true"></i>';
 /* what the bush has to say */
 const SAY={
@@ -392,8 +457,8 @@ const SAY={
 };
 
 /* ---------- content ---------- */
-const NAME={grasshopper:'grasshopper',rat:'rat',frog:'frog',egg:'egg',agama:'agama lizard',mongoose:'mongoose',monitor:'monitor lizard',ratel:'ratel',pangolin:'pangolin',bird:'secretary bird'};
-const DOT={grasshopper:'#9ccc65',rat:'#8d8781',frog:'#4caf50',egg:'#f4ecd6',agama:'#f08a24',mongoose:'#9c6b3c',monitor:'#6b6b34',ratel:'#d8d8d0',pangolin:'#8b6a43',bird:'#c9c9c4'};
+const NAME={grasshopper:'grasshopper',rat:'rat',frog:'frog',egg:'egg',agama:'agama lizard',mongoose:'mongoose',monitor:'monitor lizard',ratel:'ratel',pangolin:'pangolin',bird:'secretary bird',walker:'passer-by',gunman:'hunter with a dane gun'};
+const DOT={grasshopper:'#9ccc65',rat:'#8d8781',frog:'#4caf50',egg:'#f4ecd6',agama:'#f08a24',mongoose:'#9c6b3c',monitor:'#6b6b34',ratel:'#d8d8d0',pangolin:'#8b6a43',bird:'#c9c9c4',walker:'#7fd0ff',gunman:'#ff2a2a'};
 const T={
   grasshopper:{kind:'prey',every:4,move:'hop',pts:10,grow:1,venom:15},
   rat:{kind:'prey',every:2,move:'flee',pts:15,grow:1,venom:25},
@@ -403,16 +468,18 @@ const T={
   mongoose:{kind:'pred',every:2,hunt:'head',edible:true,pts:80},
   monitor:{kind:'pred',every:3,hunt:'head',edible:true,pts:100},
   ratel:{kind:'pred',every:3,hunt:'body'},
-  pangolin:{kind:'block',every:5}
+  pangolin:{kind:'block',every:5},
+  walker:{kind:'human',every:1},
+  gunman:{kind:'shooter',every:1,pts:150}
 };
 const LEVELS=[
   {name:'Bush Farm',size:36,style:'open',sub:'Wide farmland running into the forest, with bush clumps, trees and hay. Learn the turns, then keep clear of the mongoose until your bar is full.',goal:12,tick:150,theme:'farm',prey:['grasshopper','grasshopper','grasshopper','rat','rat','egg','egg'],preds:['mongoose'],predAt:4},
   {name:'Lekki Swamp',size:40,style:'open',sub:'Wide wetland broken up by ponds and reed beds. Frogs everywhere, and a monitor lizard on patrol.',goal:14,tick:143,theme:'swamp',prey:['frog','frog','frog','frog','grasshopper','grasshopper','egg'],preds:['monitor','mongoose']},
   {name:'Ikorodu Backyard',size:40,style:'maze',sub:'A maze of compound walls, water drums and generators. Two mongooses run these alleys.',goal:16,tick:136,theme:'yard',prey:['rat','rat','rat','egg','egg','agama','agama'],preds:['mongoose','mongoose']},
   {name:'Night Market',size:44,style:'maze',sub:'Dark lanes between market stalls. The rats are bold, and so is the ratel that venom cannot touch.',goal:18,tick:130,theme:'market',prey:['rat','rat','rat','rat','egg','egg','grasshopper'],preds:['ratel','mongoose']},
-  {name:'Omo Forest',size:48,style:'maze',sub:'A forest labyrinth of trees and thick bush. A monitor lizard, a ratel, a mongoose and a rolling pangolin share the paths.',goal:20,tick:124,theme:'forest',prey:['frog','frog','rat','rat','agama','grasshopper','grasshopper'],preds:['monitor','ratel','pangolin','mongoose']},
-  {name:'Savanna Edge',size:50,style:'open',sub:'Huge open grassland with termite mounds and acacias. Look up for the secretary bird.',goal:22,tick:117,theme:'savanna',prey:['agama','agama','agama','grasshopper','grasshopper','rat','rat'],preds:['ratel','mongoose','pangolin'],bird:true},
-  {name:"Ojola's Den",size:54,style:'maze',sub:'A red-rock labyrinth at dusk. Every hunter in the bush, plus the bird.',goal:26,tick:110,theme:'den',prey:['rat','rat','egg','egg','agama','agama','frog','frog'],preds:['ratel','mongoose','monitor','pangolin','mongoose'],bird:true,final:true}
+  {name:'Omo Forest',size:48,style:'maze',sub:'A forest labyrinth of trees and thick bush. A monitor lizard, a ratel, a mongoose and a rolling pangolin share the paths, and a hunter with a dane gun is out looking for snake. Never stay in his line of fire.',goal:20,tick:124,theme:'forest',prey:['frog','frog','rat','rat','agama','grasshopper','grasshopper'],preds:['monitor','ratel','pangolin','mongoose','gunman']},
+  {name:'Savanna Edge',size:50,style:'open',sub:'Huge open grassland with termite mounds and acacias. Look up for the secretary bird, and keep out of the line of fire of the man with the gun.',goal:22,tick:117,theme:'savanna',prey:['agama','agama','agama','grasshopper','grasshopper','rat','rat'],preds:['ratel','mongoose','pangolin','gunman'],bird:true},
+  {name:"Ojola's Den",size:54,style:'maze',sub:'A red-rock labyrinth at dusk. Every hunter in the bush, two men with guns, plus the bird.',goal:26,tick:110,theme:'den',prey:['rat','rat','egg','egg','agama','agama','frog','frog'],preds:['ratel','mongoose','monitor','pangolin','mongoose','gunman','gunman'],bird:true,final:true}
 ];
 /* how each world is generated: open = scattered clumps; maze = 3-wide corridors with loops */
 const GEN={
@@ -470,7 +537,7 @@ LEVELS.push(
   {name:'Oga Ratel',size:34,style:'maze',boss:'ratel',final:true,sub:'The final boss. Venom does nothing to Oga Ratel. Grab the ata rodo peppers for a fire bite, or blind him with cobra spit, then bite him three times.',goal:Infinity,tick:122,theme:'lair',prey:['rat','rat','egg','grasscutter','snail','hornbill'],preds:['pangolin']}
 );
 const ENDLESS_L={name:'Endless Bush',size:48,style:'open',endless:true,sub:'No finish line. Survive as long as you can while the bush gets busier every 40 seconds.',goal:Infinity,tick:140,theme:'wild',prey:['rat','frog','grasshopper','agama','egg','grasscutter','snail','hornbill'],preds:['mongoose']};
-const RAMP=['monitor','ratel','mongoose','pangolin','mongoose','ratel','monitor','mongoose'];
+const RAMP=['monitor','ratel','gunman','mongoose','pangolin','mongoose','gunman','ratel','monitor','mongoose'];
 THEMES.court={ground:['#7a9a46','#6f8f40'],outer:'#4f6a30',sky:0xe8b07a,fog:[26,62],fence:'#7a5a3a',decor:'tree',hemi:.62,sun:.9,sunColor:0xffb070};
 THEMES.lair={ground:['#5a3a2c','#523426'],outer:'#2a1a14',sky:0x141018,fog:[16,42],fence:'#3a2a20',decor:'rocks',hemi:.28,sun:.25,night:true,rock:'#5a4a48',rock2:'#6a5a52'};
 THEMES.wild=Object.assign({},THEMES.forest,{ground:['#4f7d3c','#4a7638'],sky:0xa9c9a8,hemi:.62,sun:.85});
@@ -488,6 +555,7 @@ const MISSIONS=[
   {id:'eat50',text:'Eat 50 animals',n:50,stat:s=>s.eaten,cw:30},
   {id:'eat300',text:'Eat 300 animals',n:300,stat:s=>s.eaten,cw:120},
   {id:'bite5',text:'Bite 5 hunters',n:5,stat:s=>s.bites,cw:40},
+  {id:'scare25',text:'Scare 25 people off the road',n:25,stat:s=>s.scared||0,cw:40},
   {id:'gold5',text:'Eat 5 golden animals',n:5,stat:s=>s.gold,cw:50},
   {id:'blind5',text:'Blind 5 hunters with cobra spit',n:5,stat:s=>s.blinded,cw:40},
   {id:'flawless',text:'Clear a level without losing a skin',n:1,stat:s=>s.flawless,cw:50},
@@ -798,6 +866,62 @@ function previewImg(key,skinKey){
   return PREV[id];
 }
 const snakePic=(key,skinKey,cls)=>{const u=previewImg(key,skinKey);const s=SPECIES[key],sk=skinKey&&SKINS[skinKey];return u?`<img class="${cls}" src="${u}" alt="${s.name}${sk?' in '+sk.name:''}">`:`<span class="sw" style="--a:${(sk||s).top};--b:${(sk||s).belly}"></span>`};
+
+
+/* ---------- people on the road, and hunters with guns in the bush ---------- */
+const LANG={
+  yo:{name:'Yoruba',scream:['Ejo o! Ejo!','Ẹ gbà mí o!','Ẹ sá o, ejo ti dé!','Olúwa mi o! Ejo ńlá!','Ta ló mú ejo wá síbí?!'],idle:['Ẹ káàsán o!','Ọjà ò tà lónìí o.','Ẹ jọ̀ọ́, ẹ yà fún mi.','Ooru yìí ti pọ̀ jù.']},
+  ig:{name:'Igbo',scream:['Agwọ! Agwọ!','Chineke m!','Gbaa ọsọ! Agwọ abịala!','Nne m o! Agwọ!','Chukwu nyere m aka!'],idle:['Kedu?','Ahịa adịghị mma taa.','Anwụ na-acha nke ukwuu.','Ụzọ a dị ogologo.']},
+  ha:{name:'Hausa',scream:['Maciji! Maciji!','Wayyo Allah!','Ku gudu! Ga maciji!','Innalillahi!','Kai! Maciji ne!'],idle:['Sannu da zuwa.','Ina kwana?','Rana tana zafi yau.','Ina hanyar Legas?']},
+  pg:{name:'Pidgin',scream:['Snake don enter o!','Jesus! Run!','Make una run o!','Who get this snake?!','I no fit die for here o!'],idle:['This traffic no go kill person.','Na wa for this sun o.','Abeg, where Ikorodu bus dey?','Una good afternoon o.']},
+  en:{name:'English',scream:['Snake! Snake!','Somebody help!','Call the police!','Run, everybody run!'],idle:['I am so late for work.','Is this the road to Lagos?','My phone battery is dying.','Lovely weather today.']}
+};
+const ANKARA=['#e8423a','#f5c518','#2f8fd8','#16a085','#8e44ad','#e67e22','#c0392b','#1abc9c','#d35400'];
+const SKINT=['#5a3825','#6b4428','#7a4e2d','#4a2e1e','#3f2618'];
+const PEOPLE=[
+  {lang:'yo',names:['Mama Bisi','Iya Basira','Aunty Funmi','Mama Tola'],look:()=>({dress:pickL(ANKARA),top:pickL(ANKARA),head:'gele',headCol:pickL(ANKARA),basin:Math.random()<.6})},
+  {lang:'yo',names:['Baba Ade','Uncle Kunle','Bro Tunde'],look:()=>({top:pickL(ANKARA),legs:'#2c3e50',head:'fila',headCol:pickL(['#5d4037','#8e44ad','#2f8fd8'])})},
+  {lang:'ig',names:['Oga Emeka','Chidi','Uncle Obinna'],look:()=>({top:pickL(['#f4ecd9','#2f8fd8','#16a085']),legs:'#1f2a44',head:'cap',headCol:'#c0392b'})},
+  {lang:'ig',names:['Mama Ngozi','Aunty Ada'],look:()=>({dress:pickL(ANKARA),top:pickL(ANKARA),head:'gele',headCol:pickL(ANKARA)})},
+  {lang:'ha',names:['Mallam Sani','Alhaji Musa','Aminu'],look:()=>({dress:pickL(['#f4ecd9','#9fc3e8','#d7d0c0']),top:pickL(['#f4ecd9','#9fc3e8','#d7d0c0']),head:'hula',headCol:'#f4ecd9'})},
+  {lang:'pg',names:['Okada man','Danfo conductor','Mama Put'],look:()=>({top:pickL(ANKARA),legs:pickL(['#2c3e50','#5d4037']),head:Math.random()<.5?'cap':'none',headCol:pickL(['#f5c518','#1f2a44','#e8423a'])})},
+  {lang:'en',names:['Office lady','Banker guy','Corper'],look:()=>Math.random()<.4?{top:'#c2a878',legs:'#3e7d3a',head:'cap',headCol:'#3e7d3a'}:{top:'#f4f6f8',legs:'#1f2a44',head:'none',tie:pickL(['#e8423a','#2f8fd8'])}}
+];
+const HUNTER_SAY={
+  aim:['Mo rí ẹ! Dúró síbẹ̀!','I don see you, snake!','Ka tsaya! Zan harbe ka!','Agwọ a, ị gaghị agbapụ!','Hold am there!'],
+  miss:['E don miss!','Kai! I miss am.','Olúwa o! Ó sá lọ.','Next one no go miss.'],
+  hit:['I don get am!','Pepper soup tonight!','Bullseye!'],
+  idle:['I smell snake for this bush.','Today, pepper soup go sweet.','Ejo yìí máa di ọbẹ̀ ata.','My dane gun don load.'],
+  scared:['Ah! Venom! I dey go house!','Mo sá lọ o!','Wayyo! Ba ruwana!','Chineke! Leave me!']
+};
+let PERSONA_NEXT=null;
+function humanModel(o){
+  const g=new THREE.Group(),skin=o.skin||pickL(SKINT),U=g.userData;
+  const limb=(x,y,col,len,w)=>{const p=new THREE.Group();p.position.set(x,y,0);p.add(P('c',col,[0,-len/2,0],[w,len,w]));g.add(p);return p};
+  U.legs=[limb(.11,.72,o.legs||skin,.7,.13),limb(-.11,.72,o.legs||skin,.7,.13)];
+  if(o.dress)g.add(P('c',o.dress,[0,.44,0],[.48,.62,.4]));
+  g.add(P('b',o.top||'#f4ecd9',[0,1.02,0],[.46,.6,.28]));
+  if(o.tie)g.add(P('b',o.tie,[0,1.04,.15],[.07,.42,.02]));
+  if(o.charms)for(let i=0;i<5;i++)g.add(P('s',['#f4ecd6','#c0392b','#2f2f2f'][i%3],[-.16+i*.08,1.22-Math.abs(i-2)*.05,.15],[.06,.06,.06]));
+  U.arms=[limb(.29,1.28,o.top||skin,.58,.11),limb(-.29,1.28,o.top||skin,.58,.11)];
+  U.arms.forEach(a=>a.add(P('s',skin,[0,-.6,0],[.12,.12,.12])));
+  g.add(P('s',skin,[0,1.5,0],[.32,.36,.32],null,true));
+  g.add(P('s','#111111',[.07,1.53,.14],[.05,.05,.05]));g.add(P('s','#111111',[-.07,1.53,.14],[.05,.05,.05]));
+  if(o.head==='gele'){g.add(P('i',o.headCol,[0,1.7,-.02],[.52,.3,.42]));g.add(P('k',o.headCol,[.12,1.84,-.05],[.26,.24,.2],[0,0,-.5]))}
+  else if(o.head==='fila')g.add(P('b',o.headCol,[0,1.71,0],[.3,.16,.3],[0,0,.25]));
+  else if(o.head==='cap'){g.add(P('c',o.headCol,[0,1.68,0],[.33,.13,.33]));g.add(P('b',o.headCol,[0,1.64,.18],[.26,.03,.16]))}
+  else if(o.head==='hula')g.add(P('c',o.headCol,[0,1.69,0],[.32,.15,.32]));
+  if(o.basin){g.add(P('c','#c9ced3',[0,1.86,0],[.62,.13,.62],null,true,0,.3));[[.12,.08],[-.1,.1],[.02,-.13],[-.14,-.06]].forEach(([x,z])=>g.add(P('s','#f08a24',[x,1.97,z],[.14,.14,.14],null,true)))}
+  if(o.gun){
+    const gun=new THREE.Group();gun.position.set(.16,1.08,.2);
+    gun.add(P('c','#2b2b2b',[0,0,.55],[.06,1.1,.06],[PI/2,0,0]));gun.add(P('b','#6b4a2a',[0,-.04,-.08],[.1,.14,.4]));gun.add(P('c','#2b2b2b',[0,-.02,.98],[.08,.06,.08],[PI/2,0,0]));
+    g.add(gun);U.gun=gun;U.arms.forEach(a=>a.rotation.x=-PI/2.3);
+  }
+  return g;
+}
+MODELS.walker=()=>humanModel(PERSONA_NEXT?PERSONA_NEXT.look:PEOPLE[0].look());
+MODELS.gunman=()=>{const m=humanModel({skin:pickL(SKINT),top:pickL(['#6b4a2a','#5a3e22','#4e5a2a']),legs:'#3b2a1a',head:'fila',headCol:pickL(['#8a2a1a','#5d4037']),charms:true,gun:true});
+  const laser=new THREE.Mesh(geo.b,new THREE.MeshBasicMaterial({color:0xff2a2a,transparent:true,opacity:.6,depthWrite:false}));laser.visible=false;laser.position.y=.5;m.add(laser);m.userData.laser=laser;return m};
 
 /* ---------- level scene ---------- */
 let blocked=[],blockKind=[],ponds=[],lampLights=[],miniBase=null;
@@ -1130,7 +1254,7 @@ function startLevel(li,score,opt){
   opt=opt||{};
   const base=opt.level||LEVELS[li];const L=Object.assign({},base,{prey:base.prey.slice(),preds:base.preds.slice()});
   if(opt.goal)L.goal=opt.goal;
-  ents.forEach(e=>world.remove(e.mesh));ents=[];
+  ents.forEach(e=>world.remove(e.mesh));ents=[];tracers.forEach(t=>world.remove(t.m));tracers=[];
   buildLevel(L,opt.seed!=null?opt.seed:li*97+13,li);
   eventLights(seeded(7));billboards(L);
   const sp=SPECIES[chosen];
@@ -1145,6 +1269,7 @@ function startLevel(li,score,opt){
   if(G.weather==='rain'){spawn('frog',4);spawn('frog',4);if(T.snail)spawn('snail',4)}
   if(!L.predAt){L.preds.forEach(t=>spawn(t,12));G.predsOut=true}
   if(L.boss)spawn(BOSS[L.boss].type,14,L.boss);
+  spawnWalkers();
   if(L.boss==='ratel')spawn('pepper',6);
   acc=0;hud();
 }
@@ -1180,7 +1305,7 @@ function tick(){
   const p=entAt(nx,nz);if(p&&(p.cfg.kind==='prey'||p.cfg.kind==='power'))meet(p);
   if(G.state!=='play')return;
   if(G.venomOn){G.venomT--;G.venom=G.venomT/G.vt*100;if(G.venomT<=0){G.venomOn=false;G.venom=0}}
-  for(const q of G.pending.slice())if(G.ticks>=q.at&&spawn(q.type,12))G.pending.splice(G.pending.indexOf(q),1);
+  for(const q of G.pending.slice())if(G.ticks>=q.at&&(q.type==='walker'?spawnWalker(true):spawn(q.type,12)))G.pending.splice(G.pending.indexOf(q),1);
   if(G.grace>0)G.grace--;
   if(--G.powT<=0){G.powT=G.L.boss==='ratel'?70:120+Math.floor(Math.random()*60);const have=ents.filter(x=>x.cfg.kind==='power').length;
     if(have<2){const t=G.L.boss==='ratel'&&!ents.some(x=>x.type==='pepper')?'pepper':pickL(POWERS);spawn(t,6)}}
@@ -1196,6 +1321,8 @@ function tick(){
 /* the snake's head and an animal meet on one cell; false means the run stopped */
 function meet(e){
   if(e.cfg.kind==='power'){pickup(e);return true}
+  if(e.cfg.kind==='human'){panic(e);const o=DIRS.map(q=>[e.x+q[0],e.z+q[1],q]).find(o=>canEnter(e,o[0],o[1])&&snakeAt(o[0],o[1])<0);if(o){e.x=o[0];e.z=o[1]}else leaveWalker(e);return true}
+  if(e.cfg.kind==='shooter'){if(G.venomOn||G.fx.pepper>0||e.stun>0){chaseHunter(e);return true}die('The hunter grabbed you by the neck.',e);return false}
   if(e.cfg.kind==='prey'){eatPrey(e);return true}
   if(e.cfg.kind==='block'){die('Pangolin armour does not bend.',e);return false}
   if(e.boss){if(vuln(e)){bossHit(e);return true}die(`${e.bossName} got you.`,e);return false}
@@ -1256,10 +1383,103 @@ function pickup(e){
 }
 function endlessRamp(){
   if(G.elapsed<G.rampAt)return;
-  G.rampAt+=40000;const t=RAMP[G.rampN%RAMP.length];G.rampN++;spawn(t,12);G.tickMul=Math.max(.68,G.tickMul*.96);
+  G.rampAt+=40000;let t=RAMP[G.rampN%RAMP.length];G.rampN++;if(t==='gunman'&&ents.filter(e=>e.type==='gunman').length>=3)t='mongoose';spawn(t,12);G.tickMul=Math.max(.68,G.tickMul*.96);
   if(G.elapsed>=180000&&!G.L.bird){G.L.bird=true;toast('A secretary bird has started circling.','bad')}
   else toast(`The bush is getting busier: a ${NAME[t]} has joined.`,'bad');
 }
+
+/* people walk the road between the bush and the city; when they see the snake they run anyhow */
+function roadFree(minD){const h=G.snake[0];return [...ROAD.cells].map(k=>k.split(',').map(Number)).filter(([x,z])=>!blocked[x][z]&&snakeAt(x,z)<0&&!entAt(x,z)&&md([x,z],h)>=minD)}
+function spawnWalker(atEnd){
+  if(!ROAD||!G)return null;let c=roadFree(9);if(atEnd){const ends=c.filter(([x,z])=>z<=1||z>=H-2);if(ends.length)c=ends}
+  if(!c.length)return null;const [x,z]=pickL(c);
+  const per=pickL(PEOPLE),look=per.look();PERSONA_NEXT={look};
+  const e=spawn('walker',0);PERSONA_NEXT=null;if(!e)return null;
+  e.x=e.px=x;e.z=e.pz=z;const [wx,wz]=cp(x,z);e.mesh.position.set(wx,0,wz);
+  const L=LANG[per.lang];e.label=`${pickL(per.names)} · ${L.name}`;e.say={idle:L.idle,near:L.scream,scream:L.scream};e.lang=per.lang;
+  e.dir=z<H/2?[0,1]:[0,-1];e.fx=0;e.fz=e.dir[1];e.cd=1+Math.floor(Math.random()*3);return e;
+}
+function spawnWalkers(){if(!ROAD)return;const n=['yard','market'].includes(G.L.theme)?5:3;for(let i=0;i<n;i++)spawnWalker(false)}
+function leaveWalker(e){removeEnt(e);G.pending.push({type:'walker',at:G.ticks+25+Math.floor(Math.random()*40)})}
+function panic(e,chain){
+  if(e.panic)return;e.panic=true;e.ptime=0;e.talkAt=0;
+  if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}
+  say(e,pickL(e.say.scream),'hunter');
+  stats().scared=(stats().scared||0)+1;G.run.scared=(G.run.scared||0)+1;earn([e.x,e.z],20,Math.random()<.5?1:0);
+  sfx(1100+Math.random()*300,.12,'sawtooth',.025);setTimeout(()=>sfx(800,.16,'sawtooth',.02),120);
+  if(!chain)ents.forEach(o=>{if(o!==e&&o.type==='walker'&&!o.panic&&md([o.x,o.z],[e.x,e.z])<=6)setTimeout(()=>{if(o.alive&&G&&G.state==='play')panic(o,true)},250+Math.random()*500)});
+}
+function walkerStep(e){
+  const h=G.snake[0],d=md([e.x,e.z],h);
+  if(!e.panic&&d<=4&&G.grace<=0)panic(e);
+  const opts=DIRS.map(q=>[e.x+q[0],e.z+q[1],q]).filter(o=>canEnter(e,o[0],o[1]));
+  if(e.panic){
+    e.ptime++;
+    if(e.ptime>22||(e.ptime>3&&(e.x<=0||e.z<=0||e.x>=W-1||e.z>=H-1))){leaveWalker(e);return}
+    if(!opts.length)return;
+    const f=distHead(),sc=o=>{const v=f[o[1]*W+o[0]];return (v>=0?v:md(o,h))+Math.random()*1.6};
+    opts.sort((a,b)=>sc(b)-sc(a));return step(e,opts[0],1);
+  }
+  if(--e.cd>0)return;e.cd=3;
+  if((e.z===0&&e.dir[1]<0)||(e.z===H-1&&e.dir[1]>0)){leaveWalker(e);return}
+  const onRoad=o=>ROAD.cells.has(o[0]+','+o[1]);
+  let c=opts.filter(o=>onRoad(o)&&!(o[2][0]===-e.fx&&o[2][1]===-e.fz));
+  if(!c.length)c=opts.filter(onRoad);if(!c.length)c=opts;if(!c.length)return;
+  c.sort((a,b)=>(b[2][1]*e.dir[1]-a[2][1]*e.dir[1])+(Math.random()-.5)*.9);
+  step(e,c[0],3);
+}
+/* hunters: patrol, line up with the snake, aim (a red line shows where), then fire */
+const AIM_T=8;
+function sight(e,h){
+  if(e.x===h[0]&&e.z!==h[1]){const s=Math.sign(h[1]-e.z);for(let z=e.z+s;z!==h[1];z+=s)if(blocked[e.x][z])return null;return[0,s]}
+  if(e.z===h[1]&&e.x!==h[0]){const s=Math.sign(h[0]-e.x);for(let x=e.x+s;x!==h[0];x+=s)if(blocked[x][e.z])return null;return[s,0]}
+  return null;
+}
+function rayFrom(e,dir){const c=[];let x=e.x,z=e.z;for(let k=0;k<14;k++){x+=dir[0];z+=dir[1];if(!inB(x,z)||blocked[x][z])break;c.push([x,z])}return c}
+let tracers=[];
+function shotFx(e,endCell){
+  const [ax,az]=cp(e.x,e.z),[bx,bz]=endCell?cp(endCell[0],endCell[1]):[ax+e.aimDir[0]*14,az+e.aimDir[1]*14];
+  const len=Math.hypot(bx-ax,bz-az),m=new THREE.Mesh(geo.b,new THREE.MeshBasicMaterial({color:0xffe27a,transparent:true,opacity:1,depthWrite:false}));
+  m.scale.set(.07,.07,len);m.position.set((ax+bx)/2,.6,(az+bz)/2);m.rotation.y=Math.atan2(bx-ax,bz-az);world.add(m);tracers.push({m,life:1});
+  const fl=new THREE.Mesh(geo.s,new THREE.MeshBasicMaterial({color:0xffb030,transparent:true,opacity:1}));fl.scale.setScalar(.6);fl.position.set(ax+e.aimDir[0]*1.1,1.05,az+e.aimDir[1]*1.1);world.add(fl);tracers.push({m:fl,life:1,grow:true});
+  burst(endCell||[e.x+e.aimDir[0]*3,e.z+e.aimDir[1]*3],'#cfc7b8',6);
+  sfx(70,.28,'sawtooth',.09);sfx(140,.12,'square',.06);setTimeout(()=>sfx(55,.3,'square',.04),60);G.shake=Math.max(G.shake,.45);
+}
+function fire(e){
+  e.cool=22+Math.floor(Math.random()*12);
+  const ray=rayFrom(e,e.aimDir);let hit=-1,at=null;
+  for(const c of ray){const si=snakeAt(c[0],c[1]);if(si>=0){hit=si;at=c;break}}
+  shotFx(e,at||ray[ray.length-1]);
+  if(hit===0){e.talkAt=0;if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}say(e,pickL(HUNTER_SAY.hit),'hunter');return die('Bang! A hunter shot you.',e)}
+  if(hit>0){if(G.sp.thick){if(G.snake.length>3)G.snake.length--;toast('Thick scales! The bullet only took one segment.','bad')}else{cutTo(Math.max(2,hit));toast('Bang! A bullet took off part of your tail.','bad')}return}
+  if(!e.bub)say(e,pickL(HUNTER_SAY.miss),'hunter');
+}
+function gunStep(e){
+  if(!e.label)e.label=pickL(['Ọdẹ Àkàndé','Baba Ọdẹ','Hunter Musa','Ogbuefi Okafor','Mallam Dogo'])+' · hunter';
+  if(e.stun>0){e.stun--;e.aim=0;return}
+  const h=G.snake[0],d=md([e.x,e.z],h),afraid=G.venomOn||G.fx.pepper>0;
+  if(e.aim>0){if(--e.aim===0)fire(e);return}
+  if(e.cool>0)e.cool--;
+  if(!afraid&&G.grace<=0&&!(e.cool>0)&&d<=10){const dir=sight(e,h);if(dir){e.aim=AIM_T;e.aimDir=dir;e.fx=dir[0];e.fz=dir[1];e.aimLen=rayFrom(e,dir).length;
+    if(!e.bub)say(e,pickL(HUNTER_SAY.aim),'hunter');sfx(1400,.03,'square',.03);setTimeout(()=>sfx(1600,.03,'square',.03),70);return}}
+  if(--e.cd>0)return;e.cd=afraid&&d<8?1:3;
+  const opts=DIRS.map(q=>[e.x+q[0],e.z+q[1],q]).filter(o=>canEnter(e,o[0],o[1]));if(!opts.length)return;
+  if(Math.random()<.2)return step(e,pickL(opts),e.cd);
+  let sc;
+  if(afraid&&d<8){const f=distHead();sc=o=>-(f[o[1]*W+o[0]]>=0?f[o[1]*W+o[0]]:md(o,h))}
+  else sc=o=>{const dd=md(o,h),al=Math.min(Math.abs(o[0]-h[0]),Math.abs(o[1]-h[1]));return al*2+(dd<5?(5-dd)*4:0)+(dd>12?dd-12:0)};
+  opts.sort((a,b)=>sc(a)-sc(b));step(e,opts[0],e.cd);
+}
+function chaseHunter(e){
+  const fireBite=G.fx.pepper>0,cw=COWRIE.gunman;
+  earn([e.x,e.z],e.cfg.pts,cw);G.run.bites++;stats().bites++;addXP(3);G.grow+=1;
+  if(!fireBite&&!(e.stun>0)){G.venomOn=false;G.venom=0;G.venomT=0}
+  if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}
+  say(e,pickL(HUNTER_SAY.scared),'hunter');burst([e.x,e.z],'#ff4d3a',14);removeEnt(e);
+  G.pending.push({type:'gunman',at:G.ticks+70});
+  toast(`<big>+${e.cfg.pts}</big>The hunter dropped his gun and ran! +${cw} cowries.`,'good');sfx(520,.08);setTimeout(()=>sfx(780,.08),90);
+}
+
 /* breadth-first distance maps so hunters find their way through mazes */
 function bfs(srcs,passBody){
   const d=new Int16Array(W*H).fill(-1),occ=new Uint8Array(W*H),q=[];
@@ -1279,7 +1499,10 @@ function canEnter(e,x,z){
   return false;
 }
 function moveEnt(e){
-  const c=e.cfg;if(!c.every)return;
+  const c=e.cfg;
+  if(c.kind==='human')return walkerStep(e);
+  if(c.kind==='shooter')return gunStep(e);
+  if(!c.every)return;
   if(e.stun>0){e.stun--;return}
   if(e.rest>0){e.rest--;return}
   const h=G.snake[0],d=md([e.x,e.z],h);
@@ -1310,7 +1533,8 @@ function moveEnt(e){
   else choice=opts[Math.floor(Math.random()*opts.length)];
   step(e,choice);
 }
-function step(e,o){
+function step(e,o,slow){
+  if(slow){const [ax,az]=cp(e.x,e.z);e.m0=[ax,az];e.mt0=performance.now();e.mdur=tickMs()*slow}
   e.x=o[0];e.z=o[1];e.fx=o[2][0];e.fz=o[2][1];e.moved=1;
   const si=snakeAt(e.x,e.z);
   if(si===0)meet(e);
@@ -1324,9 +1548,9 @@ function spit(){
   if(G.spitCd>0){toast('Spit is still recharging.');return}
   G.spitCd=Math.round(SPIT_CD*(G.lvl>=4?.7:1));G.hood=performance.now();sfx(1500,.06,'triangle');setTimeout(()=>sfx(900,.08,'triangle'),60);
   const [hx,hz]=G.snake[0];let hit=null;
-  for(let k=1;k<=6;k++){const x=hx+G.dir[0]*k,z=hz+G.dir[1]*k;if(!inB(x,z)||blocked[x][z])break;const e=entAt(x,z);if(e&&e.cfg.kind==='pred'){hit=e;break}}
+  for(let k=1;k<=6;k++){const x=hx+G.dir[0]*k,z=hz+G.dir[1]*k;if(!inB(x,z)||blocked[x][z])break;const e=entAt(x,z);if(e&&(e.cfg.kind==='pred'||e.cfg.kind==='shooter')){hit=e;break}}
   const [wx,wz]=cp(hx,hz);for(let i=0;i<12;i++){const m=new THREE.Mesh(geo.s,mat('#d6f05a',true,0x6a8a10));m.scale.setScalar(.08+Math.random()*.06);m.position.set(wx+G.dir[0]*.5,.45,wz+G.dir[1]*.5);world.add(m);parts.push({m,v:[G.dir[0]*(7+Math.random()*4)+(Math.random()-.5),1+Math.random()*1.5,G.dir[1]*(7+Math.random()*4)+(Math.random()-.5)],life:1})}
-  if(hit){hit.stun=16;G.run.blinded++;stats().blinded++;toast(`${hit.boss?hit.bossName:'The '+NAME[hit.type]} is blinded.${hit.cfg.edible||hit.boss?' Bite now.':''}`,'good')}
+  if(hit){hit.stun=16;hit.aim=0;G.run.blinded++;stats().blinded++;toast(`${hit.boss?hit.bossName:'The '+NAME[hit.type]} is blinded.${hit.cfg.edible||hit.boss?' Bite now.':''}`,'good')}
   hud();
 }
 function birdTick(){
@@ -1345,7 +1569,7 @@ function birdTick(){
 function lastWordsFor(killer){
   const now=performance.now();
   if(killer){const lbl=labelOf(killer);const l=G.lastLines.slice().reverse().find(x=>x.who===lbl&&now-x.at<15000);if(l)return l;
-    const S=killer.boss?{near:SAY.boss[killer.boss==='king'?'mongoose':'ratel']}:killer===B?SAY.bird:SAY[killer.type];if(S&&S.near)return{who:lbl,text:pickL(S.near)}}
+    const S=killer.boss?{near:SAY.boss[killer.boss==='king'?'mongoose':'ratel']}:killer===B?SAY.bird:killer.type==='gunman'?{near:HUNTER_SAY.hit}:SAY[killer.type];if(S&&S.near)return{who:lbl,text:pickL(S.near)}}
   return G.lastLines.slice().reverse().find(x=>x.hunter&&now-x.at<10000)||null;
 }
 function die(msg,killer){
@@ -1391,7 +1615,7 @@ const pickL=a=>a[Math.floor(Math.random()*a.length)];
 let bubs=[],chatOn=true,chatT=0;try{chatOn=localStorage.getItem('ejo.chat')!=='off'}catch(e){}
 const _v=new THREE.Vector3();
 function screenOf(x,y,z){_v.set(x,y,z).project(camera);return{x:(_v.x+1)/2*innerWidth,y:(1-_v.y)/2*innerHeight,ok:_v.z<1}}
-function labelOf(t){if(t.isSnake)return G.sp.name;if(t===B)return 'Secretary bird';if(t.boss)return t.bossName;return (t.gold?'Golden ':'')+NAME[t.type]}
+function labelOf(t){if(t.label)return t.label;if(t.isSnake)return G.sp.name;if(t===B)return 'Secretary bird';if(t.boss)return t.bossName;return (t.gold?'Golden ':'')+NAME[t.type]}
 function say(t,text,kind){
   if(!chatOn||!G||t.bub)return;
   if(bubs.length>=3){const o=bubs.shift();o.el.remove();o.t.bub=null}
@@ -1404,7 +1628,7 @@ function say(t,text,kind){
 }
 function placeBub(b){
   const t=b.t;let x,y,z;
-  if(t.isSnake){x=headPose.x;z=headPose.z;y=2.1}else if(t===B){const [wx,wz]=cp(B.x,B.z);x=wx;z=wz;y=3.2}else{x=t.mesh.position.x;z=t.mesh.position.z;y=t.type==='pangolin'||t.type==='ratel'?1.3:1.05}
+  if(t.isSnake){x=headPose.x;z=headPose.z;y=2.1}else if(t===B){const [wx,wz]=cp(B.x,B.z);x=wx;z=wz;y=3.2}else{x=t.mesh.position.x;z=t.mesh.position.z;y=t.type==='walker'||t.type==='gunman'?2.35:t.type==='pangolin'||t.type==='ratel'?1.3:1.05}
   const p=screenOf(x,y,z);const w=b.el.offsetWidth,h=b.el.offsetHeight;
   const px=Math.max(8,Math.min(innerWidth-w-8,p.x-w/2)),py=Math.max(70,Math.min(innerHeight-h-8,p.y-h-6));
   b.el.style.transform=`translate(${px}px,${py}px)`;b.el.style.visibility=p.ok?'visible':'hidden';
@@ -1421,16 +1645,17 @@ function popAt(cell,html,cls,dy){
 function chatter(){
   if(!chatOn||G.state!=='play')return;const now=performance.now(),h=G.snake[0];
   for(const e of ents){
-    if(e.bub||now<(e.talkAt||0))continue;const S=e.boss?{near:SAY.boss[e.boss==='king'?'mongoose':'ratel'],hunter:true}:SAY[e.type];if(!S)continue;const d=md([e.x,e.z],h);
+    if(e.bub||now<(e.talkAt||0))continue;const S=e.boss?{near:SAY.boss[e.boss==='king'?'mongoose':'ratel'],hunter:true}:e.type==='gunman'?{near:HUNTER_SAY.idle,scared:HUNTER_SAY.scared,hunter:true}:(e.say||SAY[e.type]);if(!S||e.panic||e.aim>0)continue;const d=md([e.x,e.z],h);
     const kind=e.gold?'gold':S.think?'think':S.hunter?'hunter':'';let line=null;
-    if(S.scared&&G.venomOn&&e.cfg.edible&&d<7)line=pickL(S.scared);
+    if(S.scared&&G.venomOn&&(e.cfg.edible||e.type==='gunman')&&d<7)line=pickL(S.scared);
     else if(e.stun>0&&d<8)line='My eyes! I no fit see!';
     else if(d<5&&Math.random()<.45)line=e.gold?pickL(SAY.gold):pickL(S.near);
     if(line){say(e,line,kind);e.talkAt=now+7000+Math.random()*5000;return}
   }
   if(now>chatT){chatT=now+5500+Math.random()*5000;
-    const c=ents.filter(e=>{if(e.bub||!SAY[e.type]||!SAY[e.type].idle)return false;const p=screenOf(e.mesh.position.x,1,e.mesh.position.z);return p.ok&&p.x>40&&p.x<innerWidth-40&&p.y>90&&p.y<innerHeight-40});
-    if(c.length){const e=pickL(c),S=SAY[e.type];say(e,e.gold?pickL(SAY.gold):(EVENT&&Math.random()<.35?pickL(SAY.festive[EVENT.id]):pickL(S.idle)),e.gold?'gold':S.think?'think':S.hunter?'hunter':'');e.talkAt=now+8000}}
+    const sayOf=e=>e.type==='gunman'?{idle:HUNTER_SAY.idle,hunter:true}:(e.say||SAY[e.type]);
+    const c=ents.filter(e=>{if(e.bub||e.panic||!sayOf(e)||!sayOf(e).idle)return false;const p=screenOf(e.mesh.position.x,1,e.mesh.position.z);return p.ok&&p.x>40&&p.x<innerWidth-40&&p.y>90&&p.y<innerHeight-40});
+    if(c.length){const e=pickL(c),S=sayOf(e);say(e,e.gold?pickL(SAY.gold):(EVENT&&Math.random()<.35?pickL(SAY.festive[EVENT.id]):pickL(S.idle)),e.gold?'gold':S.think?'think':S.hunter?'hunter':'');e.talkAt=now+8000}}
 }
 
 /* ---------- particles ---------- */
@@ -1607,9 +1832,16 @@ function frame(now){
     if(headMesh.userData.hood){const flare=(G.venomOn||now-G.hood<1200||G.state==='select')?1:.45;const h=headMesh.userData.hood;h.scale.x=lerp(h.scale.x,flare,.12);h.scale.y=lerp(h.scale.y,.6+flare*.4,.12)}
     ents.forEach(e=>{
       const [ax,az]=cp(e.px,e.pz),[bx,bz]=cp(e.x,e.z);
-      e.mesh.position.x=lerp(ax,bx,ts);e.mesh.position.z=lerp(az,bz,ts);
+      if(e.mdur){const k=Math.min(1,(now-e.mt0)/e.mdur);e.mesh.position.x=lerp(e.m0[0],bx,k);e.mesh.position.z=lerp(e.m0[1],bz,k)}
+      else{e.mesh.position.x=lerp(ax,bx,ts);e.mesh.position.z=lerp(az,bz,ts)}
+      const U=e.mesh.userData;
+      if(U.legs){const walking=e.mdur&&now-e.mt0<e.mdur*1.15||e.type==='walker',run=e.panic||(e.type==='gunman'&&e.cd===1);
+        const sw=walking?Math.sin(now/(run?65:150)+e.yaw*9)*(run?.95:.5):0;U.legs[0].rotation.x=sw;U.legs[1].rotation.x=-sw;
+        if(e.panic){U.arms[0].rotation.x=-PI*.85+Math.sin(now/55)*.35;U.arms[1].rotation.x=-PI*.85-Math.sin(now/55)*.35}
+        else if(!U.gun){U.arms[0].rotation.x=-sw*.7;U.arms[1].rotation.x=sw*.7}
+        if(U.laser){U.laser.visible=e.aim>0;if(e.aim>0){const L=e.aimLen||1;U.laser.scale.set(.05,.05,L);U.laser.position.set(.16,.62,.4+L/2);U.laser.material.opacity=.3+.6*Math.abs(Math.sin(now/(e.aim<4?35:110)))}}}
       const hop=(e.type==='frog'||e.type==='grasshopper')&&e.moved?Math.sin(ts*PI)*.6:0;
-      e.mesh.position.y=hop+(e.type==='egg'?0:Math.abs(Math.sin(now/220+e.yaw))*.03);
+      e.mesh.position.y=U.legs?(e.panic?Math.abs(Math.sin(now/65))*.08:0):hop+(e.type==='egg'?0:Math.abs(Math.sin(now/220+e.yaw))*.03);
       e.mesh.scale.setScalar(e.sc*Math.min(1,(now-e.born)/300));
       if(e.pring){e.pring.material.opacity=.4+.45*Math.sin(now/140);e.mesh.rotation.y+=dt*.0015;e.mesh.position.y=.12+Math.sin(now/300+e.yaw)*.08}
       if(e.fx||e.fz)e.mesh.rotation.y=angLerp(e.mesh.rotation.y,Math.atan2(e.fx,e.fz),.25);
@@ -1662,6 +1894,7 @@ function frame(now){
     camera.position.set(camP.x+(Math.random()-.5)*sh,camP.y,camP.z+(Math.random()-.5)*sh);
     camera.lookAt(camT);
   }
+  if(tracers.length)tracers=tracers.filter(t=>{t.life-=dt/180;t.m.material.opacity=Math.max(0,t.life);if(t.grow)t.m.scale.multiplyScalar(1.06);if(t.life<=0){world.remove(t.m);t.m.geometry!==geo.b&&t.m.geometry!==geo.s&&t.m.geometry.dispose();t.m.material.dispose();return false}return true});
   if(bubs.length)bubTick(now);
   parts=parts.filter(p=>{p.life-=dt/700;p.v[1]-=dt*.012;p.m.position.x+=p.v[0]*dt/1000;p.m.position.y=Math.max(.05,p.m.position.y+p.v[1]*dt/1000);p.m.position.z+=p.v[2]*dt/1000;p.m.scale.multiplyScalar(.985);if(p.life<=0){world.remove(p.m);return false}return true});
   dome.position.copy(camera.position);
@@ -1672,7 +1905,7 @@ function drawMini(){
   if(!miniBase||mini.hidden)return;
   const w=mini.clientWidth*(devicePixelRatio||1);if(mini.width!==Math.round(w)){mini.width=mini.height=Math.round(w)}
   const k=mini.width/W;mctx.imageSmoothingEnabled=false;mctx.drawImage(miniBase,0,0,mini.width,mini.height);
-  ents.forEach(e=>{mctx.fillStyle=e.gold?'#f5c518':e.cfg.kind==='prey'?'#f4ecd9':e.cfg.kind==='power'?e.cfg.color:e.cfg.kind==='block'?'#b08850':'#ff4d3a';const sz=e.boss?k*3:e.cfg.kind==='prey'?k*1.2:k*1.6;mctx.fillRect(e.x*k+(k-sz)/2,e.z*k+(k-sz)/2,sz,sz)});
+  ents.forEach(e=>{mctx.fillStyle=e.gold?'#f5c518':e.cfg.kind==='human'?'#7fd0ff':e.cfg.kind==='shooter'?'#ff2a2a':e.cfg.kind==='prey'?'#f4ecd9':e.cfg.kind==='power'?e.cfg.color:e.cfg.kind==='block'?'#b08850':'#ff4d3a';const sz=e.boss||e.cfg.kind==='shooter'?k*2.4:e.cfg.kind==='prey'?k*1.2:k*1.6;mctx.fillRect(e.x*k+(k-sz)/2,e.z*k+(k-sz)/2,sz,sz)});
   if(B.state==='shadow'){mctx.fillStyle='rgba(0,0,0,.5)';mctx.beginPath();mctx.arc((B.x+.5)*k,(B.z+.5)*k,k*1.6,0,7);mctx.fill()}
   mctx.fillStyle='#f5c518';G.snake.forEach((s,i)=>{const sz=i===0?k*1.6:k;mctx.fillRect(s[0]*k+(k-sz)/2,s[1]*k+(k-sz)/2,sz,sz)});
 }
@@ -1731,20 +1964,24 @@ function menu(){
   startLevel(0,0,{mode:'levels',weather:'clear'});G.state='menu';showPlayUI(false);
   const nextUp=Math.min(unlocked,LEVELS.length-1),d=getDaily(),done=inv.dailyDone===d.date,mr=missionsReady(),b=bests();
   screen(`<div class="panel wide">
-    <div><div class="eyebrow">A Lagos bush game</div><h1>Ejo</h1>
-    <p class="tag">Snake like the old Nokia, now in 3D and set in the Nigerian bush. Pick your snake, eat what runs, run from what bites, then fill your bar and bite back.</p></div>
+    <div class="menuhead"><div><div class="eyebrow">A Lagos bush game</div><h1>Ejo</h1></div>
+    <p class="tag">Snake like the old Nokia, in 3D in the Nigerian bush. Eat what runs, run from what bites, then fill your bar and bite back.</p></div>
     ${EVENT?`<p class="event">${EVENT.name}: ${EVENT.banner.replace(/^[^:!]*[:!]\s*/,'')}</p>`:''}
-    ${streakStrip()}
-    <div class="modes">
-      <button class="mode daily${done?' done':''}" type="button" data-act="daily"><span class="n">Daily challenge</span><b>${d.label}</b><small>${done?'Done today. Come back tomorrow.':`${d.li>=0?LEVELS[d.li].name+' · ':''}+${DAILY_REWARD} cowries`}</small></button>
-      <button class="mode" type="button" data-act="endless"><span class="n">Endless Bush</span><b>How long can you last?</b><small>${b.endlessTime?`Your best: ${fmtTime(b.endlessTime)}, ${b.endless} pts`:'The bush gets busier every 40 seconds'}</small></button>
-      <button class="mode" type="button" data-act="duel"><span class="n">Duel</span><b>Two players, one device</b><small>Take turns on the same level</small></button>
+    <div class="modes mini">
+      <button class="mode daily${done?' done':''}" type="button" data-act="daily"><span class="n">Daily</span><b>${d.label}</b><small>${done?'Done today':`+${DAILY_REWARD} cowries`}</small></button>
+      <button class="mode" type="button" data-act="endless"><span class="n">Endless</span><b>How long can you last?</b><small>${b.endlessTime?`Best ${fmtTime(b.endlessTime)} · ${b.endless} pts`:'Gets busier every 40s'}</small></button>
+      <button class="mode" type="button" data-act="duel"><span class="n">Duel</span><b>Two players, one device</b><small>Take turns, same level</small></button>
     </div>
+    <div class="levels mini">${LEVELS.map((l,i)=>{const lock=i>unlocked&&!(l.boss==='ratel'&&passActive());const why=l.boss==='ratel'?'Clear level 8, or get the Bush Pass':'Clear level '+i+' to unlock';return`<button class="lv${l.boss?' final':''}" type="button" data-act="level" data-i="${i}" ${lock?`disabled title="${why}"`:''} ${i===nextUp?'data-primary':''}><span class="n">${lock?'🔒 ':''}Level ${i+1}${l.boss?' · Boss':''}</span><b>${l.name}</b><small>${lock?'Locked':l.boss?'Defeat the boss':'Eat '+l.goal}${b['l'+i]?` · best ${b['l'+i]}`:''}</small></button>`}).join('')}</div>
     <div id="topNow" class="topnow" hidden></div>
-    <div class="btns"><button class="btn" type="button" data-act="missions">Missions${mr?` <span class="dot">${mr}</span>`:''}</button><button class="btn" type="button" data-act="board">Leaderboard</button><button class="btn shopcta" type="button" data-act="shop" data-from="menu">Shop</button><button class="btn" type="button" data-act="settings">Settings</button></div>
-    <div class="cat">Levels</div>
-    <div class="levels">${LEVELS.map((l,i)=>{const lock=i>unlocked&&!(l.boss==='ratel'&&passActive());return`<button class="lv${l.boss?' final':''}" type="button" data-act="level" data-i="${i}" ${lock?'disabled':''} ${i===nextUp?'data-primary':''}><span class="n">Level ${i+1}${l.boss?' · Boss':''}</span><b>${l.name}</b><small>${lock?(l.boss==='ratel'?'Clear level 8, or get the Bush Pass':'Clear level '+i+' to unlock'):l.boss?'Defeat the boss':'Eat '+l.goal+' animals'}${b['l'+i]?` · best ${b['l'+i]}`:''}</small></button>`}).join('')}</div>
-    <details><summary>Who is who in the bush</summary><div class="who">
+    <div class="btns menubtns"><button class="btn" type="button" data-act="missions">Missions${mr?` <span class="dot">${mr}</span>`:''}</button><button class="btn" type="button" data-act="board">Leaderboard</button><button class="btn shopcta" type="button" data-act="shop" data-from="menu">Shop</button><button class="btn" type="button" data-act="guide">How to play</button><button class="btn" type="button" data-act="settings">Settings</button></div>
+  </div>`);
+  fillTopNow();
+}
+function renderGuide(){
+  screen(`<div class="panel wide"><div class="eyebrow">How to play</div><h2>Who is who in the bush</h2>
+    <p class="compactmuted">${coarse?'Swipe or use the arrow pad to turn.':'Arrow keys or WASD to turn. V changes the camera view. P pauses.'} Eat enough to open the checkpoint, then follow the road north to finish a level.</p>
+    <div class="who">
       <div><h3>Food</h3><ul>
         <li style="--c:${DOT.rat}"><i></i><span><b>Rat, frog, grasshopper</b>Everyday food. Rats run away, frogs jump two squares.</span></li>
         <li style="--c:${DOT.egg}"><i></i><span><b>Egg</b>Sits still and grows you by two. 3 cowries.</span></li>
@@ -1761,11 +1998,11 @@ function menu(){
         <li style="--c:${DOT.ratel}"><i></i><span><b>Ratel</b>Immune to venom. Only a pepper fire bite works.</span></li>
         <li style="--c:${DOT.bird}"><i></i><span><b>Secretary bird</b>Watch for its shadow, then move.</span></li>
         <li style="--c:${DOT.pangolin}"><i></i><span><b>Pangolin</b>Harmless, but its armour is a wall.</span></li>
+        <li style="--c:${DOT.gunman}"><i></i><span><b>Hunter with a dane gun</b>When you are in a straight line with him he shouts and aims. A red line shows where. Turn off it before he fires. With a full bar, chase him off for 150.</span></li>
+        <li style="--c:${DOT.walker}"><i></i><span><b>People on the road</b>They scream in Yoruba, Igbo, Hausa, Pidgin or English and run. 20 points for every person you scare.</span></li>
       </ul><h3 style="margin-top:12px">Power-ups</h3><ul>${POWERS.map(k=>`<li style="--c:${T[k].color}"><i></i><span><b>${T[k].label}</b>${T[k].desc}</span></li>`).join('')}</ul></div>
-    </div></details>
-    <p class="keys">${coarse?'Swipe or use the arrow pad to turn.':'Arrow keys or WASD to turn. V changes the camera view. P to pause.'}${CONFIG.sponsor.name?` This season is sponsored by ${esc(CONFIG.sponsor.name)}.`:''}</p>
-  </div>`);
-  fillTopNow();
+    </div>
+    <div class="btns"><button class="btn primary" type="button" data-act="menu" data-primary>Back</button></div></div>`);
 }
 function streakStrip(){
   const s=inv.streak||0;if(!s)return'';const day=((s-1)%7)+1;
@@ -1775,17 +2012,20 @@ function streakStrip(){
 /* ---------- choosing a snake and starting ---------- */
 function pickSnake(){startLevel(RUN.li,RUN.score,RUN.opts);G.state='select';showPlayUI(false);renderPick()}
 function runTitle(){const m=RUN.opts.mode;if(m==='duel')return`Duel · Player ${duelCtx.p}`;if(m==='endless')return'Endless Bush';if(m==='daily')return'Daily challenge';if(m==='friend')return`Challenge from ${esc(RUN.opts.target.nick)}`;return`Level ${RUN.li+1}: ${LEVELS[RUN.li].name}`}
+let viewK=null;
 function renderPick(){
+  const k=viewK&&SPECIES[viewK]?viewK:chosen,s=SPECIES[k],locked=s.paid&&!inv.owned[s.paid],l=lvlOf(k),x=xpOf(k),nx=XP_STEPS[l]||null;
   screen(`<div class="panel wide">
     <div><div class="eyebrow">${runTitle()}</div><h2>${RUN.opts.mode==='duel'?`Player ${duelCtx.p}, choose your snake`:'Choose your snake'}</h2></div>
-    <div class="snakes">${Object.entries(SPECIES).map(([k,s])=>{const locked=s.paid&&!inv.owned[s.paid];const l=lvlOf(k),x=xpOf(k),nx=XP_STEPS[l]||null;return`<button class="sn${k===chosen?' on':''}" type="button" data-act="${locked?'buy':'sp'}" data-k="${k}" ${locked?`data-id="${s.paid}"`:''} aria-pressed="${k===chosen}">
+    <div class="snchips">${Object.entries(SPECIES).map(([q,t])=>{const lk=t.paid&&!inv.owned[t.paid];return`<button class="snchip${q===chosen?' on':''}${q===k&&q!==chosen?' view':''}" type="button" data-act="sp" data-k="${q}" aria-pressed="${q===chosen}">${snakePic(q,q===chosen&&skinOf()?inv.equipped:'','')}<b>${t.name}</b><small>${lk?'🔒 '+naira(ITEM[t.paid].price):'Lv '+lvlOf(q)}</small></button>`}).join('')}</div>
+    <div class="sn sndetail">
       ${snakePic(k,k===chosen&&skinOf()?inv.equipped:'','snakeimg')}
-      <span class="hd"><span><b class="nm">${s.name}</b><small>${s.local}</small></span><span class="lvl">Lv ${l}</span></span>${locked?`<span class="lockp">Unlock for ${naira(ITEM[s.paid].price)}</span>`:''}
-      <span class="xpbar" title="${x} XP"><i style="width:${nx?Math.min(100,(x-XP_STEPS[l-1])/(nx-XP_STEPS[l-1])*100):100}%"></i></span><small class="xpt">${nx?`${x} / ${nx} XP to level ${l+1}`:'Max level'}${l>1?` · ${PERKS.slice(1,l).join(', ')}`:''}</small>
-      <span class="st">${Object.entries(s.stats).map(([n,v])=>`<div><span>${n}</span>${pips(v)}</div>`).join('')}<div><span>Skins</span><span>${s.lives}${l>=5?' + 1':''}</span></div></span>
-      <span class="pro"><b>Strength</b>${s.strength}</span>
-      <span class="con"><b>Weakness</b>${s.weakness}</span>
-    </button>`}).join('')}</div>
+      <div><span class="hd"><span><b class="nm">${s.name}</b><small>${s.local}</small></span><span class="lvl">Lv ${l}</span></span>
+        <span class="xpbar" title="${x} XP"><i style="width:${nx?Math.min(100,(x-XP_STEPS[l-1])/(nx-XP_STEPS[l-1])*100):100}%"></i></span><small class="xpt">${nx?`${x} / ${nx} XP to level ${l+1}`:'Max level'}${l>1?` · ${PERKS.slice(1,l).join(', ')}`:''}</small>
+        <span class="st">${Object.entries(s.stats).map(([n,v])=>`<div><span>${n}</span>${pips(v)}</div>`).join('')}<div><span>Skins</span><span>${s.lives}${l>=5?' + 1':''}</span></div></span>
+        ${locked?`<button class="buy" type="button" data-act="buy" data-id="${s.paid}">Unlock for ${naira(ITEM[s.paid].price)}</button>`:''}</div>
+      <div class="pc"><span class="pro"><b>Strength</b>${s.strength}</span><span class="con"><b>Weakness</b>${s.weakness}</span></div>
+    </div>
     ${skinRow('pick')}
     <div class="btns"><button class="btn primary" type="button" data-act="toIntro" data-primary>Play as ${SPECIES[chosen].name}</button><button class="btn" type="button" data-act="shop" data-from="pick">Shop</button><button class="btn" type="button" data-act="menu">Menu</button></div>
   </div>`,true);
@@ -1803,12 +2043,12 @@ function intro(){
   const duelInfo=G.mode==='duel'&&duelCtx.p===2?`<p class="event">Player 1 ${duelCtx.res[0].cleared?`ate ${L.goal} in ${fmtTime(duelCtx.res[0].time)}`:`ate ${duelCtx.res[0].eaten} before running out of skins`}. Beat that.</p>`:'';
   screen(`<div class="panel">
     <div><div class="eyebrow">${runTitle()}</div><h2>${L.name}</h2></div>
-    <p>${L.sub}</p>${target}${duelInfo}
+    <p class="intro-sub">${L.sub}</p>${target}${duelInfo}
     ${G.weather!=='clear'?`<p class="weather">${WEATHER_TEXT[G.weather]}</p>`:''}
     <div class="stats"><div><small>Goal</small><b class="goal">${goal}</b></div><div><small>Skins</small><b>${s.lives+(lvlOf(G.key)>=5?1:0)}</b></div>${G.score?`<div><small>Score</small><b>${G.score}</b></div>`:''}</div>
-    <div class="yours">${snakePic(G.key,skinOf()?inv.equipped:'','yourimg')}<div><b>Playing as ${s.name} · Lv ${lvlOf(G.key)}</b><span class="pro"><b>Strength</b>${s.strength}</span><span class="con"><b>Weakness</b>${s.weakness}</span></div></div>
-    <div><div class="eyebrow quiet" style="margin-bottom:6px">On the menu</div><div class="threats">${[...new Set(L.prey)].map(chip).join('')}</div></div>
-    <div><div class="eyebrow warn" style="margin-bottom:6px">Watch out for</div><div class="threats">${L.boss?`<span style="--c:#ff4d3a"><i></i>${BOSS[L.boss].name}</span>`:''}${threats.map(chip).join('')}</div></div>
+    <div class="yours slim">${snakePic(G.key,skinOf()?inv.equipped:'','yourimg')}<div><b>Playing as ${s.name} · Lv ${lvlOf(G.key)}</b></div></div>
+    <div class="chiprow"><div class="eyebrow quiet">Food</div><div class="threats">${[...new Set(L.prey)].map(chip).join('')}</div>
+    <div class="eyebrow warn">Hunters</div><div class="threats">${L.boss?`<span style="--c:#ff4d3a"><i></i>${BOSS[L.boss].name}</span>`:''}${threats.map(chip).join('')}</div></div>
     <p id="beat" class="beat" hidden></p>
     ${G.mode==='duel'?'':boostBox()}
     <div class="btns"><button class="btn primary" type="button" data-act="go" data-primary>Start</button><button class="btn" type="button" data-act="pick">Change snake</button>${G.mode==='duel'?'':'<button class="btn" type="button" data-act="shop" data-from="intro">Shop</button>'}</div>
@@ -1821,7 +2061,7 @@ async function fillTopNow(){
   const el=$('topNow');if(!el||!G||G.state!=='menu')return;
   if(!e&&!d){el.hidden=true;return}
   const list=(rows,n,timeOn)=>rows&&rows.length?`<ol>${rows.slice(0,n).map((r,i)=>`<li${r.id===myId()?' class="me"':''}><span class="rk">${i+1}</span><span>${esc(r.nick)} <small>${esc(r.area)}</small></span><b>${r.score.toLocaleString('en-NG')}${timeOn&&r.time?` <small>${fmtTime(r.time)}</small>`:''}</b></li>`).join('')}</ol>`:'<p class="none">No scores yet. Play now and take the top spot.</p>';
-  el.innerHTML=`<div><h3>Top players right now · Endless</h3>${list(e,5,true)}</div><div><h3>Today's challenge</h3>${list(d,3,false)}</div>`;el.hidden=false;
+  el.innerHTML=`<div><h3>Top players right now · Endless</h3>${list(e,3,true)}</div><div><h3>Today's challenge</h3>${list(d,3,false)}</div>`;el.hidden=false;
 }
 async function fillBeat(){
   const bd=boardOf();const el=$('beat');if(!bd||!el)return;
@@ -1911,8 +2151,8 @@ function duelNext(won){
 /* ---------- missions ---------- */
 function renderMissions(){
   const s=stats();inv.mclaimed=inv.mclaimed||{};
-  screen(`<div class="panel wide"><div class="eyebrow">Missions</div><h2>Jobs in the bush</h2><p class="muted">Finish a mission, then claim its cowries here.</p>
-    <div class="mlist">${MISSIONS.map(m=>{const v=Math.min(m.n,m.stat(s)),done=v>=m.n,cl=inv.mclaimed[m.id];return`<div class="mis${cl?' claimed':''}"><div><b>${m.text}</b><span class="xpbar"><i style="width:${v/m.n*100}%"></i></span><small>${m.fmt?m.fmt(v)+' / '+m.fmt(m.n):v+' / '+m.n}</small></div>${cl?'<span class="muted">Claimed</span>':`<button class="buy${done?'':' ghost'}" type="button" data-act="claim" data-id="${m.id}" ${done?'':'disabled'}>${CW} ${m.cw}</button>`}</div>`}).join('')}</div>
+  screen(`<div class="panel wide"><div class="eyebrow">Missions</div><h2>Jobs in the bush</h2><p class="muted missub">Finish a mission, then claim its cowries here.</p>
+    <div class="mlist">${MISSIONS.slice().sort((x,y)=>{const r=m=>inv.mclaimed[m.id]?2:Math.min(m.n,m.stat(s))>=m.n?0:1;return r(x)-r(y)}).map(m=>{const v=Math.min(m.n,m.stat(s)),done=v>=m.n,cl=inv.mclaimed[m.id];return`<div class="mis${cl?' claimed':''}"><div><b>${m.text}</b><span class="xpbar"><i style="width:${v/m.n*100}%"></i></span><small>${m.fmt?m.fmt(v)+' / '+m.fmt(m.n):v+' / '+m.n}</small></div>${cl?'<span class="muted">Claimed</span>':`<button class="buy${done?'':' ghost'}" type="button" data-act="claim" data-id="${m.id}" ${done?'':'disabled'}>${CW} ${m.cw}</button>`}</div>`}).join('')}</div>
     <div class="btns"><button class="btn primary" type="button" data-act="menu" data-primary>Back</button></div></div>`);
 }
 
@@ -2049,28 +2289,32 @@ let shopFrom='menu';
 function back(from){if(from==='pick'){G.state='select';renderPick()}else if(from==='intro')intro();else if(from==='over')endScreen(false,0);else if(from==='shop')renderShop();else menu()}
 function invLine(){return `<div class="invrow"><span>${CW} Cowries <b>${inv.cowries.toLocaleString('en-NG')}</b></span><span>Extra skins <b>${inv.life}</b></span><span>Full venom starts <b>${inv.venom}</b></span><span>Revives <b>${inv.revive}</b></span>${passActive()?`<span>Bush Pass <b>${Math.ceil((inv.passUntil-Date.now())/864e5)} days left</b></span>`:''}</div>`}
 const cwPrice=i=>EVENT&&EVENT.id==='indep'&&i.id==='skin_naija'?Math.round(i.cw/2):i.cw;
+let shopTab=null;
+const SHOP_TABS={'Boosts':'Boosts','Snake skins':'Skins','Snakes and levels':'Snakes & levels','Bush Pass':'Bush Pass','Cowries':'Cowries','Gifts':'Gifts & codes'};
 function renderShop(){
   const cats=[...new Set(SHOP.map(i=>i.cat))];
   const card=i=>{
-    if(i.special==='ad'){const left=adsLeft();return `<div class="item"><div class="top"><span><b class="nm">${i.name}</b></span></div><p>${i.desc}</p><button class="buy ghost" type="button" data-act="adcw" ${left>0?'':'disabled'}>${left>0?`Watch for ${CW} 20 · ${left} left today`:'Come back tomorrow'}</button></div>`}
-    if(i.special==='gift')return `<div class="item"><div class="top"><span><b class="nm">${i.name}</b></span></div><p>${i.desc}</p><button class="buy" type="button" data-act="gift">Choose a skin to gift</button></div>`;
+    if(i.special==='ad'){const left=adsLeft();return `<div class="item nopic"><div class="top"><span><b class="nm">${i.name}</b></span></div><p>${i.desc}</p><button class="buy ghost" type="button" data-act="adcw" ${left>0?'':'disabled'}>${left>0?`Watch for ${CW} 20 · ${left} left today`:'Come back tomorrow'}</button></div>`}
+    if(i.special==='gift')return `<div class="item nopic"><div class="top"><span><b class="nm">${i.name}</b></span></div><p>${i.desc}</p><button class="buy" type="button" data-act="gift">Choose a skin to gift</button></div>`;
     const sk=SKINS[i.id],sp=i.id==='sp_royal'?SPECIES.royal:null,owned=i.own&&(inv.owned[i.id]||(i.id==='levels'&&unlocked>=LEVELS.length-1));
     const pic=sk?snakePic(chosen,i.id,'shopimg'):sp?snakePic('royal','','shopimg'):i.id==='pass'?snakePic(chosen,'skin_adire','shopimg'):'';
     const cw=i.cw?cwPrice(i):0;let btn;
     if(i.id==='pass'&&passActive())btn=`<button class="buy" type="button" data-act="buy" data-id="pass">Add 30 more days for ${naira(i.price)}</button>`;
     else if(sk&&owned)btn=`<button class="buy ghost" type="button" data-act="equip" data-k="${(inv.equipped===i.id)?'':i.id}" data-from="shop">${inv.equipped===i.id?'Wearing it. Take off':'Wear this skin'}</button>`;
     else if(owned)btn=`<button class="buy ghost" type="button" disabled>Owned</button>`;
-    else btn=`<span class="btns" style="gap:8px"><button class="buy" type="button" data-act="buy" data-id="${i.id}">Buy for ${naira(i.price)}</button>${cw?`<button class="buy ghost cwbuy" type="button" data-act="cwbuy" data-id="${i.id}" ${inv.cowries<cw?'disabled':''}>${inv.cowries<cw?`Need ${cw-inv.cowries} more ${CW}`:`or ${CW} ${cw}`}</button>`:''}</span>`;
+    else btn=`<span class="btns" style="gap:8px"><button class="buy" type="button" data-act="buy" data-id="${i.id}">Buy ${naira(i.price)}</button>${cw?`<button class="buy ghost cwbuy" type="button" data-act="cwbuy" data-id="${i.id}" ${inv.cowries<cw?`disabled title="You need ${cw-inv.cowries} more cowries"`:''}>${CW} ${cw}</button>`:''}</span>`;
     const badge=cw&&cw<i.cw?'Half price':i.badge;
-    return `<div class="item">${pic}<div class="top"><span><b class="nm">${i.name}</b></span>${badge?`<span class="badge">${badge}</span>`:''}</div><p>${i.desc}</p>${btn}</div>`};
+    return `<div class="item${pic?'':' nopic'}">${pic}<div class="top"><span><b class="nm">${i.name}</b></span>${badge?`<span class="badge">${badge}</span>`:''}</div><p>${i.desc}</p>${btn}</div>`};
+  if(!cats.includes(shopTab))shopTab=cats[0];
   screen(`<div class="panel wide">
     <div><div class="eyebrow">Bush shop</div><h2>Boosts, skins and snakes</h2></div>
     ${invLine()}
-    <p class="earn">Earn cowries as you play: rats and frogs drop 1, agamas and snails 2, eggs and hornbills 3, grasscutters 4, tortoises and mongooses 5, monitor lizards 8. Golden animals drop 10. Clearing levels, missions, daily challenges and login streaks pay too.</p>
-    ${PAY.publicKey?'':'<p class="demo">Demo shop: purchases here unlock items for free so you can try them. Real Paystack payments switch on when the game is hosted with a Paystack key.</p>'}
-    ${cats.map(c=>`<div class="cat">${c}</div><div class="shopgrid">${SHOP.filter(i=>i.cat===c).map(card).join('')}</div>`).join('')}
-    <div class="cat">Have a gift code?</div>
-    <div class="redeem"><input id="giftCode" placeholder="EJO-XXX-XXXXX" maxlength="16" autocomplete="off" aria-label="Gift code"><button class="buy" type="button" data-act="redeem">Redeem</button></div>
+    <div class="tabs scrollx" role="tablist">${cats.map(c=>`<button type="button" role="tab" class="tab${c===shopTab?' on':''}" aria-selected="${c===shopTab}" data-act="shoptab" data-k="${c}">${SHOP_TABS[c]||c}</button>`).join('')}</div>
+    <div class="shoplist">${SHOP.filter(i=>i.cat===shopTab).map(card).join('')}</div>
+    ${shopTab==='Gifts'?`<div class="cat">Have a gift code?</div>
+    <div class="redeem"><input id="giftCode" placeholder="EJO-XXX-XXXXX" maxlength="16" autocomplete="off" aria-label="Gift code"><button class="buy" type="button" data-act="redeem">Redeem</button></div>`:''}
+    <details class="earn"${shopTab==='Cowries'?' open':''}><summary>How to earn cowries for free</summary>Rats and frogs drop 1, agamas and snails 2, eggs and hornbills 3, grasscutters 4, tortoises and mongooses 5, monitor lizards 8, golden animals 10. Clearing levels, missions, daily challenges and login streaks pay too.</details>
+    ${PAY.publicKey?'':'<p class="compactmuted">Demo shop: purchases unlock for free until real Paystack payments are switched on.</p>'}
     <div class="btns"><button class="btn primary" type="button" data-act="back" data-primary>Back</button></div>
   </div>`);
 }
@@ -2164,7 +2408,9 @@ function startEndless(){startRun(-1,0,{mode:'endless',level:ENDLESS_L,seed:4242}
 $('screen').addEventListener('click',async ev=>{const b=ev.target.closest('[data-act]');if(!b)return;unlockAudio();sfx(880,.04);
   const a=b.dataset.act;
   if(a==='level')startRun(+b.dataset.i,0,{mode:'levels'});
-  else if(a==='sp'){setSpecies(b.dataset.k);renderPick();const f=$('screen').querySelector(`[data-k="${b.dataset.k}"]`);if(f)f.focus({preventScroll:true})}
+  else if(a==='guide')renderGuide();
+  else if(a==='shoptab'){shopTab=b.dataset.k;renderShop();const t=$('screen').querySelector('.tab.on');if(t)t.scrollIntoView({inline:'nearest',block:'nearest'})}
+  else if(a==='sp'){const q=b.dataset.k,t=SPECIES[q];if(t.paid&&!inv.owned[t.paid])viewK=q;else{viewK=null;setSpecies(q)}renderPick();const f=$('screen').querySelector(`[data-k="${b.dataset.k}"]`);if(f)f.focus({preventScroll:true})}
   else if(a==='toIntro')intro();
   else if(a==='pick'){G.state='select';renderPick()}
   else if(a==='go')go();
