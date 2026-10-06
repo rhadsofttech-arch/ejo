@@ -21,6 +21,7 @@ On ZevCloud: Add Service → Web Application → Import from GitHub → this rep
 ## What is in it
 
 - 9 levels across open forests and labyrinths, including two boss levels (Mongoose King, Oga Ratel)
+- A wide forest with no fence: a laterite road crosses each level and leaves through a checkpoint toward the Lagos skyline. Eat enough to lift the barrier, then slither out along the road to finish
 - 5 snakes, each with its own strengths, weaknesses and XP levels
 - Endless Bush, a daily challenge, a pass-and-play duel and friend challenge links
 - Talking animals, cowries, missions, login streaks, weather and festive events
