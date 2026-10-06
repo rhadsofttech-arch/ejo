@@ -403,6 +403,51 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
   .hpill{font-size:16px;padding:6px 10px}
 }
 @media (max-height:640px){.hleft .htile:nth-child(3){display:none}.hchamp{display:none}}
+
+/* in-game HUD: one slim bar across the top, venom bar under it */
+#hud{display:block;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 0;background:linear-gradient(rgba(5,10,7,.55),rgba(5,10,7,0));pointer-events:none}
+#hud .hrow{display:flex;align-items:center;gap:6px;min-width:0}
+.hpl{background:rgba(9,18,13,.78);border:1px solid var(--line);border-radius:12px;padding:4px 10px 5px;display:flex;flex-direction:column;min-width:0;backdrop-filter:blur(6px);flex:none}
+.hpl small{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;line-height:1.3}
+.hpl b{font-family:var(--display);font-weight:400;font-size:19px;line-height:1.05;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hpl .cwb{display:flex;align-items:center;gap:5px}.hpl .cwb .cw{font-size:15px}
+.hpl.lives .skins{margin-top:3px}
+.hgrow{flex:1;min-width:0}
+.hbtns{display:flex;gap:6px;pointer-events:auto;flex:none}
+.hib{height:40px;min-width:40px;border-radius:12px;background:rgba(9,18,13,.78);border:1px solid var(--line);color:var(--cream);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;font-size:13px;font-weight:700;backdrop-filter:blur(6px)}
+.hib svg{width:20px;height:20px;flex:none}
+.hib.off{color:var(--muted)}
+.hib:active{background:var(--danfo);color:var(--ink)}
+#hud .vrow{display:flex;align-items:center;gap:8px;margin-top:6px;max-width:460px;background:rgba(9,18,13,.6);border-radius:10px;padding:4px 10px}
+#hud .vrow #hVenomLabel{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;white-space:nowrap}
+#hud .vrow .bar{flex:1;height:8px}
+#hud .vrow #hSpit{font-size:11px;font-weight:800;white-space:nowrap;color:var(--muted)}
+#hud .vrow #hSpit.ready{color:var(--danfo)}
+#hud.vfull .vrow{background:rgba(245,197,24,.18)}
+#hFx{position:static;margin-top:6px;max-width:none}
+#mini{top:calc(env(safe-area-inset-top,0px) + 100px)}
+.live{top:calc(env(safe-area-inset-top,0px) + 100px)}
+#pauseBtn{display:none!important}
+@media (max-width:899px){.hib .lbl{display:none}}
+@media (max-width:640px){
+  #hud{padding-left:8px;padding-right:8px}
+  #hud .hrow{gap:5px}
+  .hpl{padding:3px 8px 4px;border-radius:10px}
+  .hpl b{font-size:17px}
+  .hpl small{font-size:9px;max-width:72px}
+  .hpl.lives small{display:none}.hpl.lives .skins{margin-top:0}.hpl.lives{justify-content:center;min-height:38px}
+  .hib{height:38px;min-width:38px;padding:0 8px}
+  .hib.wide-only{display:none}
+  #hud .vrow{margin-top:5px;padding:3px 8px}
+  #mini{width:88px;height:88px;right:8px;top:calc(env(safe-area-inset-top,0px) + 92px);border-radius:10px}
+  .live{left:8px;top:calc(env(safe-area-inset-top,0px) + 92px);width:auto;max-width:52vw;padding:4px 8px;border-radius:10px}
+  .live small{display:none}
+  .live li{font-size:12px;padding:1px 4px}
+  .live li:not(.me):not(:first-child),.live li.gap{display:none}
+  #pad{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,52px);gap:5px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
+  #pad button{background:rgba(9,18,13,.5);font-size:19px}
+}
+@media (max-width:360px){.hpl:nth-child(3) small{display:none}}
 </style>
 </head>
 <body>
@@ -446,12 +491,22 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
 <div id="app"></div>
 
 <div id="hud" hidden>
-  <div class="chip"><small id="hLevel">Bush Farm</small><b id="hEaten">0 / 10</b>
-    <div class="bar vmini" id="hVenomMiniWrap" style="width:96px;margin-top:4px"><i id="hVenomMini"></i></div>
+  <div class="hrow">
+    <div class="hpl lvl"><small id="hLevel">Bush Farm</small><b id="hEaten">0 / 10</b></div>
+    <div class="hpl"><small>Score</small><b id="hScore">0</b></div>
+    <div class="hpl"><small>Cowries</small><b class="cwb"><i class="cw"></i><span id="hCw">0</span></b></div>
+    <div class="hpl lives"><small id="hSnake">Skins</small><div class="skins" id="hLives"></div></div>
+    <span class="hgrow"></span>
+    <div class="hbtns">
+      <button class="hib" id="viewBtn" type="button"></button>
+      <button class="hib wide-only" id="chatBtn" type="button"></button>
+      <button class="hib wide-only" id="muteBtn" type="button"></button>
+      <button class="hib" id="pauseTop" type="button" aria-label="Pause"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg></button>
+    </div>
   </div>
-  <div class="chip venom"><small id="hVenomLabel">Venom</small><div class="bar" id="hVenomWrap"><i id="hVenom"></i></div><span id="hSpit" hidden></span></div>
-  <div class="chip right"><div class="row"><small id="hSnake">Skins</small><div class="skins" id="hLives"></div></div><b id="hScore">0</b><span class="cwrow"><i class="cw"></i><span id="hCw">0</span></span><div class="row"><button class="mute" id="viewBtn" type="button">View: Follow</button><button class="mute" id="chatBtn" type="button">Chatter on</button><button class="mute" id="muteBtn" type="button">Sound on</button></div></div>
+  <div class="vrow"><span id="hVenomLabel">Venom</span><div class="bar" id="hVenomWrap"><i id="hVenom"></i></div><span id="hSpit" hidden></span></div>
   <div id="hFx" class="fxrow"></div>
+  <span id="hVenomMiniWrap" hidden><i id="hVenomMini"></i></span>
 </div>
 <canvas id="mini" hidden aria-label="Map"></canvas>
 <div id="live" class="live" hidden aria-live="off"></div>
@@ -1349,7 +1404,7 @@ function pickWeather(L){
   if(['savanna','farm','den','yard'].includes(L.theme)&&r>.68)return'harmattan';
   return'clear';
 }
-function weatherSky(){paintSky(THEMES[G.L.theme].night,G.weather==='harmattan');if(cityG)cityG.visible=G.weather!=='harmattan'}
+function weatherSky(){G.fogBase=[scene.fog.near,scene.fog.far];paintSky(THEMES[G.L.theme].night,G.weather==='harmattan');if(cityG)cityG.visible=G.weather!=='harmattan'}
 const WEATHER_TEXT={rain:'Rain is falling. More frogs and snails are out, but you slide a little slower.',harmattan:'Harmattan haze. You cannot see far, so watch the minimap.',clear:''};
 
 /* ---------- starting a run ---------- */
@@ -1999,6 +2054,7 @@ function frame(now){
       tgt=new THREE.Vector3(headPose.x+G.dir[0]*1.5,0,headPose.z+G.dir[1]*1.5+.5);
       pos=new THREE.Vector3(tgt.x,Math.sin(tilt)*d,tgt.z+Math.cos(tilt)*d);
     }
+    if(G.fogBase&&G.weather!=='harmattan'){const m=G.state==='play'||G.state==='paused'||G.state==='dying'?(view==='wide'?1.8:view==='top'?1.6:1):1;scene.fog.near=G.fogBase[0]*m;scene.fog.far=G.fogBase[1]*m}
     {const wf=G.state==='menu'?52:40;if(Math.abs(camera.fov-wf)>.05){camera.fov+=(wf-camera.fov)*Math.min(1,dt*.004);camera.updateProjectionMatrix()}}
     const k0=!close&&view==='rear'?.1:.06,k=1-Math.pow(1-k0,Math.min(6,dt/16.7));camT.lerp(tgt,k);camP.lerp(pos,k);
     const sh=G.shake>0?(G.shake*=.9,G.shake*.25):0;
@@ -2036,8 +2092,10 @@ function hud(){
   else if(L.endless)prog=`Survived ${fmtTime(G.elapsed/1000)}`;
   else if(G.roadOpen)prog='Take the road north';
   else prog=`${Math.min(G.eaten,L.goal)} / ${L.goal} eaten`;
-  $('hLevel').textContent=G.mode==='levels'||G.mode==='friend'?`${G.li+1}. ${title}`:title;$('hEaten').textContent=prog;
-  $('hScore').textContent=G.score;$('hCw').textContent=inv.cowries.toLocaleString('en-NG');$('hSnake').textContent=`${G.sp.name} · Lv ${G.lvl||1}`;
+  const narrow=innerWidth<=640;
+  if(narrow){prog=prog.replace(' eaten','').replace(' / ','/').replace('Survived ','').replace('Take the road north','Go north ↑');title=G.mode==='levels'||G.mode==='friend'?`Level ${G.li+1}`:G.mode==='daily'?'Daily':G.mode==='endless'?'Endless':title}
+  $('hLevel').textContent=!narrow&&(G.mode==='levels'||G.mode==='friend')?`${G.li+1}. ${title}`:title;$('hEaten').textContent=prog;$('hud').classList.toggle('vfull',G.venomOn);
+  $('hScore').textContent=G.score;$('hCw').textContent=inv.cowries.toLocaleString('en-NG');$('hSnake').textContent=`Skins · ${G.sp.name}`;
   const w=Math.round(G.venom)+'%';$('hVenom').style.width=w;$('hVenomMini').style.width=w;
   $('hVenomWrap').classList.toggle('full',G.venomOn);$('hVenomMiniWrap').classList.toggle('full',G.venomOn);
   $('hVenomLabel').textContent=G.venomOn?`${G.sp.bar} ready: bite a hunter`:G.sp.bar;
@@ -2051,13 +2109,20 @@ function hud(){
 const VIEWS=[['follow','Follow'],['rear','Rear'],['wide','Wide'],['top','Top-down']];
 let view='follow';try{const v=localStorage.getItem('ejo.view');if(VIEWS.some(x=>x[0]===v))view=v}catch(e){}
 const viewLabel=()=>VIEWS.find(x=>x[0]===view)[1];
-function syncView(){const b=$('viewBtn');if(b)b.textContent='View: '+viewLabel()}
+
+const HUDI={
+  cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="7" width="13" height="11" rx="2.5"/><path d="M16 11l5-3v9l-5-3z"/></svg>',
+  chat:on=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/>${on?'':'<path d="M3 3l18 18" stroke-linecap="round"/>'}</svg>`,
+  sound:on=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M4 10h4l5-4v12l-5-4H4z"/>${on?'<path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"/>':'<path d="M17 9l5 6M22 9l-5 6"/>'}</svg>`
+};
+function syncMute(){const b=$('muteBtn');if(!b)return;b.innerHTML=HUDI.sound(!muted)+`<span class="lbl">${muted?'Sound off':'Sound on'}</span>`;b.classList.toggle('off',muted);b.setAttribute('aria-label',muted?'Sound off':'Sound on')}
+function syncView(){const b=$('viewBtn');if(!b)return;b.innerHTML=HUDI.cam+`<span class="lbl">${viewLabel()}</span>`;b.setAttribute('aria-label','Camera view: '+viewLabel())}
 function cycleView(){const i=VIEWS.findIndex(x=>x[0]===view);view=VIEWS[(i+1)%VIEWS.length][0];try{localStorage.setItem('ejo.view',view)}catch(e){}syncView();
   toast(`<big>${viewLabel()} view</big>${{follow:'The classic angled view that follows your snake.',rear:'Right behind your snake. Left and right turn it from its own point of view.',wide:'Zoomed out to see much more of the bush.',top:'Straight down, like the old Nokia.'}[view]}`)}
 let toastTimer;
 function toast(html,kind){const t=$('toast');t.innerHTML=html;t.className='show '+(kind||'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.className=kind||'',2200)}
 const coarse=matchMedia('(pointer:coarse)').matches;
-function showPlayUI(on){$('hud').hidden=!on;if(!on)$('live').hidden=true;$('bubbles').hidden=!on;$('mini').hidden=!on;$('pad').hidden=!(on&&coarse);$('pauseBtn').hidden=!(on&&coarse);$('pad').querySelector('.sp').hidden=!(G&&G.sp.spit)}
+function showPlayUI(on){$('hud').hidden=!on;if(!on)$('live').hidden=true;$('bubbles').hidden=!on;$('mini').hidden=!on;$('pad').hidden=!(on&&coarse);$('pauseBtn').hidden=true;$('pad').querySelector('.sp').hidden=!(G&&G.sp.spit)}
 function screen(html,side){const s=$('screen');s.innerHTML=html;s.hidden=!html;s.classList.toggle('side',side===true);s.classList.toggle('homemode',side==='home');s.scrollTop=0;const p=s.querySelector('[data-primary]');if(p)setTimeout(()=>p.focus({preventScroll:true}),30)}
 const chip=t=>`<span style="--c:${DOT[t]||'#f5c518'}"><i></i>${(NAME[t]||t)[0].toUpperCase()+(NAME[t]||t).slice(1)}</span>`;
 const pips=v=>`<span class="pips">${[1,2,3,4,5].map(i=>`<i class="${i<=v?'f':''}"></i>`).join('')}</span>`;
@@ -2255,7 +2320,10 @@ function go(){
   let msg=`Eat ${G.L.goal} animals, then follow the road north through the checkpoint.`;if(G.L.boss)msg=`Defeat ${BOSS[G.L.boss].name}.`;if(G.L.endless)msg='Stay alive.';if(G.mode==='daily')msg=G.daily.label+'.';
   toast(`<big>${G.L.name}</big>${msg}${tip}`);
 }
-function pause(){if(G.state!=='play')return;G.state='paused';screen(`<div class="panel"><h2>Paused</h2><p class="muted">${G.L.name}: ${G.eaten} eaten, ${G.score} points${G.L.endless?`, ${fmtTime(G.elapsed/1000)} survived`:''}.</p><div class="btns"><button class="btn primary" type="button" data-act="resume" data-primary>Resume</button><button class="btn" type="button" data-act="retry">Restart</button><button class="btn" type="button" data-act="quit">Quit to menu</button></div></div>`)}
+function pauseHtml(){return `<div class="panel"><h2>Paused</h2><p class="muted">${G.L.name}: ${G.eaten} eaten, ${G.score} points${G.L.endless?`, ${fmtTime(G.elapsed/1000)} survived`:''}.</p>
+  <div class="btns"><button class="btn" type="button" data-act="tview">Camera: ${viewLabel()}</button><button class="btn" type="button" data-act="tsound">Sound: ${muted?'off':'on'}</button><button class="btn" type="button" data-act="tchat">Chatter: ${chatOn?'on':'off'}</button></div>
+  <div class="btns"><button class="btn primary" type="button" data-act="resume" data-primary>Resume</button><button class="btn" type="button" data-act="retry">Restart</button><button class="btn" type="button" data-act="quit">Quit to menu</button></div></div>`}
+function pause(){if(G.state!=='play')return;G.state='paused';screen(pauseHtml())}
 
 /* ---------- the end of a run ---------- */
 function overScreen(){endScreen(false,0)}
@@ -2332,7 +2400,7 @@ async function saveSettings(){
   setProfile(f,r);
   chatOn=$('setChat').checked;voiceOn=$('setVoice').checked;muted=!$('setSound').checked;
   try{localStorage.setItem('ejo.chat',chatOn?'on':'off');localStorage.setItem('ejo.voice',voiceOn?'on':'off')}catch(e){}
-  syncChat();$('muteBtn').textContent=muted?'Sound off':'Sound on';
+  syncChat();syncMute();
   NET.dirty=true;save();syncScores();
   if(voiceOn&&window.speechSynthesis)speak('Welcome to the bush!',SNAKE_T);
   return 'Saved.';
@@ -2564,6 +2632,9 @@ $('screen').addEventListener('click',async ev=>{const b=ev.target.closest('[data
   const a=b.dataset.act;
   if(a==='level')startRun(+b.dataset.i,0,{mode:'levels'});
   else if(a==='guide')renderGuide();
+  else if(a==='tsound'){toggleMute();screen(pauseHtml())}
+  else if(a==='tchat'){$('chatBtn').click();screen(pauseHtml())}
+  else if(a==='tview'){cycleView();screen(pauseHtml())}
   else if(a==='hprev'||a==='hnext'){homeLi=Math.max(0,Math.min(LEVELS.length-1,homeLi+(a==='hnext'?1:-1)));menu();const f=$('screen').querySelector(`[data-act="${a}"]`);if(f&&!f.disabled)f.focus({preventScroll:true})}
   else if(a==='snakes')startRun(isLocked(homeLi)?Math.min(unlocked,LEVELS.length-1):homeLi,0,{mode:'levels'});
   else if(a==='shoptab'){shopTab=b.dataset.k;renderShop();const t=$('screen').querySelector('.tab.on');if(t)t.scrollIntoView({inline:'nearest',block:'nearest'})}
@@ -2628,9 +2699,9 @@ addEventListener('pointerup',e=>{if(!swiping)return;swiping=false;const dx=e.cli
 const PADD={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]};
 $('pad').addEventListener('pointerdown',e=>{const b=e.target.closest('[data-d]');if(!b)return;e.preventDefault();unlockAudio();if(b.dataset.d==='spit')spit();else if(view==='rear'){if(b.dataset.d==='l'||b.dataset.d==='r')turnRel(b.dataset.d)}else turn(PADD[b.dataset.d])});
 $('viewBtn').addEventListener('click',cycleView);syncView();
-$('pauseBtn').addEventListener('click',pause);
+$('pauseBtn').addEventListener('click',pause);$('pauseTop').addEventListener('click',()=>{unlockAudio();pause()});
 $('muteBtn').addEventListener('click',toggleMute);
-function syncChat(){$('chatBtn').textContent=chatOn?'Chatter on':'Chatter off'}syncChat();
+function syncChat(){const b=$('chatBtn');b.innerHTML=HUDI.chat(chatOn)+`<span class="lbl">${chatOn?'Chatter on':'Chatter off'}</span>`;b.classList.toggle('off',!chatOn);b.setAttribute('aria-label',chatOn?'Animal chatter on':'Animal chatter off')}syncChat();syncMute();syncView();
 $('chatBtn').addEventListener('click',()=>{chatOn=!chatOn;try{localStorage.setItem('ejo.chat',chatOn?'on':'off')}catch(e){}if(!chatOn)clearBubs();syncChat()});
 addEventListener('blur',()=>{if(G&&G.state==='play')pause()});
 
@@ -2638,7 +2709,7 @@ addEventListener('blur',()=>{if(G&&G.state==='play')pause()});
 let ac=null;
 function unlockAudio(){if(ac)return;try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}
 function sfx(f,d=.08,type='square',v=.04){if(!ac||muted)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d+.02)}catch(e){}}
-function toggleMute(){muted=!muted;$('muteBtn').textContent=muted?'Sound off':'Sound on'}
+function toggleMute(){muted=!muted;syncMute()}
 
 menu();
 requestAnimationFrame(frame);
