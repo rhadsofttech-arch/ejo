@@ -12,7 +12,10 @@
 //   PORT                 port to listen on (default 3000)
 //   DATA_DIR             where data files live (default ./data). Use a persistent volume in production.
 //   ADMIN_PASSWORD       password for /admin. The dashboard stays locked until you set it.
-//   PAYSTACK_SECRET_KEY  lets the server confirm payments with Paystack, so revenue counts as verified.
+//   ZEVPAY_SECRET_KEY    your ZevPay Checkout secret key (sk_live_... or sk_test_...). Turns on real payments.
+//   ZEVPAY_WEBHOOK_SECRET  the webhook secret (whsec_...) from the ZevPay dashboard, for POST /api/zevpay/webhook.
+//   PUBLIC_URL           the game's public address, e.g. https://ejo.zevcloud.app (used for the return link).
+//   PAYSTACK_SECRET_KEY  only if you use Paystack instead: lets the server confirm Paystack payments.
 const http = require('http'), https = require('https'), fs = require('fs'), path = require('path'), crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
@@ -20,14 +23,22 @@ const ROOT = fs.existsSync(path.join(__dirname, 'dist', 'index.html')) ? path.jo
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
+const ZEVPAY_SECRET = process.env.ZEVPAY_SECRET_KEY || '';
+const ZEVPAY_WEBHOOK = process.env.ZEVPAY_WEBHOOK_SECRET || '';
+const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+// shop prices in naira; the server decides what things cost, never the browser
+const PRICES = { life: 100, venom: 100, revive: 100, bundle: 500, skin_danfo: 200, skin_naija: 200, skin_eko: 200, skin_gold: 500,
+  sp_royal: 300, levels: 300, pass: 500, cw_pouch: 100, cw_bag: 500,
+  gift_skin_danfo: 200, gift_skin_naija: 200, gift_skin_eko: 200, gift_skin_gold: 500 };
 const LEVELS = 9, MAX_SCORE = 10_000_000, MAX_PLAYERS = 50000, MAX_EVENTS = 200000;
 const ONLINE_MS = 90 * 1000;
 
 // ---------- storage: plain JSON files, written a second after the last change ----------
-const FILES = { players: 'scores.json', events: 'events.json' };
+const FILES = { players: 'scores.json', events: 'events.json', orders: 'orders.json' };
 function load(name, fallback) { try { return JSON.parse(fs.readFileSync(path.join(DATA_DIR, FILES[name]), 'utf8')); } catch (e) { return fallback; } }
 let players = load('players', {});
 let events = load('events', []);
+let orders = load('orders', {});
 const timers = {};
 function persist(name) {
   clearTimeout(timers[name]);
@@ -35,7 +46,7 @@ function persist(name) {
     try {
       fs.mkdirSync(DATA_DIR, { recursive: true });
       const f = path.join(DATA_DIR, FILES[name]);
-      fs.writeFileSync(f + '.tmp', JSON.stringify(name === 'players' ? players : events));
+      fs.writeFileSync(f + '.tmp', JSON.stringify(name === 'players' ? players : name === 'orders' ? orders : events));
       fs.renameSync(f + '.tmp', f);
     } catch (e) { console.error('Could not save ' + name + ':', e.message); }
   }, 1000);
@@ -103,6 +114,43 @@ function verifyPaystack(ref) {
   });
 }
 
+
+// ---------- ZevPay Checkout: start a session, confirm it, take webhooks ----------
+function zevpay(method, pathName, body) {
+  return new Promise((resolve, reject) => {
+    const data = body ? JSON.stringify(body) : null;
+    const api = new URL(process.env.ZEVPAY_API || 'https://api.zevpaycheckout.com'), lib = api.protocol === 'http:' ? http : https;
+    const req = lib.request({ hostname: api.hostname, port: api.port || undefined, path: pathName, method, timeout: 20000,
+      headers: Object.assign({ Authorization: 'Bearer ' + ZEVPAY_SECRET, Accept: 'application/json', 'User-Agent': 'ejo-game/1.0' },
+        data ? { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) } : {}) }, r => {
+      let b = ''; r.on('data', c => b += c);
+      r.on('end', () => { let j = {}; try { j = JSON.parse(b || '{}'); } catch (e) {}
+        if (r.statusCode >= 200 && r.statusCode < 300) resolve(j.data || j);
+        else reject(new Error((j && (j.message || (j.error && (j.error.message || j.error)))) || 'ZevPay returned ' + r.statusCode)); });
+    });
+    req.on('error', reject); req.on('timeout', () => { req.destroy(new Error('ZevPay took too long to answer')); });
+    if (data) req.write(data); req.end();
+  });
+}
+function markPaid(o, amountNaira, how) {
+  if (o.status === 'paid') return false;
+  o.status = 'paid'; o.paidAt = Date.now(); o.amount = amountNaira; o.via = how;
+  const p = players[o.pid]; if (p) { p.spent = (p.spent || 0) + amountNaira; persist('players'); }
+  addEvent({ t: Date.now(), pid: o.pid, type: 'purchase', item: o.item, price: o.price, amount: amountNaira, ref: o.id, verified: true, provider: 'zevpay' });
+  persist('orders'); return true;
+}
+// ask ZevPay whether this order's session has been paid
+async function checkOrder(o) {
+  if (o.status === 'paid' || !o.sessionId) return o.status;
+  const v = await zevpay('GET', '/v1/checkout/session/' + encodeURIComponent(o.sessionId) + '/verify');
+  const st = String(v.status || '').toLowerCase(), kobo = Number(v.amount) || 0;
+  if ((st === 'completed' || st === 'success' || st === 'successful' || st === 'paid') && kobo >= o.price * 100) markPaid(o, Math.round(kobo / 100), 'verify');
+  else if (st === 'expired' || st === 'failed') { o.status = st; persist('orders'); }
+  return o.status;
+}
+function readRaw(req, cb) { const chunks = []; let n = 0; req.on('data', c => { n += c.length; if (n > 100000) req.destroy(); else chunks.push(c); }); req.on('end', () => cb(Buffer.concat(chunks))); }
+function baseUrl(req) { return PUBLIC_URL || ('https://' + String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim()); }
+
 // ---------- scores ----------
 function publicRow(id, p) {
   const row = { id, nick: p.nick, area: p.area, endless: p.endless, endlessTime: p.endlessTime, daily: p.daily, dailyDate: p.dailyDate };
@@ -156,7 +204,7 @@ function stats() {
   const areas = {}; list.forEach(p => { if (p.name) areas[p.area || 'Other'] = (areas[p.area || 'Other'] || 0) + 1; });
   const signed = list.filter(p => p.name);
   return {
-    generated: now, paystackVerify: !!PAYSTACK_SECRET,
+    generated: now, paystackVerify: !!PAYSTACK_SECRET || !!ZEVPAY_SECRET, zevpay: !!ZEVPAY_SECRET, zevpayWebhook: !!ZEVPAY_WEBHOOK,
     totals: {
       users: signed.length,
       signupsToday: signed.filter(p => dayOf(p.created) === today).length,
@@ -176,6 +224,7 @@ function stats() {
     items: Object.entries(items).map(([k, v]) => ({ item: k, count: v.count, revenue: v.revenue })).sort((a, b) => b.revenue - a.revenue),
     online: online.slice(0, 100).map(p => ({ name: p.name, username: p.nick, area: p.area, state: p.state, level: p.level, since: p.sessionStart, lastSeen: p.lastSeen })),
     recentSignups: signed.sort((a, b) => b.created - a.created).slice(0, 25).map(p => ({ name: p.name, username: p.nick, email: p.email || '', area: p.area, created: p.created, best: p.endless || 0 })),
+    pendingOrders: Object.values(orders).filter(o => o.status === 'pending' && now - o.created < 86400000).length,
     recentPurchases: recentBuys.slice(-25).reverse().map(e => ({ t: e.t, username: (players[e.pid] || {}).nick || '?', item: e.item, price: e.price, amount: e.amount, verified: !!e.verified, demo: !!e.demo, ref: e.ref || '' })),
     topPlayers: signed.slice().sort((a, b) => (b.endless || 0) - (a.endless || 0)).slice(0, 10).map(p => ({ username: p.nick, name: p.name, area: p.area, endless: p.endless || 0, runs: p.runs || 0, spent: p.spent || 0 }))
   };
@@ -261,6 +310,65 @@ http.createServer((req, res) => {
       } else return send(res, 400, { error: 'Unknown event' });
       persist('players');
       return send(res, 200, { ok: true });
+    });
+  }
+
+
+  if (url.pathname === '/api/pay/config' && req.method === 'GET') return send(res, 200, { zevpay: !!ZEVPAY_SECRET });
+
+  if (url.pathname === '/api/pay/start' && req.method === 'POST') {
+    if (!ZEVPAY_SECRET) return send(res, 501, { error: 'Payments are not switched on yet.' });
+    if (limited(ip, 'paystart', 10)) return send(res, 429, { error: 'Too many tries. Wait a minute and try again.' });
+    return readJson(req, res, async d => {
+      const o = owner(d); if (o.error) return send(res, o.error[0], { error: o.error[1] });
+      if (!o.p) return send(res, 404, { error: 'Sign up first' });
+      const item = String(d.item || ''), price = PRICES[item], email = String(d.email || '').trim().toLowerCase();
+      if (!price) return send(res, 400, { error: 'That item is not for sale.' });
+      if (!isEmail(email)) return send(res, 400, { error: 'Enter a valid email address for your receipt.' });
+      const id = 'ejo_' + crypto.randomBytes(9).toString('hex');
+      try {
+        const s = await zevpay('POST', '/v1/checkout/session/initialize', { amount: price * 100, email, currency: 'NGN', reference: id,
+          customer_name: o.p.name || o.p.nick, callback_url: baseUrl(req) + '/?pay=' + id, metadata: { game: 'ejo', item, player: o.p.nick } });
+        const sessionId = s.sessionId || s.session_id, checkoutUrl = s.checkoutUrl || s.checkout_url;
+        if (!sessionId || !checkoutUrl) throw new Error('ZevPay did not return a checkout page');
+        orders[id] = { id, pid: o.pid, item, price, email, sessionId, status: 'pending', created: Date.now() };
+        if (!o.p.email) { o.p.email = email; persist('players'); }
+        persist('orders');
+        return send(res, 200, { order: id, checkoutUrl });
+      } catch (e) { console.error('ZevPay start failed:', e.message); return send(res, 502, { error: 'Could not open ZevPay right now. Please try again.' }); }
+    });
+  }
+
+  if (url.pathname === '/api/pay/claim' && req.method === 'POST') {
+    if (limited(ip, 'payclaim', 40)) return send(res, 429, { error: 'Slow down' });
+    return readJson(req, res, async d => {
+      const o = owner(d); if (o.error) return send(res, o.error[0], { error: o.error[1] });
+      const ord = orders[String(d.order || '')];
+      if (!ord || ord.pid !== o.pid) return send(res, 404, { error: 'Order not found' });
+      if (ord.claimed) return send(res, 200, { status: 'claimed', item: ord.item });
+      try { await checkOrder(ord); } catch (e) { return send(res, 200, { status: 'pending', note: 'Could not reach ZevPay, will try again.' }); }
+      if (ord.status !== 'paid') return send(res, 200, { status: ord.status === 'pending' ? 'pending' : ord.status, item: ord.item });
+      ord.claimed = Date.now(); persist('orders');
+      return send(res, 200, { status: 'paid', item: ord.item, amount: ord.amount });
+    });
+  }
+
+  if (url.pathname === '/api/zevpay/webhook' && req.method === 'POST') {
+    return readRaw(req, async raw => {
+      if (!ZEVPAY_WEBHOOK) return send(res, 503, { error: 'Webhook secret not set' });
+      const sig = String(req.headers['x-zevpay-signature'] || '');
+      const expected = crypto.createHmac('sha256', ZEVPAY_WEBHOOK).update(raw).digest('hex');
+      let ok = false; try { ok = sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(expected, 'hex')); } catch (e) { ok = false; }
+      if (!ok) return send(res, 400, { error: 'Bad signature' });
+      let ev; try { ev = JSON.parse(raw.toString('utf8')); } catch (e) { return send(res, 400, { error: 'Bad JSON' }); }
+      if (ev.event === 'charge.success') {
+        const dd = ev.data || {}, refs = [dd.merchantReference, dd.merchant_reference, dd.reference, dd.metadata && dd.metadata.reference].filter(Boolean);
+        const sid = dd.sessionId || dd.session_id;
+        const ord = refs.map(r => orders[r]).find(Boolean) || (sid && Object.values(orders).find(x => x.sessionId === sid));
+        // confirm with ZevPay directly rather than trusting the webhook body alone
+        if (ord) { try { await checkOrder(ord); } catch (e) { console.error('Webhook check failed:', e.message); } }
+      }
+      return send(res, 200, { received: true });
     });
   }
 

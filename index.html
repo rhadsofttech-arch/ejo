@@ -259,6 +259,9 @@ summary{cursor:pointer;font-weight:800}
 .giftgrid{display:flex;flex-direction:column;gap:8px}
 .giftcode{border:1px dashed var(--danfo);border-radius:12px;padding:12px;text-align:center}
 .giftcode small{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.1em}
+.paywait{display:flex;gap:10px;align-items:center;font-weight:700;font-size:14px;color:var(--cream);background:rgba(244,236,217,.06);border-radius:10px;padding:10px 12px}
+.spin{width:16px;height:16px;border-radius:50%;border:3px solid rgba(245,197,24,.3);border-top-color:var(--danfo);animation:spin .9s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
 .giftcode b{font-family:var(--display);font-weight:400;font-size:30px;letter-spacing:.06em;color:var(--danfo);-webkit-user-select:text;user-select:text}
 a.btn{text-decoration:none;display:inline-flex;align-items:center;color:inherit}
 a.btn.primary{color:var(--ink)}
@@ -614,7 +617,8 @@ const naira=n=>'₦'+n.toLocaleString('en-NG');
    When you host the game yourself, paste your Paystack public key (pk_live_...) and,
    ideally, a verifyUrl on your own server that checks the reference with your secret key
    and returns {"ok":true}. Never put the secret key in this file. */
-const PAY={publicKey:'',verifyUrl:''};
+const PAY={publicKey:'',verifyUrl:'',provider:''}; // provider becomes 'zevpay' when the game server has ZevPay switched on
+const payLive=()=>PAY.provider==='zevpay'||!!PAY.publicKey;
 let inv={life:0,venom:0,revive:0,cowries:0,owned:{},equipped:''};
 /* cowries dropped by each animal; golden animals add 10 more */
 const COWRIE={grasshopper:0,rat:1,frog:1,agama:2,egg:3,mongoose:5,monitor:8,gunman:10};
@@ -2475,7 +2479,7 @@ async function doSignup(){
   signingUp=true;const b=$('suGo');if(b){b.disabled=true;b.textContent='Signing you up…'}
   const r=await register(f);signingUp=false;
   if(r.error)return renderSignup(r.error,null,f);
-  setProfile(f,r);
+  setProfile(f,r);if(PAY.provider==='zevpay')resumePayment();
   const after=signupAfter;signupAfter=null;
   if(after)after();else menu();
   toast(`<big>Welcome, ${esc(f.name.split(' ')[0])}!</big>You play as ${esc(f.username)}.`,'good');
@@ -2492,6 +2496,7 @@ function track(type,data){
   try{fetch(API.base+'/event',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({pid:pid(),key:inv.pkey,type},data))}).catch(()=>{})}catch(e){}
 }
 setInterval(ping,45000);
+setTimeout(loadPayConfig,1200);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)ping()});
 
 /* ---------- leaderboard ---------- */
@@ -2535,6 +2540,7 @@ const cwPrice=i=>EVENT&&EVENT.id==='indep'&&i.id==='skin_naija'?Math.round(i.cw/
 let shopTab=null;
 const SHOP_TABS={'Boosts':'Boosts','Snake skins':'Skins','Snakes and levels':'Snakes & levels','Bush Pass':'Bush Pass','Cowries':'Cowries','Gifts':'Gifts & codes'};
 function renderShop(){
+  const pend=getPend();if(pend&&PAY.provider==='zevpay'&&!checkout&&Date.now()-pend.t<86400000){const item=itemById(pend.item);if(item){checkout={item,stage:'waiting',order:pend.order,url:pend.url,after:null};setTimeout(()=>{renderSheet();pollPay(checkout)},0)}}
   const cats=[...new Set(SHOP.map(i=>i.cat))];
   const card=i=>{
     if(i.special==='ad'){const left=adsLeft();return `<div class="item nopic"><div class="top"><span><b class="nm">${i.name}</b></span></div><p>${i.desc}</p><button class="buy ghost" type="button" data-act="adcw" ${left>0?'':'disabled'}>${left>0?`Watch for ${CW} 20 · ${left} left today`:'Come back tomorrow'}</button></div>`}
@@ -2557,7 +2563,7 @@ function renderShop(){
     ${shopTab==='Gifts'?`<div class="cat">Have a gift code?</div>
     <div class="redeem"><input id="giftCode" placeholder="EJO-XXX-XXXXX" maxlength="16" autocomplete="off" aria-label="Gift code"><button class="buy" type="button" data-act="redeem">Redeem</button></div>`:''}
     <details class="earn"${shopTab==='Cowries'?' open':''}><summary>How to earn cowries for free</summary>Rats and frogs drop 1, agamas and snails 2, eggs and hornbills 3, grasscutters 4, tortoises and mongooses 5, monitor lizards 8, golden animals 10. Clearing levels, missions, daily challenges and login streaks pay too.</details>
-    ${PAY.publicKey?'':'<p class="compactmuted">Demo shop: purchases unlock for free until real Paystack payments are switched on.</p>'}
+    ${payLive()?'<p class="compactmuted">Payments by ZevPay: bank transfer or PayID.</p>':'<p class="compactmuted">Demo shop: purchases unlock for free until real payments are switched on.</p>'}
     <div class="btns"><button class="btn primary" type="button" data-act="back" data-primary>Back</button></div>
   </div>`);
 }
@@ -2577,6 +2583,8 @@ function giftSheet(){
 }
 let payEmail='';try{payEmail=localStorage.getItem('ejo.email')||''}catch(e){}
 let checkout=null;
+const giftItem=k=>({id:'gift_'+k,gift:k,name:`Gift: ${SKINS[k].name} skin`,price:ITEM[k].price,desc:`A code your friend can redeem for the ${SKINS[k].name} skin.`});
+const itemById=id=>ITEM[id]||(String(id).startsWith('gift_')&&ITEM[String(id).slice(5)]?giftItem(String(id).slice(5)):null);
 function openCheckout(id,after){const item=typeof id==='string'?ITEM[id]:id;checkout={item,after,stage:'form',err:''};renderSheet()}
 function closeCheckout(){checkout=null;const sh=$('sheet');sh.hidden=true;sh.innerHTML=''}
 function renderSheet(){
@@ -2584,6 +2592,13 @@ function renderSheet(){
   if(c.stage==='done'){
     const gift=i.code?`<div class="giftcode"><small>Gift code</small><b id="giftOut">${i.code}</b></div><div class="btns"><button class="btn" type="button" data-sh="copygift">Copy code</button><a class="btn" href="https://wa.me/?text=${encodeURIComponent(`I got you the ${SKINS[i.gift].name} skin in Ejo! Open the game, go to the shop and enter this code: ${i.code} ${CONFIG.gameUrl}`)}" target="_blank" rel="noopener">Send on WhatsApp</a></div>`:'';
     sh.innerHTML=`<div class="sheet" role="dialog" aria-label="Purchase complete"><div class="eyebrow">Payment received</div><h3>${i.code?'Your gift is ready':i.name+' is yours'}</h3><p class="muted">${i.desc}</p>${gift}${i.code?'':invLine()}<div class="btns"><button class="btn primary" type="button" data-sh="ok">${c.after?'Continue':'Done'}</button></div></div>`;sh.querySelector('[data-sh="ok"]').focus();return}
+  if(c.stage==='waiting'){
+    sh.innerHTML=`<div class="sheet" role="dialog" aria-label="Waiting for payment"><div class="eyebrow">Waiting for your payment</div><h3>${i.name} · ${naira(i.price)}</h3>
+      <p class="muted">Finish paying on the ZevPay page by bank transfer or PayID. ${i.name} unlocks here by itself once the money lands, usually within a minute.</p>
+      <div class="paywait"><span class="spin" aria-hidden="true"></span><span>${c.note||'Checking with ZevPay…'}</span></div>
+      ${c.err?`<p class="err">${c.err}</p>`:''}
+      <div class="btns"><a class="btn primary" href="${c.url}" target="_blank" rel="noopener">Open the ZevPay page</a><button class="btn" type="button" data-sh="checknow">I have paid, check now</button><button class="btn" type="button" data-sh="cancel">Close</button></div>
+      <p class="demo">Closed this by mistake? Your order is saved. Open the shop again and it picks up where you left off.</p></div>`;return}
   const busy=c.stage==='busy';
   sh.innerHTML=`<div class="sheet" role="dialog" aria-label="Checkout">
     <div><div class="eyebrow">Checkout</div><h3>${i.name}</h3></div>
@@ -2591,8 +2606,8 @@ function renderSheet(){
     <p class="muted">${i.desc}</p>
     <label class="field">Email for your receipt<input id="payEmailIn" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="${payEmail.replace(/"/g,'&quot;')}" ${busy?'disabled':''}></label>
     ${c.err?`<p class="err">${c.err}</p>`:''}
-    ${PAY.publicKey?'<p class="demo">Card, bank transfer or USSD through Paystack.</p>':'<p class="demo">Demo checkout: no money is taken here. With a Paystack key on your hosted game, this button opens Paystack for card, bank transfer or USSD.</p>'}
-    <div class="btns"><button class="btn primary" type="button" data-sh="pay" ${busy?'disabled':''}>${busy?'Processing…':`Pay ${naira(i.price)}`}</button><button class="btn" type="button" data-sh="cancel" ${busy?'disabled':''}>Cancel</button></div>
+    ${PAY.provider==='zevpay'?'<p class="demo">Secure checkout by ZevPay: pay by bank transfer or PayID. The ZevPay page opens in a new tab.</p>':PAY.publicKey?'<p class="demo">Card, bank transfer or USSD through Paystack.</p>':'<p class="demo">Demo checkout: no money is taken here. Real payments switch on when the game server has a ZevPay key.</p>'}
+    <div class="btns"><button class="btn primary" type="button" data-sh="pay" ${busy?'disabled':''}>${busy?'Opening ZevPay…':`Pay ${naira(i.price)}`}</button><button class="btn" type="button" data-sh="cancel" ${busy?'disabled':''}>Cancel</button></div>
   </div>`;
   if(!busy)setTimeout(()=>{const b=sh.querySelector('[data-sh="pay"]');if(b)b.focus({preventScroll:true})},30);
 }
@@ -2610,12 +2625,71 @@ function payWithPaystack(item,email){
 }
 function doPay(){
   const c=checkout;const inp=$('payEmailIn');payEmail=(inp&&inp.value||'').trim();
-  if(PAY.publicKey&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payEmail)){c.err='Enter a valid email address so Paystack can send your receipt.';return renderSheet()}
+  if(payLive()&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payEmail)){c.err='Enter a valid email address so we can send your receipt.';return renderSheet()}
+  if(PAY.provider==='zevpay')return zevStart(c);
   try{localStorage.setItem('ejo.email',payEmail)}catch(e){}
   c.stage='busy';c.err='';renderSheet();
   const p=PAY.publicKey?payWithPaystack(c.item,payEmail):new Promise(r=>setTimeout(r,900));
-  p.then(r=>{track('purchase',{item:c.item.id,price:c.item.price,ref:(r&&r.reference)||'',demo:!PAY.publicKey});grant(c.item);c.stage='done';sfx(784,.08);setTimeout(()=>sfx(1046,.14),90);renderSheet()})
+  p.then(r=>{track('purchase',{item:c.item.id,price:c.item.price,ref:(r&&r.reference)||'',demo:!payLive()});grant(c.item);c.stage='done';sfx(784,.08);setTimeout(()=>sfx(1046,.14),90);renderSheet()})
    .catch(e=>{c.stage='form';c.err=e.message;renderSheet()});
+}
+
+/* ---------- ZevPay: the server opens a checkout session, the player pays on ZevPay, the server confirms ---------- */
+const PEND_KEY='ejo.payOrder',WATCH_KEY='ejo.payWatch';
+const getPend=()=>{try{return JSON.parse(localStorage.getItem(PEND_KEY)||'null')}catch(e){return null}};
+const setPend=v=>{try{v?localStorage.setItem(PEND_KEY,JSON.stringify(v)):localStorage.removeItem(PEND_KEY)}catch(e){}};
+async function payApi(path,body){const r=await fetch(API.base+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({pid:pid(),key:inv.pkey},body))});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Something went wrong. Try again.');return j}
+function zevStart(c){
+  const w=window.open('','_blank'); // opened straight away, so phones don't treat it as a pop-up
+  if(w)try{w.document.write('<title>Opening ZevPay…</title><body style="font-family:sans-serif;background:#0b1510;color:#f4ecd9;display:grid;place-items:center;height:100vh;margin:0"><p>Opening ZevPay checkout…</p></body>')}catch(e){}
+  c.stage='busy';c.err='';renderSheet();
+  payApi('/pay/start',{item:c.item.id,email:payEmail}).then(j=>{
+    c.order=j.order;c.url=j.checkoutUrl;c.stage='waiting';c.note='';setPend({order:j.order,item:c.item.id,url:j.checkoutUrl,t:Date.now()});
+    if(w&&!w.closed)w.location.href=j.checkoutUrl;else location.href=j.checkoutUrl;
+    renderSheet();pollPay(c);
+  }).catch(e=>{if(w&&!w.closed)w.close();c.stage='form';c.err=e.message;renderSheet()});
+}
+async function claimOrder(order){return payApi('/pay/claim',{order})}
+function payDone(c,itemId){
+  setPend(null);const item=c&&c.item&&c.item.id===itemId?c.item:itemById(itemId);if(!item)return;
+  grant(item);sfx(784,.08);setTimeout(()=>sfx(1046,.14),90);
+  if(!checkout||checkout!==c){checkout={item,stage:'done',after:null}}else{c.stage='done'}
+  renderSheet();if(G&&G.state==='menu')renderHome();
+}
+function pollPay(c){
+  let n=0;const tick=async()=>{
+    if(checkout!==c||c.stage!=='waiting')return;
+    try{localStorage.setItem(WATCH_KEY,String(Date.now()))}catch(e){}
+    try{const j=await claimOrder(c.order);
+      if(checkout!==c)return;
+      if(j.status==='paid')return payDone(c,j.item);
+      if(j.status==='claimed'){setPend(null);try{const v=JSON.parse(localStorage.getItem('ejo.inv')||'null');if(v)inv=Object.assign(inv,v)}catch(e){}c.stage='done';renderSheet();return}
+      if(j.status==='expired'||j.status==='failed'){setPend(null);c.stage='form';c.err=j.status==='expired'?'That checkout expired before payment arrived. You can start again.':'ZevPay says that payment failed. You can try again.';renderSheet();return}
+      c.note=n<4?'Checking with ZevPay…':'No payment yet. Bank transfers can take a minute or two.';const el=$('sheet').querySelector('.paywait span:last-child');if(el)el.textContent=c.note;
+    }catch(e){}
+    n++;setTimeout(tick,n<30?4000:9000);
+  };setTimeout(tick,2500);
+}
+// back from ZevPay (the ?pay= link), or a checkout that was left open last time
+async function resumePayment(){
+  const qs=new URLSearchParams(location.search),fromLink=qs.get('pay'),pend=getPend();
+  if(fromLink)try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
+  const order=fromLink||(pend&&pend.order);if(!order||!API.base)return;
+  let watch=0;try{watch=+localStorage.getItem(WATCH_KEY)||0}catch(e){}
+  if(fromLink&&Date.now()-watch<9000){
+    // the game tab that started the payment is still open and will unlock the item there
+    toast('<big>Payment sent</big>Go back to your other Ejo tab. It unlocks your item by itself. You can close this one.','good');return}
+  const itemId=(pend&&pend.order===order&&pend.item)||null;
+  try{const j=await claimOrder(order);
+    if(j.status==='paid')return payDone(null,j.item);
+    if(j.status==='claimed'){setPend(null);return}
+    if(j.status==='pending'&&(itemId||j.item)){const item=itemById(itemId||j.item);if(!item)return;checkout={item,stage:'waiting',order,url:(pend&&pend.url)||'',after:null};renderSheet();pollPay(checkout);return}
+    setPend(null);
+  }catch(e){if(/not found/i.test(e.message))setPend(null)}
+}
+async function loadPayConfig(){
+  if(!API.base||API.ok===false)return;
+  try{const r=await fetch(API.base+'/pay/config');if(!r.ok)return;const j=await r.json();if(j.zevpay){PAY.provider='zevpay';if(inv.profile)resumePayment()}}catch(e){}
 }
 function copyText(text,el){
   const ok=()=>toast('Copied.','good');
@@ -2626,10 +2700,11 @@ $('sheet').addEventListener('click',async ev=>{
   if(ev.target.id==='sheet'&&checkout&&checkout.stage!=='busy'){closeCheckout();return}
   const b=ev.target.closest('[data-sh]');if(!b)return;unlockAudio();const a=b.dataset.sh;
   if(a==='pay')doPay();
+  else if(a==='checknow'&&checkout&&checkout.order){const c=checkout;c.note='Checking with ZevPay…';renderSheet();claimOrder(c.order).then(j=>{if(checkout!==c)return;if(j.status==='paid')payDone(c,j.item);else if(j.status==='claimed'){c.stage='done';renderSheet()}else{c.note='Not received yet. If you just paid, give it a minute.';renderSheet()}}).catch(e=>{c.err=e.message;renderSheet()})}
   else if(a==='cancel'||a==='close'){closeCheckout()}
   else if(a==='ok'){const after=checkout&&checkout.after;closeCheckout();if(after)after();else back(shopFrom==='shop'?'shop':shopFrom)}
   else if(a==='adok'){if(adDone){const f=adDone;adDone=null;f()}}
-  else if(a==='giftpick'){const k=b.dataset.k,base=ITEM[k];openCheckout({id:'gift_'+k,gift:k,name:`Gift: ${SKINS[k].name} skin`,price:base.price,desc:`A code your friend can redeem for the ${SKINS[k].name} skin.`},()=>renderShop())}
+  else if(a==='giftpick'){openCheckout(giftItem(b.dataset.k),()=>renderShop())}
   else if(a==='copygift'){copyText($('giftOut').textContent,$('giftOut'))}
   else if(a==='copy'){copyText($('shareText').value,$('shareText'))}
   else if(a==='saveimg'){

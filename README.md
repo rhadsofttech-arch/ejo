@@ -54,6 +54,17 @@ The game finds the API at `/api` on the same site automatically, and shows "Top 
 
 Scores are saved to `DATA_DIR/scores.json` (default `./data`). Point `DATA_DIR` at a persistent disk, or scores reset when the server restarts. Scores are reported by the browser, so a determined player could fake one.
 
+## Payments (ZevPay)
+
+With `ZEVPAY_SECRET_KEY` set, the shop takes real payments through ZevPay Checkout (bank transfer or PayID):
+
+1. The player taps Pay. The server opens a ZevPay checkout session at the price it knows for that item (the browser can't change prices) and the ZevPay page opens in a new tab.
+2. The game checks with the server every few seconds. The server asks ZevPay whether the session is paid.
+3. Once ZevPay confirms it, the item unlocks once. Each order can only be claimed one time, and the payment shows as confirmed revenue on `/admin`.
+4. ZevPay also calls `/api/zevpay/webhook` (signed with your webhook secret), so payments are recorded even if the player closes the game.
+
+Orders are kept in `DATA_DIR/orders.json`. Prices live in `PRICES` near the top of `server.js`; keep them in step with the shop list in `index.html`.
+
 ## Sign-up and the admin dashboard
 
 Before their first game, players sign up with their name and a username (email is optional). On a host running `server.js`, usernames are checked so no two players share one. Without a server (GitHub Pages, the Claude artifact), sign-up is saved in the player's browser only.
@@ -71,7 +82,10 @@ Set these environment variables on the server:
 | Variable | What it does |
 |---|---|
 | `ADMIN_PASSWORD` | Password for `/admin`. The dashboard stays locked until it is set. Use a long one. |
-| `PAYSTACK_SECRET_KEY` | Your Paystack secret key (`sk_live_...`). The server uses it to confirm each payment and its amount, so revenue counts as confirmed. |
+| `ZEVPAY_SECRET_KEY` | Your ZevPay Checkout secret key (`sk_live_...`, or `sk_test_...` while testing). Switches the shop from demo mode to real payments. |
+| `ZEVPAY_WEBHOOK_SECRET` | The webhook secret (`whsec_...`) from the ZevPay dashboard. Set the webhook URL there to `https://your-site/api/zevpay/webhook`. |
+| `PUBLIC_URL` | Your game's address, e.g. `https://ejo.zevcloud.app`. ZevPay sends players back here after paying. |
+| `PAYSTACK_SECRET_KEY` | Only if you use Paystack instead of ZevPay. |
 | `DATA_DIR` | Where players, scores and events are saved (default `./data`). Point it at a persistent disk. |
 
 The `data/` folder holds names and emails, so it is in `.gitignore`. Never commit it.

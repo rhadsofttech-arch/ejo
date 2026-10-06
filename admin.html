@@ -170,7 +170,9 @@ function render(d){
   const t=d.totals;
   $('updated').textContent='Updated '+new Date(d.generated).toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' · refreshes every 15 seconds';
   const notes=[];
-  if(!d.paystackVerify)notes.push('Payments are not being confirmed with Paystack yet. Set <b>PAYSTACK_SECRET_KEY</b> on the server so revenue counts as confirmed; until then paid purchases show as "unconfirmed".');
+  if(!d.zevpay)notes.push('Real payments are off, so the shop is in demo mode. Set <b>ZEVPAY_SECRET_KEY</b> on the server to take payments through ZevPay.');
+  else if(!d.zevpayWebhook)notes.push('ZevPay is on. For extra safety, also set <b>ZEVPAY_WEBHOOK_SECRET</b> and add <b>'+location.origin+'/api/zevpay/webhook</b> as the webhook URL in your ZevPay dashboard.');
+  if(d.pendingOrders)notes.push(`${d.pendingOrders} checkout${d.pendingOrders>1?'s':''} started in the last day ${d.pendingOrders>1?'are':'is'} still waiting for payment.`);
   $('notes').innerHTML=notes.map(n=>`<div class="note">${n}</div>`).join('');
   const k=(label,val,sub,hero)=>`<div class="kpi${hero?' hero':''}"><small>${label}</small><b>${val}</b>${sub?`<em>${sub}</em>`:''}</div>`;
   $('kpis').innerHTML=[
@@ -178,7 +180,7 @@ function render(d){
     k('Total players',fmt(t.users),`+${fmt(t.signupsToday)} today · +${fmt(t.signups7d)} this week`),
     k('Active today',fmt(t.activeToday),`${fmt(t.active7d)} in the last 7 days`),
     k('Revenue (confirmed)',naira(t.revenueVerified),`${naira(t.revenueToday)} today`,true),
-    k('Unconfirmed payments',naira(t.revenueUnverified),'Check these in Paystack'),
+    k('Unconfirmed payments',naira(t.revenueUnverified),'Reported by the game, not checked'),
     k('Paying players',fmt(t.payers),t.payers?`${naira(t.arppu)} each on average`:'No purchases yet'),
     k('Runs played',fmt(t.runs),`${fmt(t.runsToday)} today`),
     k('Average run',dur(t.avgRunSecs),`${fmt(t.withEmail)} players gave an email`)
