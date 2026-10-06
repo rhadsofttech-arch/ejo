@@ -12,6 +12,12 @@ python3 -m http.server 8000
 
 Then visit http://localhost:8000.
 
+## Deploy
+
+`npm run build` copies the game into `dist/`. Any static host can serve that folder.
+
+On ZevCloud: Add Service → Web Application → Import from GitHub → this repo, branch `main`, tick **Static site**, publish directory `dist`, build command `npm run build`.
+
 ## What is in it
 
 - 9 levels across open forests and labyrinths, including two boss levels (Mongoose King, Oga Ratel)
