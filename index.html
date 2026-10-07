@@ -382,6 +382,8 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
 .hpills{display:flex;gap:8px;min-width:0}
 .hpill{display:inline-flex;gap:7px;align-items:center;background:rgba(9,18,13,.8);border:1px solid var(--line);border-radius:14px;padding:7px 12px;font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums;backdrop-filter:blur(6px);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .hpill.user{font-family:var(--body);font-size:14px;font-weight:800;color:var(--muted)}
+.hicons{display:flex;gap:8px;flex:none}
+.hicon.off{opacity:.75}
 .hicon{width:46px;height:46px;border-radius:14px;background:rgba(9,18,13,.8);border:1px solid var(--line);display:grid;place-items:center;flex:none;backdrop-filter:blur(6px)}
 .hicon svg{width:26px;height:26px}
 .hevent{align-self:center;background:rgba(245,197,24,.92);color:var(--ink);border-radius:999px;padding:4px 14px;font-size:12px;font-weight:800;text-align:center;max-width:100%;pointer-events:auto}
@@ -2225,6 +2227,7 @@ const ICON={
   basket:`<svg viewBox="0 0 40 40"><circle cx="14" cy="13" r="5" fill="#f08a24"/><circle cx="23" cy="11" r="5.5" fill="#e8423a"/><circle cx="29" cy="15" r="4.5" fill="#f5c518"/><path d="M5 17h30l-3.4 17a3 3 0 0 1-3 2.4H11.4a3 3 0 0 1-3-2.4z" fill="#b5793a" stroke="#7a4e22" stroke-width="2" stroke-linejoin="round"/><path d="M10 22h20M11 28h18M15 17l1.5 19M25 17l-1.5 19M20 17v19" stroke="#7a4e22" stroke-width="1.6"/></svg>`,
   trophy:`<svg viewBox="0 0 40 40"><path d="M12 5h16v9a8 8 0 0 1-16 0z" fill="#f5c518" stroke="#c99a00" stroke-width="2"/><path d="M12 8H6c0 6 3 9 7 9M28 8h6c0 6-3 9-7 9" fill="none" stroke="#c99a00" stroke-width="2.4"/><path d="M17 22h6v6h-6z" fill="#c99a00"/><rect x="11" y="28" width="18" height="7" rx="2" fill="#8a6a3a"/></svg>`,
   book:`<svg viewBox="0 0 40 40"><path d="M5 9c5-2 10-2 15 1v24c-5-3-10-3-15-1z" fill="#2f8fd8" stroke="#1f5f9a" stroke-width="2" stroke-linejoin="round"/><path d="M35 9c-5-2-10-2-15 1v24c5-3 10-3 15-1z" fill="#5aa9ea" stroke="#1f5f9a" stroke-width="2" stroke-linejoin="round"/><text x="27" y="26" font-size="12" font-weight="900" text-anchor="middle" fill="#fff" font-family="Arial">?</text></svg>`,
+  note:on=>`<svg viewBox="0 0 32 32"><path d="M12 23V8l14-3v15" fill="none" stroke="${on?'#f5c518':'#9aa59e'}" stroke-width="2.6" stroke-linejoin="round"/><ellipse cx="9" cy="23.5" rx="4" ry="3.2" fill="${on?'#f5c518':'#9aa59e'}"/><ellipse cx="23" cy="20.5" rx="4" ry="3.2" fill="${on?'#f5c518':'#9aa59e'}"/>${on?'':'<path d="M5 5l22 22" stroke="#e8423a" stroke-width="2.6" stroke-linecap="round"/>'}</svg>`,
   gear:`<svg viewBox="0 0 32 32"><path d="M16 3l2.2 3.3 3.9-.9.8 3.9 3.6 1.6-1.5 3.7 2.2 3.3-3.4 2 .1 4-4-.3-2 3.5-3.9-1.7-3.9 1.7-2-3.5-4 .3.1-4-3.4-2 2.2-3.3L3.5 11l3.6-1.6.8-3.9 3.9.9z" fill="#d9cfb6" stroke="#f4ecd9" stroke-width="1.2" stroke-linejoin="round"/><circle cx="16" cy="16.5" r="4.6" fill="#122119"/></svg>`
 };
 let homeLi=null;
@@ -2242,7 +2245,7 @@ function renderHome(){
   screen(`<div class="home">
     <div class="htop">
       <div class="hpills"><span class="hpill" title="Your cowries"><span class="cw"></span>${n(inv.cowries)}</span><span class="hpill user">${esc(inv.nick||'Guest')}</span></div>
-      <button class="hicon" type="button" data-act="settings" aria-label="Settings">${ICON.gear}</button>
+      <div class="hicons"><button class="hicon${musicOn?'':' off'}" type="button" data-act="hmusic" aria-label="${musicOn?'Music on':'Music off'}" title="${musicOn?'Turn music off':'Turn music on'}">${ICON.note(musicOn)}</button><button class="hicon" type="button" data-act="settings" aria-label="Settings">${ICON.gear}</button></div>
     </div>
     ${EVENT?`<div class="hevent">${EVENT.name}: ${EVENT.banner.replace(/^[^:!]*[:!]\s*/,'')}</div>`:''}
     <div class="hcols">
@@ -2397,7 +2400,7 @@ function go(){
   toast(`<big>${G.L.name}</big>${msg}${tip}`);
 }
 function pauseHtml(){return `<div class="panel"><h2>Paused</h2><p class="muted">${G.L.name}: ${G.eaten} eaten, ${G.score} points${G.L.endless?`, ${fmtTime(G.elapsed/1000)} survived`:''}.</p>
-  <div class="btns"><button class="btn" type="button" data-act="tview">Camera: ${viewLabel()}</button><button class="btn" type="button" data-act="tsound">Sound: ${muted?'off':'on'}</button><button class="btn" type="button" data-act="tchat">Chatter: ${chatOn?'on':'off'}</button></div>
+  <div class="btns"><button class="btn" type="button" data-act="tview">Camera: ${viewLabel()}</button><button class="btn" type="button" data-act="tsound">Sound: ${muted?'off':'on'}</button><button class="btn" type="button" data-act="tchat">Chatter: ${chatOn?'on':'off'}</button><button class="btn" type="button" data-act="tmusic">Music: ${musicOn?'on':'off'}</button></div>
   <div class="btns"><button class="btn primary" type="button" data-act="resume" data-primary>Resume</button><button class="btn" type="button" data-act="retry">Restart</button><button class="btn" type="button" data-act="quit">Quit to menu</button></div></div>`}
 function pause(){if(G.state!=='play')return;G.state='paused';screen(pauseHtml())}
 
@@ -2464,7 +2467,8 @@ function renderSettings(msg){
     <label class="field">Your area<select id="setArea">${AREAS.map(a=>`<option${(inv.area||'')===a?' selected':''}>${a}</option>`).join('')}</select></label>
     <div class="boosts"><label class="tog"><input type="checkbox" id="setChat" ${chatOn?'checked':''}> Animal chatter bubbles</label>
     <label class="tog"><input type="checkbox" id="setVoice" ${voiceOn?'checked':''}> Read chatter out loud <small>(uses your device's voice)</small></label>
-    <label class="tog"><input type="checkbox" id="setSound" ${muted?'':'checked'}> Sound effects</label></div>
+    <label class="tog"><input type="checkbox" id="setSound" ${muted?'':'checked'}> Sound effects</label>
+    <label class="tog"><input type="checkbox" id="setMusic" ${musicOn?'checked':''}> Music in the menus</label></div>
     ${msg?`<p class="event">${msg}</p>`:''}
     <div class="btns"><button class="btn primary" type="button" data-act="saveset" data-primary>Save</button><button class="btn" type="button" data-act="menu">Back</button></div></div>`);
 }
@@ -2474,7 +2478,7 @@ async function saveSettings(){
   if(f.error)return f.error;
   const r=await register(f);if(r.error)return r.error;
   setProfile(f,r);
-  chatOn=$('setChat').checked;voiceOn=$('setVoice').checked;muted=!$('setSound').checked;
+  chatOn=$('setChat').checked;voiceOn=$('setVoice').checked;muted=!$('setSound').checked;{const m=$('setMusic').checked;if(m!==musicOn)toggleMusic()}
   try{localStorage.setItem('ejo.chat',chatOn?'on':'off');localStorage.setItem('ejo.voice',voiceOn?'on':'off')}catch(e){}
   syncChat();syncMute();
   NET.dirty=true;save();syncScores();
@@ -2780,6 +2784,8 @@ $('screen').addEventListener('click',async ev=>{const b=ev.target.closest('[data
   if(a==='level')startRun(+b.dataset.i,0,{mode:'levels'});
   else if(a==='guide')renderGuide();
   else if(a==='tsound'){toggleMute();screen(pauseHtml())}
+  else if(a==='tmusic'){toggleMusic();screen(pauseHtml())}
+  else if(a==='hmusic')toggleMusic();
   else if(a==='tchat'){$('chatBtn').click();screen(pauseHtml())}
   else if(a==='tview'){cycleView();screen(pauseHtml())}
   else if(a==='hprev'||a==='hnext'){homeLi=Math.max(0,Math.min(LEVELS.length-1,homeLi+(a==='hnext'?1:-1)));menu();const f=$('screen').querySelector(`[data-act="${a}"]`);if(f&&!f.disabled)f.focus({preventScroll:true})}
@@ -2858,6 +2864,52 @@ let ac=null;
 function unlockAudio(){if(ac)return;try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}
 function sfx(f,d=.08,type='square',v=.04){if(!ac||muted)return;try{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d+.02)}catch(e){}}
 function toggleMute(){muted=!muted;syncMute()}
+
+/* ---------- menu music: an original highlife / afrobeat loop, played live with Web Audio ---------- */
+let musicOn=true;try{musicOn=localStorage.getItem('ejo.music')!=='off'}catch(e){}
+const MUS={on:false,out:null,step:0,next:0,timer:null,noise:null,bar:0};
+const SIXTEENTH=60/104/4,mHz=m=>440*Math.pow(2,(m-69)/12);
+// four bars that repeat: C, F, G, F (a classic highlife turnaround)
+const PROG=[{root:36,tones:[60,64,67,72]},{root:41,tones:[60,65,69,72]},{root:43,tones:[62,67,71,74]},{root:41,tones:[60,65,69,72]}];
+const ARP=[0,-1,1,2,-1,1,3,-1,2,-1,1,0,-1,2,3,1];            // palm-wine guitar picking pattern (-1 = rest)
+const BASS={0:0,3:0,6:7,8:12,10:0,13:7,14:10};                 // semitones above the root
+const BELL=[0,2,4,5,7,9,11,12,14];                             // agogo bell
+const KICK=[0,6,8,11],CLAP=[4,12];
+function musNoise(){if(MUS.noise)return MUS.noise;const n=ac.sampleRate*0.4,b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;return MUS.noise=b}
+function mOsc(type,f,t,dur,vol,f2,filt){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur*.9);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  let n=o;if(filt){const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(filt,t);lp.frequency.exponentialRampToValueAtTime(Math.max(300,filt/4),t+dur);o.connect(lp);n=lp}
+  n.connect(g);g.connect(MUS.out);o.start(t);o.stop(t+dur+.02)}
+function mNoise(t,dur,vol,hp){const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=musNoise();f.type='highpass';f.frequency.value=hp;
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(g);g.connect(MUS.out);s.start(t,Math.random()*.2);s.stop(t+dur+.02)}
+function musStep(i,t){
+  const bar=PROG[MUS.bar%4],s=i%16,fill=MUS.bar%4===3;
+  if(KICK.includes(s))mOsc('sine',120,t,.32,.55,42);
+  if(CLAP.includes(s))mNoise(t,.12,.16,1400);
+  mNoise(t,s%2?.05:.035,s%4===2?.09:.045,6000);                                      // shaker
+  if(BELL.includes(s))mOsc('square',s%4===0?1320:990,t,.07,.035,0,3200);              // agogo
+  if(s===3||s===10||(fill&&s>=12&&s%1===0&&s!==15))mOsc('sine',s%2?150:190,t,.22,.32,s%2?230:120); // talking drum glide
+  if(BASS[s]!=null)mOsc('triangle',mHz(bar.root+BASS[s]),t,SIXTEENTH*2.2,.32,0,900);
+  const a=ARP[s];if(a>=0)mOsc('sawtooth',mHz(bar.tones[a]),t,SIXTEENTH*2.6,.07,0,2600);
+  if(s===0||s===8)bar.tones.slice(0,3).forEach(n=>mOsc('triangle',mHz(n-12),t,SIXTEENTH*7,.03,0,1200));  // soft chord bed
+  if(s===15)MUS.bar++;
+}
+function musSchedule(){if(!MUS.on)return;while(MUS.next<ac.currentTime+.15){musStep(MUS.step,MUS.next);MUS.step=(MUS.step+1)%16;MUS.next+=SIXTEENTH*(MUS.step%2?1.06:.94)}} // a little swing
+function musicStart(){
+  if(!ac||MUS.on)return;if(ac.state==='suspended')ac.resume();
+  if(!MUS.out){const c=ac.createDynamicsCompressor();c.threshold.value=-18;c.ratio.value=4;MUS.out=ac.createGain();MUS.out.gain.value=.0001;MUS.out.connect(c);c.connect(ac.destination)}
+  MUS.on=true;MUS.step=0;MUS.bar=0;MUS.next=ac.currentTime+.08;MUS.out.gain.cancelScheduledValues(ac.currentTime);MUS.out.gain.setTargetAtTime(.45,ac.currentTime,.6);
+  clearInterval(MUS.timer);MUS.timer=setInterval(musSchedule,40);
+}
+function musicStop(){if(!MUS.on)return;MUS.on=false;clearInterval(MUS.timer);if(MUS.out){MUS.out.gain.cancelScheduledValues(ac.currentTime);MUS.out.gain.setTargetAtTime(.0001,ac.currentTime,.35)}}
+// plays on the home screen, menus, level intro and end screens; fades out while you play
+function musicWanted(){return musicOn&&!!ac&&!document.hidden&&!!G&&!['play','dying'].includes(G.state)}
+function syncMusic(){if(musicWanted())musicStart();else musicStop()}
+function toggleMusic(){musicOn=!musicOn;try{localStorage.setItem('ejo.music',musicOn?'on':'off')}catch(e){}unlockAudio();syncMusic();if(G&&G.state==='menu')renderHome()}
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{unlockAudio();if(ac&&ac.state==='suspended')ac.resume();syncMusic()},{passive:true}));
+document.addEventListener('visibilitychange',syncMusic);
+setInterval(syncMusic,500);
+
 
 menu();
 requestAnimationFrame(frame);
