@@ -84,6 +84,8 @@ button:focus-visible{outline:3px solid var(--danfo);outline-offset:2px}
 #pad button:active{background:var(--danfo);color:var(--ink)}
 #pad .u{grid-column:2}#pad .l{grid-column:1;grid-row:2}#pad .d{grid-column:2;grid-row:2}#pad .r{grid-column:3;grid-row:2}
 #pad .sp{grid-column:1;grid-row:1;font-size:13px;font-weight:800}
+#pad .hs{grid-column:3;grid-row:1;font-size:13px;font-weight:800}
+#pad .hs.wait{opacity:.45}
 #pauseBtn{position:fixed;left:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:2;background:rgba(9,18,13,.72);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:600}
 
 #screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:4;background:radial-gradient(ellipse at center,rgba(8,16,11,.3),rgba(8,16,11,.78))}
@@ -448,7 +450,8 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
 #hud .vrow #hVenomLabel{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;white-space:nowrap}
 #hud .vrow .bar{flex:1;height:8px}
 #hud .vrow #hSpit{font-size:11px;font-weight:800;white-space:nowrap;color:var(--muted)}
-#hud .vrow #hSpit.ready{color:var(--danfo)}
+#hud .vrow #hSpit.ready,#hud .vrow #hHiss.ready{color:var(--danfo)}
+#hud .vrow #hHiss{font-size:11px;font-weight:800;white-space:nowrap;color:var(--muted)}
 #hud.vfull .vrow{background:rgba(245,197,24,.18)}
 #hFx{position:static;margin-top:6px;max-width:none}
 #mini{top:calc(env(safe-area-inset-top,0px) + 100px)}
@@ -530,7 +533,7 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
       <button class="hib" id="pauseTop" type="button" aria-label="Pause"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg></button>
     </div>
   </div>
-  <div class="vrow"><span id="hVenomLabel">Venom</span><div class="bar" id="hVenomWrap"><i id="hVenom"></i></div><span id="hSpit" hidden></span></div>
+  <div class="vrow"><span id="hVenomLabel">Venom</span><div class="bar" id="hVenomWrap"><i id="hVenom"></i></div><span id="hSpit" hidden></span><span id="hHiss"></span></div>
   <div id="hFx" class="fxrow"></div>
   <span id="hVenomMiniWrap" hidden><i id="hVenomMini"></i></span>
 </div>
@@ -539,6 +542,7 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
 <button id="pauseBtn" type="button" hidden>Pause</button>
 <div id="pad" hidden>
   <button class="sp" data-d="spit" type="button" hidden>Spit</button>
+  <button class="hs" data-d="hiss" type="button">Hiss</button>
   <button class="u" data-d="u" type="button" aria-label="Up">▲</button>
   <button class="l" data-d="l" type="button" aria-label="Left">◀</button>
   <button class="d" data-d="d" type="button" aria-label="Down">▼</button>
@@ -659,7 +663,7 @@ const T={
   gunman:{kind:'shooter',every:1,pts:150}
 };
 const LEVELS=[
-  {name:'Bush Farm',size:36,style:'open',sub:'Wide farmland running into the forest, with bush clumps, trees and hay. Learn the turns, then keep clear of the mongoose until your bar is full.',goal:12,tick:150,theme:'farm',prey:['grasshopper','grasshopper','grasshopper','rat','rat','egg','egg'],preds:['mongoose'],predAt:4},
+  {name:'Bush Farm',size:54,style:'open',sub:'Wide farmland running into the forest, with bush clumps, trees and hay. Learn the turns, then keep clear of the mongoose until your bar is full.',goal:12,tick:150,theme:'farm',prey:['grasshopper','grasshopper','grasshopper','rat','rat','egg','egg'],preds:['mongoose'],predAt:4},
   {name:'Lekki Swamp',size:40,style:'open',sub:'Wide wetland broken up by ponds and reed beds. Frogs everywhere, and a monitor lizard on patrol.',goal:14,tick:143,theme:'swamp',prey:['frog','frog','frog','frog','grasshopper','grasshopper','egg'],preds:['monitor','mongoose']},
   {name:'Ikorodu Backyard',size:40,style:'maze',sub:'A maze of compound walls, water drums and generators. Two mongooses run these alleys.',goal:16,tick:136,theme:'yard',prey:['rat','rat','rat','egg','egg','agama','agama'],preds:['mongoose','mongoose']},
   {name:'Night Market',size:44,style:'maze',sub:'Dark lanes between market stalls. The rats are bold, and so is the ratel that venom cannot touch.',goal:18,tick:130,theme:'market',prey:['rat','rat','rat','rat','egg','egg','grasshopper'],preds:['ratel','mongoose']},
@@ -742,6 +746,7 @@ const MISSIONS=[
   {id:'eat300',text:'Eat 300 animals',n:300,stat:s=>s.eaten,cw:120},
   {id:'bite5',text:'Bite 5 hunters',n:5,stat:s=>s.bites,cw:40},
   {id:'scare25',text:'Scare 25 people off the road',n:25,stat:s=>s.scared||0,cw:40},
+  {id:'swallow5',text:'Catch and swallow 5 people',n:5,stat:s=>s.swallowed||0,cw:50},
   {id:'gold5',text:'Eat 5 golden animals',n:5,stat:s=>s.gold,cw:50},
   {id:'blind5',text:'Blind 5 hunters with cobra spit',n:5,stat:s=>s.blinded,cw:40},
   {id:'flawless',text:'Clear a level without losing a skin',n:1,stat:s=>s.flawless,cw:50},
@@ -1055,6 +1060,7 @@ const snakePic=(key,skinKey,cls)=>{const u=previewImg(key,skinKey);const s=SPECI
 
 
 /* ---------- people on the road, and hunters with guns in the bush ---------- */
+const FREEZE={yo:['Ẹsẹ̀ mi ti dá!','Ó fẹ́ mí ní atẹ́gùn!'],ig:['Ụkwụ m adịghị aga!','O fere m ikuku!'],ha:['Ƙafafuna sun kasa motsi!','Ya hura min iska!'],pg:['My leg don hook!','E blow me breeze o!'],en:['I can\'t move!','It hissed at me!']};
 const LANG={
   yo:{name:'Yoruba',scream:['Ejo o! Ejo!','Ẹ gbà mí o!','Ẹ sá o, ejo ti dé!','Olúwa mi o! Ejo ńlá!','Ta ló mú ejo wá síbí?!'],idle:['Ẹ káàsán o!','Ọjà ò tà lónìí o.','Ẹ jọ̀ọ́, ẹ yà fún mi.','Ooru yìí ti pọ̀ jù.']},
   ig:{name:'Igbo',scream:['Agwọ! Agwọ!','Chineke m!','Gbaa ọsọ! Agwọ abịala!','Nne m o! Agwọ!','Chukwu nyere m aka!'],idle:['Kedu?','Ahịa adịghị mma taa.','Anwụ na-acha nke ukwuu.','Ụzọ a dị ogologo.']},
@@ -1506,7 +1512,7 @@ function tick(){
 /* the snake's head and an animal meet on one cell; false means the run stopped */
 function meet(e){
   if(e.cfg.kind==='power'){pickup(e);return true}
-  if(e.cfg.kind==='human'){panic(e);const o=DIRS.map(q=>[e.x+q[0],e.z+q[1],q]).find(o=>canEnter(e,o[0],o[1])&&snakeAt(o[0],o[1])<0);if(o){e.x=o[0];e.z=o[1]}else leaveWalker(e);return true}
+  if(e.cfg.kind==='human'){swallow(e);return true}
   if(e.cfg.kind==='shooter'){if(G.venomOn||G.fx.pepper>0||e.stun>0){chaseHunter(e);return true}die('The hunter grabbed you by the neck.',e);return false}
   if(e.cfg.kind==='prey'){eatPrey(e);return true}
   if(e.cfg.kind==='block'){die('Pangolin armour does not bend.',e);return false}
@@ -1587,7 +1593,7 @@ function spawnWalker(atEnd){
 function spawnWalkers(){if(!ROAD)return;const n=['yard','market'].includes(G.L.theme)?5:3;for(let i=0;i<n;i++)spawnWalker(false)}
 function leaveWalker(e){removeEnt(e);G.pending.push({type:'walker',at:G.ticks+25+Math.floor(Math.random()*40)})}
 function panic(e,chain){
-  if(e.panic)return;e.panic=true;e.ptime=0;e.talkAt=0;
+  if(e.panic)return;e.panic=true;e.ptime=0;e.rcd=1;e.talkAt=0;
   if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}
   say(e,pickL(e.say.scream),'hunter');
   stats().scared=(stats().scared||0)+1;G.run.scared=(G.run.scared||0)+1;earn([e.x,e.z],20,Math.random()<.5?1:0);
@@ -1595,15 +1601,21 @@ function panic(e,chain){
   if(!chain)ents.forEach(o=>{if(o!==e&&o.type==='walker'&&!o.panic&&md([o.x,o.z],[e.x,e.z])<=6)setTimeout(()=>{if(o.alive&&G&&G.state==='play')panic(o,true)},250+Math.random()*500)});
 }
 function walkerStep(e){
+  if(e.stun>0){e.stun--;if(e.stun===0)e.rcd=2;return} // frozen with fear after a hiss
   const h=G.snake[0],d=md([e.x,e.z],h);
-  if(!e.panic&&d<=4&&G.grace<=0)panic(e);
+  if(!e.panic&&d<=5&&G.grace<=0)panic(e);
   const opts=DIRS.map(q=>[e.x+q[0],e.z+q[1],q]).filter(o=>canEnter(e,o[0],o[1]));
   if(e.panic){
     e.ptime++;
-    if(e.ptime>22||(e.ptime>3&&(e.x<=0||e.z<=0||e.x>=W-1||e.z>=H-1))){leaveWalker(e);return}
+    // stay ahead long enough and they dive into the bush and get away
+    if(e.ptime>14&&d>2||e.ptime>48||(e.ptime>6&&(e.x<=0||e.z<=0||e.x>=W-1||e.z>=H-1))){if(e.ptime>6&&d>3&&!e.bub)say(e,pickL(['Phew!','I don escape!','Thank God!','Na so I take survive.']),'');leaveWalker(e);return}
+    // people run in bursts: slower than the snake, they tire, and sometimes they stumble
+    const pace=e.ptime<10?1:e.ptime<20?2:3; // a sprint when they first see you, then they tire
+    if(--e.rcd>0)return;e.rcd=pace;
+    if(e.ptime>14&&Math.random()<.14){e.rcd+=2;return}
     if(!opts.length)return;
-    const f=distHead(),sc=o=>{const v=f[o[1]*W+o[0]];return (v>=0?v:md(o,h))+Math.random()*1.6};
-    opts.sort((a,b)=>sc(b)-sc(a));return step(e,opts[0],1);
+    const f=distHead(),jit=pace===1?.4:1.8,sc=o=>{const v=f[o[1]*W+o[0]];return (v>=0?v:md(o,h))+Math.random()*jit};
+    opts.sort((a,b)=>sc(b)-sc(a));return step(e,opts[0],pace);
   }
   if(--e.cd>0)return;e.cd=3;
   if((e.z===0&&e.dir[1]<0)||(e.z===H-1&&e.dir[1]>0)){leaveWalker(e);return}
@@ -1612,6 +1624,42 @@ function walkerStep(e){
   if(!c.length)c=opts.filter(onRoad);if(!c.length)c=opts;if(!c.length)return;
   c.sort((a,b)=>(b[2][1]*e.dir[1]-a[2][1]*e.dir[1])+(Math.random()-.5)*.9);
   step(e,c[0],3);
+}
+
+function swallow(e){
+  const name=(e.label||'someone').split(' · ')[0];
+  if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}
+  removeEnt(e);G.grow+=2;G.eaten++;G.run.eaten++;stats().eaten++;stats().swallowed=(stats().swallowed||0)+1;
+  earn([e.x,e.z],100,3);addXP(3);fillBar(30);burst([e.x,e.z],'#f5c518',16);G.shake=Math.max(G.shake,.35);
+  sfx(180,.12,'sawtooth',.05);setTimeout(()=>sfx(120,.2,'sawtooth',.05),90);
+  toast(`<big>Gulp!</big>You swallowed ${esc(name)}. +100`,'good');say(SNAKE_T,pickL(['Na person I chop so?','Big chop!','Belle don full well well.','Who next?']),'think');
+  ents.forEach(o=>{if(o.type==='walker'&&!o.panic&&md([o.x,o.z],[e.x,e.z])<=8)panic(o,true)});
+  G.pending.push({type:'walker',at:G.ticks+40+Math.floor(Math.random()*40)});
+  if(G.eaten>=G.L.goal){if(!roadExit())return cleared();if(!G.roadOpen)openRoad()}
+}
+/* hiss: every snake can blow out a breath of air ahead of it; whoever it hits freezes for a moment */
+const HISS_MS=6000;
+function hissReady(){return !G.hissAt||performance.now()-G.hissAt>=HISS_MS}
+function hiss(){
+  if(!G||G.state!=='play')return;
+  if(!hissReady()){toast('Your hiss is still building up.');return}
+  G.hissAt=performance.now();
+  const [hx,hz]=G.snake[0],[dx,dz]=G.dir,px=-dz,pz=dx,hitCells=[];
+  for(let k=1;k<=4;k++){const w=k===1?0:1;for(let s=-w;s<=w;s++){const x=hx+dx*k+px*s,z=hz+dz*k+pz*s;if(inB(x,z)&&!blocked[x][z])hitCells.push([x,z])}}
+  let frozen=0;
+  ents.forEach(e=>{if(!e.alive||!hitCells.some(c=>c[0]===e.x&&c[1]===e.z))return;
+    if(e.type==='walker'){e.stun=20;e.panic=true;e.ptime=Math.max(e.ptime||0,1);if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}say(e,pickL(FREEZE[e.lang]||FREEZE.en),'hunter');frozen++}
+    else if(e.type==='gunman'){e.stun=Math.max(e.stun||0,10);e.aim=0;frozen++}
+    else if(e.cfg.kind==='pred'&&!e.boss){e.stun=Math.max(e.stun||0,7);frozen++}
+    else if(e.cfg.kind==='prey'){e.stun=Math.max(e.stun||0,10);frozen++}});
+  // a puff of breath you can see
+  const [wx,wz]=cp(hx,hz);
+  for(let i=0;i<34;i++){const m=new THREE.Mesh(geo.s,new THREE.MeshBasicMaterial({color:0xf2fbff,transparent:true,opacity:.7,depthWrite:false}));m.scale.setScalar(.22+Math.random()*.22);m.position.set(wx+dx*.6,.45+Math.random()*.3,wz+dz*.6);world.add(m);
+    const sp=(Math.random()-.5)*3.2;parts.push({m,v:[dx*(4.5+Math.random()*3.5)+px*sp,.9+Math.random()*.9,dz*(4.5+Math.random()*3.5)+pz*sp],life:1.1})}
+  [420,330,260,200].forEach((f,i)=>setTimeout(()=>sfx(f+Math.random()*60,.09,'sawtooth',.018),i*45));
+  G.hood=performance.now();
+  if(frozen)toast(`<big>Hiss!</big>${frozen===1?'It froze in fear.':frozen+' froze in fear.'} Catch them now.`,'good');
+  hud();
 }
 /* hunters: patrol, line up with the snake, aim (a red line shows where), then fire */
 const AIM_T=8;
@@ -2126,6 +2174,7 @@ function hud(){
   $('hVenomWrap').classList.toggle('full',G.venomOn);$('hVenomMiniWrap').classList.toggle('full',G.venomOn);
   $('hVenomLabel').textContent=G.venomOn?`${G.sp.bar} ready: bite a hunter`:G.sp.bar;
   $('hLives').innerHTML=Array.from({length:Math.max(G.maxLives,G.lives)},(_,i)=>`<span class="${i<G.lives?'':'gone'}"></span>`).join('');
+  {const hr=hissReady(),hh=$('hHiss');hh.textContent=hr?(coarse?'Hiss ready':'Hiss ready (H)'):'Hiss…';hh.classList.toggle('ready',hr);const pb=$('pad').querySelector('.hs');if(pb)pb.classList.toggle('wait',!hr)}
   const sp=$('hSpit');sp.hidden=!(G.sp.spit||G.sp.shield);if(G.sp.shield){sp.textContent=G.shield?'Curl ready: next hit is free':'Curl used';sp.classList.toggle('ready',G.shield)}if(G.sp.spit){sp.textContent=G.spitCd>0?'Spit recharging':(coarse?'Spit ready':'Spit ready (Space)');sp.classList.toggle('ready',G.spitCd<=0)}
   const fx=[];for(const k in G.fx)if(G.fx[k]>0)fx.push(`<span class="fxp" style="--c:${T[k].color}">${T[k].label} ${Math.ceil(G.fx[k]*tickMs()/1000)}s</span>`);if(G.shield2>0)fx.push(`<span class="fxp" style="--c:#f4ecd9">Shed skin ×${G.shield2}</span>`);
   if(G.weather!=='clear')fx.push(`<span class="fxp" style="--c:#9fc3e8">${G.weather==='rain'?'Rain':'Harmattan'}</span>`);
@@ -2246,7 +2295,8 @@ function renderGuide(){
         <li style="--c:${DOT.bird}"><i></i><span><b>Secretary bird</b>Watch for its shadow, then move.</span></li>
         <li style="--c:${DOT.pangolin}"><i></i><span><b>Pangolin</b>Harmless, but its armour is a wall.</span></li>
         <li style="--c:${DOT.gunman}"><i></i><span><b>Hunter with a dane gun</b>When you are in a straight line with him he shouts and aims. A red line shows where. Turn off it before he fires. With a full bar, chase him off for 150.</span></li>
-        <li style="--c:${DOT.walker}"><i></i><span><b>People on the road</b>They scream in Yoruba, Igbo, Hausa, Pidgin or English and run. 20 points for every person you scare.</span></li>
+        <li style="--c:${DOT.walker}"><i></i><span><b>People on the road</b>They scream in Yoruba, Igbo, Hausa, Pidgin or English and run, but they tire fast. 20 points for a scare, 100 if you catch and swallow one.</span></li>
+        <li style="--c:#eaf6ff"><i></i><span><b>Hiss (${coarse?'Hiss button':'H or Space'})</b>Blow a puff of breath ahead of you. People, animals and hunters in front freeze in fear for a moment. Recharges in 6 seconds.</span></li>
       </ul><h3 style="margin-top:12px">Power-ups</h3><ul>${POWERS.map(k=>`<li style="--c:${T[k].color}"><i></i><span><b>${T[k].label}</b>${T[k].desc}</span></li>`).join('')}</ul></div>
     </div>
     <div class="btns"><button class="btn primary" type="button" data-act="menu" data-primary>Back</button></div></div>`);
@@ -2782,7 +2832,8 @@ addEventListener('keydown',e=>{
   const k=e.key.length===1?e.key.toLowerCase():e.key;
   if(KEY[k]&&G&&G.state==='play'){e.preventDefault();unlockAudio();if(view==='rear'){if(REL[k])turnRel(REL[k])}else turn(KEY[k]);return}
   if(k==='v'&&!checkout&&!(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))){cycleView();return}
-  if(k===' '&&G&&G.state==='play'){e.preventDefault();if(G.sp.spit)spit();else pause();return}
+  if(k===' '&&G&&G.state==='play'){e.preventDefault();if(G.sp.spit)spit();else hiss();return}
+  if(k==='h'&&G&&G.state==='play'){e.preventDefault();hiss();return}
   if(checkout)return;
   if(k==='Enter'&&e.target&&/^su(Name|User|Email)$/.test(e.target.id)){e.preventDefault();doSignup();return}
   if(G&&G.state==='menu'&&$('screen').classList.contains('homemode')&&k==='Enter'&&$('sheet').hidden&&!(e.target&&e.target.closest&&e.target.closest('button'))){const b=$('screen').querySelector('.hplay');if(b&&!b.disabled){e.preventDefault();b.click()}return}
@@ -2794,7 +2845,7 @@ let sx=0,sy=0,swiping=false;
 renderer.domElement.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;swiping=true;unlockAudio()});
 addEventListener('pointerup',e=>{if(!swiping)return;swiping=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;if(view==='rear'){if(Math.abs(dx)>Math.abs(dy))turnRel(dx<0?'l':'r');return}turn(Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)])});
 const PADD={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]};
-$('pad').addEventListener('pointerdown',e=>{const b=e.target.closest('[data-d]');if(!b)return;e.preventDefault();unlockAudio();if(b.dataset.d==='spit')spit();else if(view==='rear'){if(b.dataset.d==='l'||b.dataset.d==='r')turnRel(b.dataset.d)}else turn(PADD[b.dataset.d])});
+$('pad').addEventListener('pointerdown',e=>{const b=e.target.closest('[data-d]');if(!b)return;e.preventDefault();unlockAudio();if(b.dataset.d==='spit')spit();else if(b.dataset.d==='hiss')hiss();else if(view==='rear'){if(b.dataset.d==='l'||b.dataset.d==='r')turnRel(b.dataset.d)}else turn(PADD[b.dataset.d])});
 $('viewBtn').addEventListener('click',cycleView);syncView();
 $('pauseBtn').addEventListener('click',pause);$('pauseTop').addEventListener('click',()=>{unlockAudio();pause()});
 $('muteBtn').addEventListener('click',toggleMute);

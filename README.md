@@ -25,7 +25,8 @@ On ZevCloud: Add Service → Web Application → Import from GitHub → this rep
 - 5 snakes, each with its own strengths, weaknesses and XP levels
 - Endless Bush, a daily challenge, a pass-and-play duel and friend challenge links
 - Talking animals, cowries, missions, login streaks, rain and festive events
-- People walk the road between the bush and the city. When they see the snake they scream in Yoruba, Igbo, Hausa, Pidgin or English and scatter (20 points per scare)
+- People walk the road between the bush and the city. When they see the snake they scream in Yoruba, Igbo, Hausa, Pidgin or English and run (20 points per scare). They sprint, then tire: catch one and swallow them for 100
+- Hiss (H, Space or the Hiss button): every snake can blow a puff of breath ahead of it that freezes people, animals and hunters in fear for a moment
 - Hunters with dane guns in the later bush levels and Endless: line up with one and he aims (a red line shows where), then fires. Move off the line, or chase him off with a full venom bar
 - A loading intro (slithering snake, progress bar, Lagos loading lines) and a game-style home screen: the 3D bush fills the screen with floating tiles, a road-sign level picker and "Tap to play"
 - Compact menus: the shop has tabs, the snake picker shows one snake at a time, and action buttons stay pinned to the bottom of every popup
