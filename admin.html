@@ -121,7 +121,7 @@ const fmt=n=>Number(n||0).toLocaleString('en-NG');
 const naira=n=>'₦'+fmt(Math.round(n||0));
 const LEVELS=['Bush Farm','Lekki Swamp','Ikorodu Backyard','Night Market','Omo Forest','Savanna Edge',"Ojola's Den",'Mongoose King\'s Court','Oga Ratel'];
 const SNAKES={mamba:'Green Mamba',python:'Rock Python',cobra:'Spitting Cobra',viper:'Gaboon Viper',royal:'Royal Python'};
-const MODES={levels:'Levels',endless:'Endless Bush',daily:'Daily challenge',duel:'Duel',friend:'Friend challenge'};
+const MODES={levels:'Levels',endless:'Endless Bush',daily:'Daily challenge',duel:'Duel',friend:'Friend challenge',roam:'Free Roam'};
 const ago=t=>{const s=Math.max(0,(Date.now()-t)/1000);if(s<60)return Math.round(s)+'s ago';if(s<3600)return Math.round(s/60)+' min ago';if(s<86400)return Math.round(s/3600)+' h ago';return Math.round(s/86400)+' d ago'};
 const dur=s=>{s=Math.round(s||0);return s<60?s+'s':Math.floor(s/60)+'m '+String(s%60).padStart(2,'0')+'s'};
 const when=t=>new Date(t).toLocaleString('en-NG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});

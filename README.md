@@ -24,6 +24,7 @@ On ZevCloud: Add Service → Web Application → Import from GitHub → this rep
 - A wide forest with no fence: a laterite road crosses each level and leaves through a checkpoint toward the Lagos skyline. Eat enough to lift the barrier, then slither out along the road to finish
 - 5 snakes, each with its own strengths, weaknesses and XP levels
 - Endless Bush, a daily challenge, a pass-and-play duel and friend challenge links
+- Free Roam: one huge open bush (120 × 120) with no grid and no levels. Slither freely (steer with ← → / A D or the touch stick, sprint with ↑ / W, sneak with ↓ / S, hiss with H / Space), keep your hunger bar up, and grow through four life stages: Hatchling → Young snake → Adult → Ojola. What you can eat grows with you, mongooses and monitor lizards hunt you while you are small, and from Adult the people on the road are fair game. The snake is saved in the browser (localStorage `ejo.roam`) every few seconds, so it is waiting when you come back. Only trees and grass near the snake are drawn, so it runs as fast as a normal level
 - Talking animals, cowries, missions, login streaks, rain and festive events
 - People walk the road between the bush and the city. When they see the snake they scream in Yoruba, Igbo, Hausa, Pidgin or English and run (20 points per scare). They sprint, then tire: catch one and swallow them for 100
 - Hiss (H, Space or the Hiss button): every snake can blow a puff of breath ahead of it that freezes people, animals and hunters in fear for a moment
