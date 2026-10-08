@@ -72,17 +72,24 @@ button:focus-visible{outline:3px solid var(--danfo);outline-offset:2px}
 
 #roamHud{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 10px;z-index:2;pointer-events:none;background:linear-gradient(rgba(5,10,7,.6),rgba(5,10,7,0))}
 #roamHud .rrow{display:flex;align-items:center;gap:6px}
+@media (max-width:440px){#roamHud .rcw{display:none}#roamHud .hpl{padding-left:8px;padding-right:8px}}
 #roamHud .hib{pointer-events:auto}
-#roamHud .rbars{display:flex;flex-direction:column;gap:5px;margin-top:7px;max-width:420px}
+#roamHud .rbars{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-top:7px;max-width:560px}
 #roamHud .rb{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;color:var(--muted)}
-#roamHud .rb>span{width:48px;flex:none}
+#roamHud .rb>span{width:46px;flex:none}
 #roamHud .rb em{font-style:normal;white-space:nowrap;font-size:11px;color:var(--muted)}
 #roamHud .bar{flex:1;height:9px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}
 #roamHud .bar i{display:block;height:100%;width:0;border-radius:9px;transition:width .25s}
 #roamHud .food i{background:linear-gradient(90deg,#f08a24,#f5c518)}
 #roamHud .food.low i{background:#e8423a;animation:blink .8s infinite}
+#roamHud .hp i{background:linear-gradient(90deg,#d8433a,#ff7a6a)}
+#roamHud .hp.low i{animation:blink .8s infinite}
+#roamHud .en i{background:linear-gradient(90deg,#3a8fd8,#7fd0ff)}
+#roamHud .en.low i{background:#7a8a9a}
 #roamHud .grow i{background:linear-gradient(90deg,#2fae48,#9ccc65)}
-#roamHud .rtips{display:flex;gap:12px;margin-top:6px;font-size:11px;font-weight:800;color:var(--muted)}
+#roamHud .rtips .warn{color:#ffb08a}
+#roamHud .rtips span:empty{display:none}
+#roamHud .rtips{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11px;font-weight:800;color:var(--muted)}
 #roamHud .rtips .ready{color:var(--danfo)}
 @keyframes blink{50%{opacity:.45}}
 #roamPad{position:fixed;inset:0;z-index:1;pointer-events:none}
@@ -92,6 +99,8 @@ button:focus-visible{outline:3px solid var(--danfo);outline-offset:2px}
 #roamPad button{position:absolute;pointer-events:auto;touch-action:none;width:74px;height:74px;border-radius:50%;border:1px solid var(--line);background:rgba(9,18,13,.78);color:var(--text,#f4ecd9);font:800 14px var(--body,system-ui)}
 #rSprintBtn{right:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 22px)}
 #rHissBtn{right:104px;bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}
+#rRestBtn{right:30px;bottom:calc(env(safe-area-inset-bottom,0px) + 110px);width:60px!important;height:60px!important;font-size:13px!important}
+#rRestBtn.on{background:rgba(127,208,255,.35)}
 #roamPad button:active{transform:scale(.94);background:rgba(245,197,24,.3)}
 #mini{position:fixed;right:16px;top:calc(env(safe-area-inset-top,0px) + 112px);width:140px;height:140px;border-radius:12px;border:1px solid var(--line);background:rgba(9,18,13,.75);z-index:2;pointer-events:none}
 @media (max-width:460px){#mini{width:96px;height:96px;top:calc(env(safe-area-inset-top,0px) + 104px)}}
@@ -577,21 +586,25 @@ details.earn summary{cursor:pointer;color:var(--cream);font-size:14px}
   <div class="rrow">
     <div class="hpl rst"><small>Stage</small><b id="rStage">Hatchling</b></div>
     <div class="hpl"><small>Length</small><b id="rLen">0.8 m</b></div>
-    <div class="hpl"><small>Cowries</small><b class="cwb"><i class="cw"></i><span id="rCw">0</span></b></div>
+    <div class="hpl"><small id="rTime">Day 1</small><b id="rClock">7:00 am</b></div>
+    <div class="hpl rcw"><small>Cowries</small><b class="cwb"><i class="cw"></i><span id="rCw">0</span></b></div>
     <span class="hgrow"></span>
     <button class="hib" id="rPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg></button>
   </div>
   <div class="rbars">
     <div class="rb"><span>Hunger</span><div class="bar food" id="rHungerWrap"><i id="rHunger"></i></div></div>
-    <div class="rb"><span>Growth</span><div class="bar grow"><i id="rGrow"></i></div><em id="rGrowLbl"></em></div>
+    <div class="rb"><span>Health</span><div class="bar hp" id="rHpWrap"><i id="rHp"></i></div></div>
+    <div class="rb"><span>Energy</span><div class="bar en" id="rEnergyWrap"><i id="rEnergy"></i></div></div>
+    <div class="rb"><span>Growth</span><div class="bar grow"><i id="rGrow"></i></div></div>
   </div>
-  <div class="rtips"><span id="rHiss"></span><span id="rSprint"></span></div>
+  <div class="rtips"><span id="rGrowLbl"></span><span id="rShed"></span><span id="rRest"></span><span id="rHiss"></span></div>
 </div>
 <div id="roamPad" hidden>
   <div id="rZone"></div>
   <div id="rStick" hidden><i id="rKnob"></i></div>
   <button id="rSprintBtn" type="button">Sprint</button>
   <button id="rHissBtn" type="button">Hiss</button>
+  <button id="rRestBtn" type="button">Rest</button>
 </div>
 <div id="bubbles"></div>
 <div id="toast"></div>
@@ -2087,28 +2100,28 @@ function checkStreak(){
 
 /* ---------- render ---------- */
 /* ================= FREE ROAM: one snake living in a big open bush, no grid, no levels ================= */
-const ROAM_SIZE=120;
+const ROAM_SIZE=120,DAY_SECS=420;
 const STAGES=[
   {name:'Hatchling',at:0,line:'Small and hungry. Grasshoppers, frogs, eggs and snails only. Keep away from mongooses.'},
   {name:'Young snake',at:40,line:'Rats and agamas are on the menu now. Mongooses still bite, so be careful.'},
   {name:'Adult',at:140,line:'Now the mongoose runs from you, and people on the road are fair game.'},
   {name:'Ojola',at:360,line:'You are the giant of the bush. Monitor lizards, grasscutters, anything you can catch.'}
 ];
-// what each animal is in the open bush: the stage needed to eat it, what it gives, how it moves
+// what each animal is in the open bush: the stage needed to eat it, what it gives, how it moves, when it is awake
 const RF={
-  grasshopper:{stage:0,mass:1,food:6,spd:1.3,flee:3,hop:1},
+  grasshopper:{stage:0,mass:1,food:6,spd:1.3,flee:3,hop:1,day:1},
   frog:{stage:0,mass:2,food:9,spd:1.2,flee:3.5,hop:1},
   egg:{stage:0,mass:2,food:10,spd:0},
   snail:{stage:0,mass:2,food:8,spd:.25,flee:0},
   rat:{stage:1,mass:4,food:14,spd:2.4,flee:5},
-  agama:{stage:1,mass:4,food:13,spd:2.1,flee:4.5},
-  hornbill:{stage:1,mass:5,food:15,spd:1.4,flee:4,flies:1},
+  agama:{stage:1,mass:4,food:13,spd:2.1,flee:4.5,day:1},
+  hornbill:{stage:1,mass:5,food:15,spd:1.4,flee:4,flies:1,day:1},
   grasscutter:{stage:2,mass:9,food:24,spd:2.6,flee:6},
-  tortoise:{stage:2,mass:10,food:26,spd:.4,flee:0},
-  mongoose:{stage:2,mass:12,food:28,spd:2.9,flee:6,hunter:1,bites:1},
-  monitor:{stage:3,mass:16,food:34,spd:2.2,flee:6,hunter:1,bites:2},
-  ratel:{stage:9,mass:0,food:0,spd:2.6,flee:0,hunter:1,bites:3},
-  walker:{stage:2,mass:14,food:30,spd:1.1,flee:7}
+  tortoise:{stage:2,mass:10,food:26,spd:.4,flee:0,day:1},
+  mongoose:{stage:2,mass:12,food:28,spd:2.9,flee:6,hunter:1,bite:24,day:1},
+  monitor:{stage:3,mass:16,food:34,spd:2.2,flee:6,hunter:1,bite:30,day:1},
+  ratel:{stage:9,mass:0,food:0,spd:2.6,flee:0,hunter:1,bite:38},
+  walker:{stage:2,mass:14,food:30,spd:1.1,flee:7,day:1}
 };
 const ROAM_MIX=[
   [['grasshopper',3],['frog',3],['egg',2],['snail',2],['rat',2],['agama',1],['mongoose',1.6]],
@@ -2116,12 +2129,18 @@ const ROAM_MIX=[
   [['rat',2],['agama',2],['grasscutter',3],['hornbill',1],['tortoise',1],['mongoose',2.2],['monitor',1.4],['ratel',.6]],
   [['grasscutter',3],['rat',1],['tortoise',1.5],['mongoose',2],['monitor',2.5],['ratel',.8]]
 ];
+// at night the day animals sleep, rats and frogs come out, and the ratel prowls
+const NIGHT_MUL={rat:2.2,frog:2,grasscutter:1.6,snail:1.5,ratel:1.8,mongoose:.35,monitor:.35,agama:.25,grasshopper:.4,hornbill:.2,tortoise:.4};
 let R=null;
 const roamStage=m=>{let s=0;STAGES.forEach((t,i)=>{if(m>=t.at)s=i});return s};
 const roamScale=m=>.55+Math.pow(Math.min(1,m/420),.75)*1.05;
 const roamLen=m=>Math.min(70,7+Math.round(m*.11));
 const wToC=(x,z)=>[Math.floor(x+W/2),Math.floor(z+H/2)];
 const roamFree=(x,z)=>{const [cx,cz]=wToC(x,z);return inB(cx,cz)&&!blocked[cx][cz]};
+// 0 at midnight, .25 sunrise, .5 noon, .75 sunset
+const daylight=t=>{const e=Math.sin((t-.25)*2*PI);return Math.max(0,Math.min(1,(e+.22)/.55))};
+const isNight=()=>daylight(R.tod)<.3;
+const clockOf=t=>{const m=Math.floor(t*24*60),h=Math.floor(m/60)%24;return `${((h+11)%12)+1}:${String(m%60).padStart(2,'0')} ${h<12?'am':'pm'}`};
 // the map is big, so only draw the trees and grass near the snake (fog hides the rest anyway)
 function roamCull(force){
   if(!force&&R.cullAt&&Math.hypot(R.x-R.cullAt[0],R.z-R.cullAt[1])<8)return;R.cullAt=[R.x,R.z];
@@ -2134,16 +2153,17 @@ function roamCull(force){
     o.count=j;o.instanceMatrix.needsUpdate=true;if(CC)o.instanceColor.needsUpdate=true});
 }
 function roamLoad(){try{const v=JSON.parse(localStorage.getItem('ejo.roam')||'null');return v&&v.v===1?v:null}catch(e){return null}}
-function roamSave(){if(!R)return;try{localStorage.setItem('ejo.roam',JSON.stringify({v:1,mass:Math.round(R.mass*10)/10,hunger:Math.round(R.hunger),x:R.x,z:R.z,h:R.h,key:G.key,eaten:R.eaten,best:Math.max(R.best||0,R.mass),days:R.days||0,secs:Math.round(R.secs)}))}catch(e){}}
-function roamPick(stage){const mix=ROAM_MIX[stage];let t=Math.random()*mix.reduce((a,b)=>a+b[1],0);for(const [k,w] of mix){t-=w;if(t<=0)return k}return mix[0][0]}
+function roamSave(){if(!R)return;try{localStorage.setItem('ejo.roam',JSON.stringify({v:1,mass:Math.round(R.mass*10)/10,hunger:Math.round(R.hunger),hp:Math.round(R.hp),energy:Math.round(R.energy),tod:Math.round(R.tod*1000)/1000,days:R.days,shed:Math.round(R.shed),dull:R.dull,sheds:R.sheds,
+  x:R.x,z:R.z,h:R.h,key:G.key,eaten:R.eaten,best:Math.max(R.best||0,R.mass),secs:Math.round(R.secs)}))}catch(e){}}
+function roamPick(stage,night){const mix=ROAM_MIX[stage].map(([k,w])=>[k,night?w*(NIGHT_MUL[k]||1):w]);let t=Math.random()*mix.reduce((a,b)=>a+b[1],0);for(const [k,w] of mix){t-=w;if(t<=0)return k}return mix[0][0]}
 
 function roamIntro(){
   const sv=roamLoad(),st=sv?roamStage(sv.mass):0;
-  screen(`<div class="panel"><div class="eyebrow">Free Roam · New</div><h2>Live as a snake in the bush</h2>
-    <p class="intro-sub">No levels and no walls. Hunt, grow from a tiny hatchling into an Ojola, and stay alive. Mongooses hunt you while you are small. When you are big enough, they run from you, and so do the people on the road.</p>
-    ${sv?`<div class="event">Your ${esc(SPECIES[sv.key]?SPECIES[sv.key].name:'snake')} is waiting: <b>${STAGES[st].name}</b>, ${(roamScale(sv.mass)*1.4).toFixed(1)} m long.</div>`:''}
-    <div class="stats"><div><small>Steer</small><b class="goal">${coarse?'Drag the stick':'← → or A D'}</b></div><div><small>Sprint</small><b class="goal">${coarse?'Hold Sprint':'↑ or W'}</b></div><div><small>Hiss</small><b class="goal">${coarse?'Hiss button':'H or Space'}</b></div></div>
-    <p class="compactmuted">Watch your hunger bar. Eat to fill it and grow. If it runs out you start to shrink.</p>
+  screen(`<div class="panel"><div class="eyebrow">Free Roam</div><h2>Live as a snake in the bush</h2>
+    <p class="intro-sub">No levels and no walls. Hunt, rest, shed your skin and grow from a tiny hatchling into an Ojola. Mongooses hunt you while you are small, and at night the ratel prowls.</p>
+    ${sv?`<div class="event">Your ${esc(SPECIES[sv.key]?SPECIES[sv.key].name:'snake')} is waiting: <b>${STAGES[st].name}</b>, ${(roamScale(sv.mass)*1.4).toFixed(1)} m long, day ${(sv.days||0)+1}.</div>`:''}
+    <div class="stats"><div><small>Steer</small><b class="goal">${coarse?'Drag the stick':'← → or A D'}</b></div><div><small>Sprint</small><b class="goal">${coarse?'Hold Sprint':'↑ or W'}</b></div><div><small>Rest</small><b class="goal">${coarse?'Rest button':'R'}</b></div><div><small>Hiss</small><b class="goal">${coarse?'Hiss button':'H or Space'}</b></div></div>
+    <p class="compactmuted">Eat to keep hunger up. Sprinting burns energy, so rest to get it back and heal. Sleep through the night to make it pass faster. When your skin goes dull, rub against a rock or tree to shed it.</p>
     <div class="btns">${sv?`<button class="btn primary" type="button" data-act="roamgo" data-primary>Continue</button><button class="btn" type="button" data-act="roamnew">Start over as a hatchling</button>`:`<button class="btn primary" type="button" data-act="roamnew" data-primary>Start as a hatchling</button>`}<button class="btn" type="button" data-act="menu">Back</button></div></div>`);
 }
 function startRoam(fresh){
@@ -2156,32 +2176,57 @@ function startRoam(fresh){
   const sp=SPECIES[chosen];
   G={mode:'roam',state:'roam',L,key:chosen,sp,lastLines:[],score:0,eaten:0,weather:'clear',fx:{},run:{eaten:0},snake:[[0,0]],prev:[[0,0]],dir:[1,0],lives:1,venomOn:false,hood:0};
   buildHead(chosen);showPlayUI(false);screen('');weatherSky();
-  R={x:sv?sv.x:0,z:sv?sv.z:0,h:sv?sv.h:0,mass:sv?sv.mass:4,hunger:sv?sv.hunger:80,eaten:sv&&sv.eaten||{},best:sv&&sv.best||0,days:sv&&sv.days||0,secs:sv&&sv.secs||0,
-     trail:[],ents:[],keys:{},joy:{x:0,y:0,on:false},sprint:0,sprintCd:0,hissAt:0,biteCd:0,saveT:0,popT:0,camYaw:0,hurtT:0,lastStage:0,starve:0,spd:0};
+  const th=THEMES.wild,v=(k,d)=>sv&&sv[k]!=null?sv[k]:d;
+  R={x:v('x',0),z:v('z',0),h:v('h',0),mass:v('mass',4),hunger:v('hunger',80),hp:v('hp',100),energy:v('energy',100),tod:v('tod',.3),days:v('days',0),shed:v('shed',0),dull:v('dull',false),sheds:v('sheds',0),
+     eaten:v('eaten',{}),best:v('best',0),secs:v('secs',0),
+     trail:[],ents:[],skins:[],flies:[],keys:{},joy:{x:0,y:0,on:false},hissAt:0,saveT:0,popT:0,camYaw:0,hurtT:0,lastStage:0,starve:0,spd:0,
+     rest:false,restT:0,rubT:0,boostT:0,skyT:0,fog0:[scene.fog.near,scene.fog.far],sky0:new THREE.Color(th.sky),sun0:th.sun,hemi0:th.hemi};
   if(!roamFree(R.x,R.z)){R.x=0;R.z=0}
   R.lastStage=roamStage(R.mass);R.camYaw=R.h;
   for(let i=0;i<60;i++)R.trail.push([R.x-Math.sin(R.h)*i*.3,R.z-Math.cos(R.h)*i*.3]);
-  $('roamHud').hidden=false;$('roamPad').hidden=!coarse;$('mini').hidden=false;$('bubbles').hidden=false;tracers.forEach(t=>world.remove(t.m));tracers=[];B.state='idle';B.mesh.visible=false;
-  roamCull(true);roamPopulate(true);roamHud();
+  $('roamHud').hidden=false;$('roamPad').hidden=!coarse;$('mini').hidden=false;$('mini').style.top='calc(env(safe-area-inset-top,0px) + 148px)';$('bubbles').hidden=false;tracers.forEach(t=>world.remove(t.m));tracers=[];B.state='idle';B.mesh.visible=false;
+  roamFireflies();roamCull(true);roamLight(true);roamPopulate(true);roamHud();
   track('run_start',{mode:'roam',li:-1,snake:chosen});
-  toast(sv?`<big>Welcome back</big>Your ${STAGES[R.lastStage].name.toLowerCase()} is hungry.`:`<big>A hatchling is born</big>${STAGES[0].line}`,'good');
+  toast(sv?`<big>Welcome back</big>Day ${R.days+1}, ${clockOf(R.tod)}. Your ${STAGES[R.lastStage].name.toLowerCase()} ${R.hunger<40?'is hungry':'is ready'}.`:`<big>A hatchling is born</big>${STAGES[0].line}`,'good');
 }
 function stopRoam(){
   if(!R)return;roamSave();
-  R.ents.forEach(e=>world.remove(e.mesh));R.ents=[];
-  $('roamHud').hidden=true;$('roamPad').hidden=true;
-  headMesh.scale.setScalar(1);camera.fov=40;camera.updateProjectionMatrix();
+  R.ents.forEach(e=>world.remove(e.mesh));R.ents=[];R.skins.forEach(k=>world.remove(k.m));R.flies.forEach(f=>world.remove(f));
+  $('roamHud').hidden=true;$('roamPad').hidden=true;$('mini').style.top='';
+  headMesh.scale.setScalar(1);bodyMesh.material.color.set(0xffffff);spot.intensity=0;camera.fov=40;camera.updateProjectionMatrix();
   track('run_end',{mode:'roam',li:-1,snake:G.key,score:Math.round(R.mass),eaten:Object.values(R.eaten).reduce((a,b)=>a+b,0),secs:Math.round(R.secs),won:false,reason:''});
   R=null;
 }
 function roamPause(){
   if(!R||G.state!=='roam')return;G.state='roampause';roamSave();
-  screen(`<div class="panel"><h2>Resting</h2><p class="muted">${STAGES[roamStage(R.mass)].name}, ${(roamScale(R.mass)*1.4).toFixed(1)} m long. Your snake is saved.</p>
+  screen(`<div class="panel"><h2>Paused</h2><p class="muted">Day ${R.days+1}, ${clockOf(R.tod)}. ${STAGES[roamStage(R.mass)].name}, ${(roamScale(R.mass)*1.4).toFixed(1)} m long, ${R.sheds} skin${R.sheds===1?'':'s'} shed. Your snake is saved.</p>
     <div class="btns"><button class="btn" type="button" data-act="tsound">Sound: ${muted?'off':'on'}</button><button class="btn" type="button" data-act="tchat">Chatter: ${chatOn?'on':'off'}</button></div>
     <div class="btns"><button class="btn primary" type="button" data-act="roamresume" data-primary>Keep roaming</button><button class="btn" type="button" data-act="roamquit">Back to menu</button></div></div>`);
 }
 
-// keep a lively bush around the snake: spawn nearby, clear far away
+/* ---- day and night ---- */
+const NIGHT_SKY=new THREE.Color(0x0b1424),DUSK=new THREE.Color(0xe7925a),_c1=new THREE.Color(),_c2=new THREE.Color();
+function roamLight(force){
+  const dl=daylight(R.tod),dusk=Math.max(0,1-Math.abs(dl-.45)/.4)*(dl<1?.55:0);
+  _c1.copy(NIGHT_SKY).lerp(R.sky0,dl).lerp(DUSK,dusk*.6);
+  scene.fog.color.copy(_c1);scene.background.copy(_c1);
+  const dullK=R.dull?.72:1,nightK=.62+.38*dl;
+  scene.fog.near=R.fog0[0]*nightK*dullK;scene.fog.far=R.fog0[1]*nightK*dullK;
+  sun.intensity=lerp(.12,R.sun0,dl);sun.color.setRGB(lerp(.55,1,dl),lerp(.65,.94,dl)-dusk*.18,lerp(1,.82,dl)-dusk*.3);
+  hemi.intensity=lerp(.24,R.hemi0,dl);hemi.color.setRGB(lerp(.55,1,dl),lerp(.62,1,dl),lerp(1,1,dl));
+  spot.intensity=(1-dl)*2.1;
+  R.skyT-=1;if(force||R.skyT<=0){R.skyT=20;
+    const zen=_c2.copy(_c1).lerp(dl>.3?new THREE.Color(0x3c78c8):new THREE.Color(0x03040c),dl>.3?.5:.7);
+    const p=dome.geometry.attributes.position,c=dome.geometry.attributes.color,col=new THREE.Color();
+    for(let i=0;i<p.count;i++){const t=Math.max(0,Math.min(1,p.getY(i)/440/.6));col.copy(_c1).lerp(zen,Math.pow(t,.7));c.setXYZ(i,col.r,col.g,col.b)}
+    c.needsUpdate=true;if(cityG)cityG.visible=dl>.15}
+}
+function roamFireflies(){
+  for(let i=0;i<26;i++){const m=new THREE.Mesh(geo.s,new THREE.MeshBasicMaterial({color:0xfff27a,transparent:true,opacity:0,depthWrite:false,fog:false}));m.scale.setScalar(.09);
+    m.userData={ox:(Math.random()-.5)*26,oz:(Math.random()-.5)*26,ph:Math.random()*9,sp:.4+Math.random()*.6};world.add(m);R.flies.push(m)}
+}
+
+/* ---- the bush around the snake: spawn nearby, clear far away ---- */
 function roamSpawn(type,minD,maxD){
   for(let n=0;n<30;n++){
     const a=Math.random()*PI*2,d=minD+Math.random()*(maxD-minD),x=R.x+Math.sin(a)*d,z=R.z+Math.cos(a)*d;
@@ -2198,30 +2243,35 @@ function roamSpawn(type,minD,maxD){
   return null;
 }
 function roamPopulate(first){
-  const st=roamStage(R.mass);
-  R.ents=R.ents.filter(e=>{if(Math.hypot(e.x-R.x,e.z-R.z)>50){world.remove(e.mesh);e.alive=false;return false}return true});
+  const st=roamStage(R.mass),night=isNight();
+  R.ents=R.ents.filter(e=>{if(Math.hypot(e.x-R.x,e.z-R.z)>50||(night&&e.type==='walker'&&!e.panic&&Math.hypot(e.x-R.x,e.z-R.z)>16)){world.remove(e.mesh);e.alive=false;if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub)}return false}return true});
   const animals=R.ents.filter(e=>e.type!=='walker').length,people=R.ents.filter(e=>e.type==='walker').length;
-  for(let i=animals;i<26;i++)roamSpawn(roamPick(st),first?7:18,first?34:36);
-  if(ROAD&&people<4){
+  for(let i=animals;i<26;i++)roamSpawn(roamPick(st,night),first?7:18,first?34:36);
+  if(ROAD&&!night&&people<4){
     const cells=[...ROAD.cells].map(k=>k.split(',').map(Number)).map(([cx,cz])=>[cx-W/2+.5,cz-H/2+.5]).filter(([x,z])=>{const d=Math.hypot(x-R.x,z-R.z);return d>14&&d<40});
     for(let i=people;i<4&&cells.length;i++){const [x,z]=pickL(cells);const e=roamSpawn('walker',0,0);if(!e)break;e.x=x;e.z=z;e.mesh.position.set(x,0,z);e.road=Math.random()<.5?1:-1}
   }
 }
-function roamStepEnt(e,dt){
+function roamStepEnt(e,dt,night){
   const rf=e.rf,st=roamStage(R.mass),dx=R.x-e.x,dz=R.z-e.z,d=Math.hypot(dx,dz),edible=st>=rf.stage;
   if(e.frozen>0){e.frozen-=dt;e.mesh.rotation.z=Math.sin(performance.now()/60)*.2;return}
   e.mesh.rotation.z=0;
+  // day animals sleep at night: they lie still and only wake if you bump right into them
+  e.asleep=night&&rf.day&&e.type!=='walker'&&!(e.woke>0);
+  if(e.woke>0)e.woke-=dt;
+  if(e.asleep){e.moving=0;if(d<1.2&&!R.rest&&R.spd>2.6&&Math.random()<dt*2)e.woke=8;return}
   let spd=0,want=null;
   if(e.type==='walker'){
     if(!e.panic&&st>=1&&d<7){e.panic=1;e.ptime=0;if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}say(e,pickL(e.say.scream),'hunter');stats().scared=(stats().scared||0)+1;sfx(1100+Math.random()*300,.12,'sawtooth',.025)}
     if(e.panic){e.ptime+=dt;want=Math.atan2(-dx,-dz)+(Math.random()-.5)*.6;spd=e.ptime<2.2?3.6:2.1;if(e.ptime>9&&d>9){world.remove(e.mesh);e.alive=false;return}}
     else{const [cx,cz]=wToC(e.x,e.z);const tx=ROAD?ROAD.xAt(Math.max(0,Math.min(H-1,cz+e.road*2)))-W/2+.5:e.x;want=Math.atan2(tx-e.x,e.road);spd=rf.spd}
   }else if(rf.hunter&&st<rf.stage){
-    // a hunter that is bigger than you comes for you
-    if(d<11){want=Math.atan2(dx,dz);spd=rf.spd*.88}else if(e.wait>0){e.wait-=dt}else{if(Math.random()<.02)e.h+=(Math.random()-.5)*2;want=e.h;spd=rf.spd*.35;if(Math.random()<.005)e.wait=1+Math.random()*2}
+    // a hunter that is bigger than you comes for you (a resting snake is harder to spot)
+    const sees=R.rest?5:11;
+    if(d<sees){want=Math.atan2(dx,dz);spd=rf.spd*.88}else if(e.wait>0){e.wait-=dt}else{if(Math.random()<.02)e.h+=(Math.random()-.5)*2;want=e.h;spd=rf.spd*.35;if(Math.random()<.005)e.wait=1+Math.random()*2}
     e.biteCd=Math.max(0,e.biteCd-dt);
     if(d<.7+roamScale(R.mass)*.35&&e.biteCd<=0&&R.hurtT<=0)roamBitten(e);
-  }else if(edible&&rf.flee&&d<rf.flee+roamScale(R.mass)){
+  }else if(edible&&rf.flee&&d<rf.flee+roamScale(R.mass)-(R.rest?2:0)){
     want=Math.atan2(-dx,-dz)+(Math.random()-.5)*.9;spd=rf.spd*(e.tired>3?.6:1);e.tired=(e.tired||0)+dt;
     if(rf.flies&&d<2.4&&Math.random()<.02){say(e,'I go just fly. Bye bye!','');world.remove(e.mesh);e.alive=false;return}
   }else{
@@ -2235,26 +2285,42 @@ function roamStepEnt(e,dt){
   }else e.moving=0;
 }
 function roamBitten(e){
-  const loss=Math.max(2,R.mass*.1);R.mass=Math.max(1,R.mass-loss);R.hunger=Math.max(0,R.hunger-8);R.hurtT=1.4;e.biteCd=2.6;
+  const armour=Math.min(.45,(roamScale(R.mass)-.55)*.5),dmg=Math.round((e.rf.bite||20)*(1-armour));
+  R.hp=Math.max(0,R.hp-dmg);R.mass=Math.max(1,R.mass-Math.max(.5,R.mass*.03));R.hurtT=1.4;e.biteCd=2.6;
+  if(R.rest)roamWake();
   const a=Math.atan2(R.x-e.x,R.z-e.z);const nx=R.x+Math.sin(a)*1.6,nz=R.z+Math.cos(a)*1.6;if(roamFree(nx,nz)){R.x=nx;R.z=nz}
   G.shake=.8;sfx(300,.12,'square');setTimeout(()=>sfx(160,.2,'square'),110);
-  toast(`<big>Ouch!</big>The ${NAME[e.type]} bit you. You lost some length. Grow bigger before you fight it.`,'bad');
+  if(R.hp<=0)return roamFaint('Your wounds were too much.');
+  if(R.hp>0)toast(`<big>Ouch! −${dmg} health</big>The ${NAME[e.type]} bit you. ${R.hp<35?'You are badly hurt. Get away and rest.':'Grow bigger before you fight it.'}`,'bad');
   const S=SAY[e.type];if(S&&S.near)say(e,pickL(S.near),'hunter');
+}
+function roamFaint(why){
+  R.mass=Math.max(1,R.mass*.85);R.hp=45;R.energy=60;R.hunger=Math.max(R.hunger,40);R.dull=false;R.shed=Math.min(R.shed,60);
+  R.x=0;R.z=0;R.h=0;R.trail=[];for(let i=0;i<60;i++)R.trail.push([0,-i*.3]);
+  if(isNight()){R.tod=.27;R.days++}
+  roamWake(true);R.hurtT=2;roamCull(true);
+  toast(`<big>You fainted</big>${why} You woke up back at your den, a little smaller.`,'bad');
 }
 function roamEat(e){
   const rf=e.rf;world.remove(e.mesh);e.alive=false;
-  R.mass+=rf.mass;R.hunger=Math.min(100,R.hunger+rf.food);R.eaten[e.type]=(R.eaten[e.type]||0)+1;
+  const gain=rf.mass*(e.asleep?1.1:1);
+  R.mass+=gain;R.hunger=Math.min(100,R.hunger+rf.food);R.hp=Math.min(100,R.hp+rf.food*.25);R.eaten[e.type]=(R.eaten[e.type]||0)+1;
+  if(!R.dull){R.shed+=gain/Math.max(16,R.mass*.3)*100;if(R.shed>=100){R.shed=100;R.dull=true;R.rubT=0;
+    setTimeout(()=>{toast('<big>Your skin is old and tight</big>Your eyes go cloudy and you slow down. Rub against a rock or tree to shed it.','');say(SNAKE_T,'This skin don tight me.','think')},900)}}
   stats().eaten++;if(e.type==='walker')stats().swallowed=(stats().swallowed||0)+1;
   const cw=e.type==='walker'?3:(COWRIE[e.type]||0);if(cw){inv.cowries+=cw;save()}
-  const [cx,cz]=[e.x+W/2-.5,e.z+H/2-.5];burst([cx,cz],DOT[e.type]||'#f5c518',10);
+  burst([e.x+W/2-.5,e.z+H/2-.5],DOT[e.type]||'#f5c518',10);
   sfx(660,.06);if(e.type==='walker'){toast(`<big>Gulp!</big>You swallowed ${esc((e.label||'someone').split(' · ')[0])}.`,'good');G.shake=.4}
+  else if(e.asleep&&Math.random()<.5)say(SNAKE_T,pickL(['Caught you sleeping.','Night chop!','Sleep na death o.']),'think');
   else if(Math.random()<.25)say(SNAKE_T,pickL(SAY.snake.eat),'think');
   R.ents.forEach(o=>{if(o.type==='walker'&&o.alive&&!o.panic&&Math.hypot(o.x-e.x,o.z-e.z)<10){o.panic=1;o.ptime=0;say(o,pickL(o.say.scream),'hunter')}});
 }
 function roamHiss(){
   if(!R||G.state!=='roam')return;
+  if(R.rest)roamWake();
   if(performance.now()-R.hissAt<HISS_MS){toast('Your hiss is still building up.');return}
-  R.hissAt=performance.now();R.hunger=Math.max(0,R.hunger-2);
+  if(R.energy<6){toast('Too tired to hiss. Rest first.');return}
+  R.hissAt=performance.now();R.hunger=Math.max(0,R.hunger-2);R.energy=Math.max(0,R.energy-6);
   const fx=Math.sin(R.h),fz=Math.cos(R.h),reach=4+roamScale(R.mass)*1.5;let n=0;
   R.ents.forEach(e=>{if(!e.alive)return;const dx=e.x-R.x,dz=e.z-R.z,d=Math.hypot(dx,dz);if(d>reach||d<.01)return;if((dx*fx+dz*fz)/d<.55)return;
     e.frozen=e.type==='walker'?3:2.2;n++;if(e.type==='walker'){e.panic=1;e.ptime=e.ptime||0;if(e.bub){e.bub.el.remove();bubs=bubs.filter(b=>b!==e.bub);e.bub=null}say(e,pickL(FREEZE[e.lang]||FREEZE.en),'hunter')}});
@@ -2263,74 +2329,142 @@ function roamHiss(){
   [420,330,260,200].forEach((f,i)=>setTimeout(()=>sfx(f+Math.random()*60,.09,'sawtooth',.018),i*45));G.hood=performance.now();
   if(n)toast(`<big>Hiss!</big>${n===1?'It froze in fear.':n+' froze in fear.'}`,'good');
 }
+
+/* ---- resting: the snake coils up, gets its energy back and heals; at night it sleeps and time runs faster ---- */
+function roamRest(){
+  if(!R||G.state!=='roam')return;
+  if(R.rest){roamWake();return}
+  R.rest=true;R.restT=0;R.keys={};R.sprintHeld=false;
+  // lay the body out in a coil that ends at the head
+  const sc=roamScale(R.mass),gap=.8*sc,n=roamLen(R.mass)+2,ring=Math.max(.5,G.sp.r*sc*2.4),b=ring/(2*PI),pts=[];
+  let th=PI*1.2,len=0;const pt=t=>[(b*t)*Math.cos(t),(b*t)*Math.sin(t)];pts.push(pt(th));
+  while(pts.length<n*gap/.12&&th<200){th+=.12/Math.max(.3,b*th);const p=pt(th),q=pts[pts.length-1];len+=Math.hypot(p[0]-q[0],p[1]-q[1]);pts.push(p)}
+  const o=pts[pts.length-1],q=pts[pts.length-2],hd=Math.atan2(o[0]-q[0],o[1]-q[1]),rot=R.h-hd,c=Math.cos(rot),s=Math.sin(rot);
+  R.trail=pts.reverse().map(([x,z])=>{const dx=x-o[0],dz=z-o[1];return[R.x+dx*c+dz*s,R.z-dx*s+dz*c]});
+  for(let i=0;i<10;i++){const m=new THREE.Mesh(geo.s,new THREE.MeshBasicMaterial({color:0xe9e2cc,transparent:true,opacity:.5,depthWrite:false}));m.scale.setScalar(.2*sc);m.position.set(R.x+(Math.random()-.5)*sc,.2,R.z+(Math.random()-.5)*sc);world.add(m);parts.push({m,v:[(Math.random()-.5)*1.5,.8,(Math.random()-.5)*1.5],life:.8})}
+  sfx(220,.12,'sine',.03);
+  say(SNAKE_T,isNight()?pickL(['Make I sleep small.','Night don reach. Zzz…']):pickL(['Let me rest my body.','Small rest.']),'think');
+  roamHud();
+}
+function roamWake(quiet){if(!R||!R.rest)return;R.rest=false;R.restT=0;if(!quiet)sfx(330,.06);roamHud()}
+
+/* ---- shedding: when the skin is dull, rub along rocks and trees to peel it off ---- */
+function roamNearRub(){
+  const sc=roamScale(R.mass),reach=.75+sc*.45,[cx,cz]=wToC(R.x,R.z),r=Math.ceil(reach)+1;
+  for(let x=cx-r;x<=cx+r;x++)for(let z=cz-r;z<=cz+r;z++){if(!inB(x,z)||!blocked[x][z])continue;const k=blockKind[x][z];if(k!=='rock'&&k!=='tree'&&k!=='bush'&&k!=='mound')continue;
+    const wx=x-W/2+.5,wz=z-H/2+.5;if(Math.max(Math.abs(wx-R.x),Math.abs(wz-R.z))-.5<reach)return true}
+  return false;
+}
+function roamShed(){
+  const sc=roamScale(R.mass),mid=R.trail[Math.min(R.trail.length-1,Math.floor(R.trail.length*.3))]||[R.x,R.z];
+  const m=MODELS.shed();m.scale.setScalar(sc*1.4);m.position.set(mid[0],0,mid[1]);m.rotation.y=Math.random()*6;world.add(m);R.skins.push({m,t:60});
+  if(R.skins.length>4){world.remove(R.skins[0].m);R.skins.shift()}
+  R.dull=false;R.shed=0;R.rubT=0;R.sheds++;R.hp=100;R.energy=Math.min(100,R.energy+40);R.boostT=8;
+  inv.cowries+=5;save();stats().sheds=(stats().sheds||0)+1;
+  for(let i=0;i<24;i++){const p=new THREE.Mesh(geo.s,new THREE.MeshBasicMaterial({color:0xf4ecd9,transparent:true,opacity:.8}));p.scale.setScalar(.14*sc);p.position.set(R.x,.4*sc,R.z);world.add(p);parts.push({m:p,v:[(Math.random()-.5)*5,2+Math.random()*2,(Math.random()-.5)*5],life:1})}
+  [523,659,784].forEach((f,i)=>setTimeout(()=>sfx(f,.09),i*90));
+  toast('<big>Fresh skin!</big>Health is full and you feel fast for a while. +5 cowries','good');say(SNAKE_T,'Fresh skin, fresh start.','think');
+}
+
 function roamHud(){
-  if(!R)return;const st=roamStage(R.mass),nx=STAGES[st+1],cur=STAGES[st].at;
+  if(!R)return;const st=roamStage(R.mass),nx=STAGES[st+1],cur=STAGES[st].at,dl=daylight(R.tod);
   $('rStage').textContent=STAGES[st].name;
   $('rGrow').style.width=(nx?Math.min(100,(R.mass-cur)/(nx.at-cur)*100):100)+'%';
-  $('rGrowLbl').textContent=nx?`${Math.round(R.mass-cur)} / ${nx.at-cur} to ${nx.name}`:'Fully grown';
+  $('rGrowLbl').textContent=nx?`Next: ${nx.name} ${Math.round(R.mass-cur)}/${nx.at-cur}`:'Fully grown';
   $('rHunger').style.width=Math.max(0,R.hunger)+'%';$('rHungerWrap').classList.toggle('low',R.hunger<25);
+  $('rHp').style.width=Math.max(0,R.hp)+'%';$('rHpWrap').classList.toggle('low',R.hp<30);
+  $('rEnergy').style.width=Math.max(0,R.energy)+'%';$('rEnergyWrap').classList.toggle('low',R.energy<15);
   $('rLen').textContent=(roamScale(R.mass)*1.4).toFixed(1)+' m';$('rCw').textContent=inv.cowries.toLocaleString('en-NG');
+  $('rTime').innerHTML=`${dl>.3?'☀︎':'☾'} Day ${R.days+1}`;$('rClock').textContent=clockOf(R.tod);
   const hr=performance.now()-R.hissAt>=HISS_MS;$('rHiss').textContent=hr?(coarse?'Hiss ready':'Hiss ready (H)'):'Hiss…';$('rHiss').classList.toggle('ready',hr);
-  const sp=$('rSprint');sp.textContent=R.sprintCd>0?'Sprint resting…':R.sprint>0?'Sprinting':(coarse?'Sprint ready':'Sprint (↑)');sp.classList.toggle('ready',R.sprintCd<=0);
+  const sh=$('rShed');sh.textContent=R.dull?(R.rubT>0?`Shedding… ${Math.round(R.rubT/2.2*100)}%`:'Dull skin: rub a rock or tree'):`New skin ${Math.round(R.shed)}%`;sh.classList.toggle('warn',R.dull);
+  const rs=$('rRest');rs.textContent=R.rest?(isNight()?'Sleeping… (move to wake)':'Resting… (move to wake)'):(R.energy<25?(coarse?'Tired: tap Rest':'Tired: press R to rest'):(coarse?'':'Rest (R)'));rs.classList.toggle('warn',!R.rest&&R.energy<25);
+  const rb=$('rRestBtn');if(rb){rb.textContent=R.rest?'Wake':'Rest';rb.classList.toggle('on',R.rest)}
 }
 function roamFrame(dt,now){
   const s=dt/1000,sp=G.sp,play=G.state==='roam';
   if(play){
-    R.secs+=s;R.hurtT=Math.max(0,R.hurtT-s);
+    const night=isNight();
+    R.secs+=s;R.hurtT=Math.max(0,R.hurtT-s);R.boostT=Math.max(0,R.boostT-s);
+    // the clock: sleeping through the night makes it pass much faster
+    const prevTod=R.tod;R.tod+=s/DAY_SECS*(R.rest&&night&&R.restT>1.5?8:1);if(R.tod>=1)R.tod-=1;
+    if(prevTod<.25&&R.tod>=.25){R.days++;toast(`<big>Day ${R.days+1}</big>The sun is up. People are back on the road and the mongooses are awake.`,'good')}
+    if(prevTod<.74&&R.tod>=.74)toast('<big>Night is falling</big>Mongooses and lizards sleep, rats come out, and the ratel prowls. Rest to sleep through it.','');
     // steering: keys turn, the touch stick points where to go (relative to the camera)
     let turn=0;if(R.keys.l)turn+=1;if(R.keys.r)turn-=1;
+    const joyOn=R.joy.on&&Math.hypot(R.joy.x,R.joy.y)>.18;
+    if(R.rest&&(turn||R.keys.u||R.keys.d||joyOn||R.sprintHeld))roamWake();
     const tr=2.7*(1.15-Math.min(.35,(roamScale(R.mass)-.55)*.25));
-    if(R.joy.on&&Math.hypot(R.joy.x,R.joy.y)>.18){const want=R.camYaw+Math.atan2(-R.joy.x,-R.joy.y);let dh=((want-R.h+PI*3)%(PI*2))-PI;R.h+=Math.max(-tr*s,Math.min(tr*s,dh))}
-    else R.h+=turn*tr*s;
-    const wantSprint=R.keys.u||R.sprintHeld;
-    if(R.sprintCd>0)R.sprintCd=Math.max(0,R.sprintCd-s);
-    if(wantSprint&&R.sprintCd<=0){R.sprint+=s;if(R.sprint>2.6){R.sprint=0;R.sprintCd=3.5}}else if(R.sprint>0){R.sprintCd=Math.min(3.5,R.sprint*1.2);R.sprint=0}
-    const sneak=R.keys.d||(R.joy.on&&Math.hypot(R.joy.x,R.joy.y)<.5&&Math.hypot(R.joy.x,R.joy.y)>.18);
-    const base=3.1/sp.speed*(1+(roamScale(R.mass)-.55)*.25),spd=base*(R.sprint>0?1.75:sneak?.5:1)*(R.hunger<=0?.7:1);
+    let spd=0,fx=Math.sin(R.h),fz=Math.cos(R.h);
+    if(R.rest){
+      R.restT+=s;
+      R.energy=Math.min(100,R.energy+s*(night?16:12));if(R.hunger>15)R.hp=Math.min(100,R.hp+s*3.2);
+    }else{
+      if(joyOn){const want=R.camYaw+Math.atan2(-R.joy.x,-R.joy.y);let dh=((want-R.h+PI*3)%(PI*2))-PI;R.h+=Math.max(-tr*s,Math.min(tr*s,dh))}
+      else R.h+=turn*tr*s;
+      fx=Math.sin(R.h);fz=Math.cos(R.h);
+      const jm=Math.hypot(R.joy.x,R.joy.y),sneak=R.keys.d||(R.joy.on&&jm<.5&&jm>.18);
+      const sprint=(R.keys.u||R.sprintHeld)&&R.energy>2&&!sneak;
+      R.sprinting=sprint;
+      const base=3.1/sp.speed*(1+(roamScale(R.mass)-.55)*.25);
+      spd=base*(sprint?1.75:sneak?.5:1)*(R.energy<=2?.65:1)*(R.hunger<=0?.75:1)*(R.dull?.88:1)*(R.boostT>0?1.2:1)*(R.hp<25?.85:1);
+      R.energy=Math.max(0,Math.min(100,R.energy+s*(sprint?-20:sneak?2.5:-.35)));
+      if(R.energy<=0&&sprint&&!R.tiredSaid){R.tiredSaid=1;toast('You are out of breath. Rest to get your energy back.','bad')}if(R.energy>30)R.tiredSaid=0;
+      if(R.hunger>40)R.hp=Math.min(100,R.hp+s*.5);
+      const nx=R.x+fx*spd*s,nz=R.z+fz*spd*s,lim=W/2-1.5;
+      const okx=roamFree(nx,R.z)&&Math.abs(nx)<lim,okz=roamFree(R.x,nz)&&Math.abs(nz)<lim;
+      if(roamFree(nx,nz)&&Math.abs(nx)<lim&&Math.abs(nz)<lim){R.x=nx;R.z=nz}else if(okx)R.x=nx;else if(okz)R.z=nz;else{R.h+=turn?0:1.2*s}
+      const tp=R.trail[0];if(!tp||Math.hypot(R.x-tp[0],R.z-tp[1])>.12){R.trail.unshift([R.x,R.z]);if(R.trail.length>900)R.trail.length=900}
+      // shedding: keep rubbing along something rough
+      if(R.dull&&spd>0&&roamNearRub()){R.rubT+=s;if(Math.random()<s*10){const sc=roamScale(R.mass),m=new THREE.Mesh(geo.s,new THREE.MeshBasicMaterial({color:0xf4ecd9,transparent:true,opacity:.7}));m.scale.setScalar(.1*sc);m.position.set(R.x,.3*sc,R.z);world.add(m);parts.push({m,v:[(Math.random()-.5)*2,1.2,(Math.random()-.5)*2],life:.6})}
+        if(R.rubT>=2.2)roamShed()}
+      else if(R.dull)R.rubT=Math.max(0,R.rubT-s*.5);
+    }
     R.spd=spd;
-    const fx=Math.sin(R.h),fz=Math.cos(R.h),nx=R.x+fx*spd*s,nz=R.z+fz*spd*s,lim=W/2-1.5;
-    const okx=roamFree(nx,R.z)&&Math.abs(nx)<lim,okz=roamFree(R.x,nz)&&Math.abs(nz)<lim;
-    if(roamFree(nx,nz)&&Math.abs(nx)<lim&&Math.abs(nz)<lim){R.x=nx;R.z=nz}else if(okx)R.x=nx;else if(okz)R.z=nz;else{R.h+=turn?0:1.2*s}
-    const tp=R.trail[0];if(!tp||Math.hypot(R.x-tp[0],R.z-tp[1])>.12){R.trail.unshift([R.x,R.z]);if(R.trail.length>900)R.trail.length=900}
     // hunger
-    R.hunger=Math.max(0,R.hunger-s*(R.sprint>0?2.8:sneak?.55:1.05));
-    if(R.hunger<=0){R.starve+=s;R.mass=Math.max(1,R.mass-s*1.2);if(R.starve>2&&Math.floor(R.starve)%8===0&&Math.floor(R.starve-s)%8!==0)toast('You are starving and shrinking. Find food!','bad')}else R.starve=0;
-    if(R.mass<=1.01&&R.hunger<=0){R.hunger=45;R.x=0;R.z=0;R.trail=[];for(let i=0;i<60;i++)R.trail.push([0,-i*.3]);R.h=0;toast('<big>You fainted from hunger</big>You woke up back at your den. Eat something quick.','bad')}
+    R.hunger=Math.max(0,R.hunger-s*(R.rest?.4:R.sprinting?2.6:spd<2?.6:1));
+    if(R.hunger<=0){R.starve+=s;R.hp=Math.max(0,R.hp-s*1.6);R.mass=Math.max(1,R.mass-s*.5);if(R.starve>2&&Math.floor(R.starve)%8===0&&Math.floor(R.starve-s)%8!==0)toast('You are starving. Find food!','bad')}else R.starve=0;
+    if(R.hp<=0)roamFaint(R.hunger<=0?'You went too long without food.':'Your wounds were too much.');
     // eating: anything you are big enough for, right at your mouth
     const sc=roamScale(R.mass),mouth=.55+sc*.45,st=roamStage(R.mass);
-    for(const e of R.ents){if(!e.alive)continue;roamStepEnt(e,s);if(!e.alive)continue;
-      if(st>=e.rf.stage&&Math.hypot(e.x-R.x-fx*.3*sc,e.z-R.z-fz*.3*sc)<mouth)roamEat(e)}
+    for(const e of R.ents){if(!e.alive)continue;roamStepEnt(e,s,night);if(!e.alive)continue;
+      if(!R.rest&&st>=e.rf.stage&&Math.hypot(e.x-R.x-fx*.3*sc,e.z-R.z-fz*.3*sc)<mouth)roamEat(e)}
     R.ents=R.ents.filter(e=>e.alive);
     if(st>R.lastStage){R.lastStage=st;sfx(523,.1);setTimeout(()=>sfx(659,.1),120);setTimeout(()=>sfx(784,.1),240);setTimeout(()=>sfx(1046,.25),360);
       toast(`<big>You are now: ${STAGES[st].name}</big>${STAGES[st].line}`,'good');say(SNAKE_T,'I don grow!','think');
       for(let i=0;i<18;i++){const m=new THREE.Mesh(geo.s,new THREE.MeshBasicMaterial({color:0xf4ecd9,transparent:true,opacity:.8}));m.scale.setScalar(.15);m.position.set(R.x,.4,R.z);world.add(m);parts.push({m,v:[(Math.random()-.5)*4,2+Math.random()*2,(Math.random()-.5)*4],life:1})}}
     else if(st<R.lastStage)R.lastStage=st;
     if(R.mass>R.best)R.best=R.mass;
+    R.skins=R.skins.filter(k=>{k.t-=s;if(k.t<=0){world.remove(k.m);return false}if(k.t<3)k.m.scale.multiplyScalar(.98);return true});
     R.popT-=s;if(R.popT<=0){R.popT=1.5;roamPopulate(false)}
     roamCull(false);
-    R.saveT-=s;if(R.saveT<=0){R.saveT=5;roamSave();roamHud()}
+    R.saveT-=s;if(R.saveT<=0){R.saveT=5;roamSave()}
     if(Math.floor(now/250)!==Math.floor((now-dt)/250))roamHud();
-    if(chatOn&&now>(R.chatT||0)){R.chatT=now+6000+Math.random()*5000;const c=R.ents.filter(e=>!e.bub&&!e.panic&&Math.hypot(e.x-R.x,e.z-R.z)<14);if(c.length){const e=pickL(c),S=e.say||SAY[e.type];if(S&&S.idle)say(e,pickL(S.idle),S.hunter?'hunter':'')}}
+    if(chatOn&&now>(R.chatT||0)){R.chatT=now+6000+Math.random()*5000;const c=R.ents.filter(e=>!e.bub&&!e.panic&&!e.asleep&&Math.hypot(e.x-R.x,e.z-R.z)<14);if(c.length){const e=pickL(c),S=e.say||SAY[e.type];if(S&&S.idle)say(e,pickL(S.idle),S.hunter?'hunter':'')}}
   }
+  roamLight(false);
   // the snake: sample the trail into evenly spaced points, then draw the same tapered body as the levels
   const sc=roamScale(R.mass),gap=.8*sc,want=roamLen(R.mass),pts=[[R.x,R.z]];
   let acc2=0;for(let i=1;i<R.trail.length&&pts.length<want;i++){const a=R.trail[i-1],b=R.trail[i];acc2+=Math.hypot(b[0]-a[0],b[1]-a[1]);if(acc2>=gap){pts.push(b.slice());acc2=0}}
   while(pts.length<3){const l=pts[pts.length-1];pts.push([l[0]-Math.sin(R.h)*gap,l[1]-Math.cos(R.h)*gap])}
-  buildBody(pts,now,{r:sp.r*sc,wave:sp.wave*sc*.7},patFor(G.key));
+  buildBody(pts,now,{r:sp.r*sc,wave:R.rest?0:sp.wave*sc*.7},patFor(G.key));
+  bodyMesh.material.color.set(R.dull?0xa8a596:0xffffff);
   bodyMesh.visible=headMesh.visible=!(R.hurtT>0&&Math.floor(now/90)%2===0);
-  headMesh.scale.setScalar(sc);headMesh.position.set(headPose.x,0,headPose.z);headMesh.rotation.y=angLerp(headMesh.rotation.y,R.h,.35);
-  const tg=headMesh.userData.tongue,tf=now%1700;tg.visible=tf<260;tg.scale.z=tf<260?Math.max(.05,Math.sin(tf/260*PI)):.05;headMesh.userData.ring.visible=false;
+  headMesh.scale.setScalar(sc);headMesh.position.set(headPose.x,R.rest?.12*sc:0,headPose.z);headMesh.rotation.y=angLerp(headMesh.rotation.y,R.h,.35);
+  const tg=headMesh.userData.tongue,tf=now%1700;tg.visible=!R.rest&&tf<260;tg.scale.z=tf<260?Math.max(.05,Math.sin(tf/260*PI)):.05;headMesh.userData.ring.visible=false;
   if(headMesh.userData.hood){const flare=now-G.hood<1200?1:.45,h=headMesh.userData.hood;h.scale.x=lerp(h.scale.x,flare,.12);h.scale.y=lerp(h.scale.y,.6+flare*.4,.12)}
-  // animals and people
+  // animals and people (sleepers lie down)
   for(const e of R.ents){const m=e.mesh;m.position.x=e.x;m.position.z=e.z;m.rotation.y=angLerp(m.rotation.y,e.h,.2);m.scale.setScalar(Math.min(1,(now-e.born)/300));
-    m.position.y=e.rf.hop&&e.moving?Math.abs(Math.sin(now/170+e.yaw))*.35:0;
+    m.position.y=e.rf.hop&&e.moving?Math.abs(Math.sin(now/170+e.yaw))*.35:0;if(e.asleep)m.scale.y*=.8;
     const U=m.userData;if(U.legs){const run=e.panic&&!(e.frozen>0),sw=(e.moving&&!(e.frozen>0))?Math.sin(now/(run?65:150)+e.yaw*9)*(run?.95:.5):0;U.legs[0].rotation.x=sw;U.legs[1].rotation.x=-sw;
       if(e.panic){U.arms[0].rotation.x=-PI*.85+Math.sin(now/55)*.35;U.arms[1].rotation.x=-PI*.85-Math.sin(now/55)*.35}else{U.arms[0].rotation.x=-sw*.7;U.arms[1].rotation.x=sw*.7}}}
+  // fireflies at night
+  const fl=1-daylight(R.tod);R.flies.forEach((f,i)=>{const u=f.userData,t=now/1000*u.sp+u.ph;f.position.set(R.x+u.ox+Math.sin(t)*1.5,.6+Math.sin(t*1.7)*.4,R.z+u.oz+Math.cos(t*.8)*1.5);f.material.opacity=fl*(.45+.55*Math.max(0,Math.sin(t*3+i)));f.visible=fl>.05});
   // light and camera follow the snake from behind
-  sun.position.set(R.x-8,22,R.z+10);sun.target.position.set(R.x,0,R.z);spot.position.set(R.x,7,R.z+2);spot.target.position.set(R.x,0,R.z);
+  sun.position.set(R.x-8,22,R.z+10);sun.target.position.set(R.x,0,R.z);spot.position.set(R.x,9,R.z+3);spot.target.position.set(R.x,0,R.z);
   let dy=((R.h-R.camYaw+PI*3)%(PI*2))-PI;R.camYaw+=dy*Math.min(1,dt*.0032);
-  const cd=5.2+sc*3.2,ch=3.1+sc*2.1,cfx=Math.sin(R.camYaw),cfz=Math.cos(R.camYaw);
-  const tgt=new THREE.Vector3(R.x+cfx*3.5*sc,.5*sc,R.z+cfz*3.5*sc),pos=new THREE.Vector3(R.x-cfx*cd,ch,R.z-cfz*cd);
+  const rz=R.rest?1.15:1,cd=(5.2+sc*3.2)*rz,ch=(3.1+sc*2.1)*rz,cfx=Math.sin(R.camYaw),cfz=Math.cos(R.camYaw);
+  const tgt=new THREE.Vector3(R.x+cfx*3.5*sc*(R.rest?.2:1),.5*sc,R.z+cfz*3.5*sc*(R.rest?.2:1)),pos=new THREE.Vector3(R.x-cfx*cd,ch,R.z-cfz*cd);
   const k=1-Math.pow(1-.12,Math.min(6,dt/16.7));camT.lerp(tgt,k);camP.lerp(pos,k);
   if(Math.abs(camera.fov-55)>.05){camera.fov+=(55-camera.fov)*Math.min(1,dt*.004);camera.updateProjectionMatrix()}
   const shk=G.shake>0?(G.shake*=.9,G.shake*.25):0;
@@ -2340,13 +2474,15 @@ function roamFrame(dt,now){
 function roamMini(){
   if(!miniBase||mini.hidden)return;const w=mini.clientWidth*(devicePixelRatio||1);if(mini.width!==Math.round(w)){mini.width=mini.height=Math.round(w)}
   const k=mini.width/W;mctx.imageSmoothingEnabled=false;mctx.drawImage(miniBase,0,0,mini.width,mini.height);
-  R.ents.forEach(e=>{const st=roamStage(R.mass);mctx.fillStyle=e.type==='walker'?'#7fd0ff':(e.rf.hunter&&st<e.rf.stage)?'#ff4d3a':st>=e.rf.stage?'#f4ecd9':'#b08850';mctx.fillRect((e.x+W/2)*k-k,(e.z+H/2)*k-k,k*2,k*2)});
+  const dl=daylight(R.tod);if(dl<1){mctx.fillStyle=`rgba(5,10,30,${(1-dl)*.5})`;mctx.fillRect(0,0,mini.width,mini.height)}
+  R.ents.forEach(e=>{const st=roamStage(R.mass);mctx.fillStyle=e.type==='walker'?'#7fd0ff':(e.rf.hunter&&st<e.rf.stage&&!e.asleep)?'#ff4d3a':st>=e.rf.stage?'#f4ecd9':'#b08850';mctx.fillRect((e.x+W/2)*k-k,(e.z+H/2)*k-k,k*2,k*2)});
   mctx.fillStyle='#f5c518';mctx.beginPath();mctx.arc((R.x+W/2)*k,(R.z+H/2)*k,k*2.4,0,7);mctx.fill();
   mctx.strokeStyle='#f5c518';mctx.lineWidth=k;mctx.beginPath();mctx.moveTo((R.x+W/2)*k,(R.z+H/2)*k);mctx.lineTo((R.x+W/2+Math.sin(R.h)*5)*k,(R.z+H/2+Math.cos(R.h)*5)*k);mctx.stroke();
+  mctx.strokeStyle='rgba(255,255,255,.7)';mctx.beginPath();mctx.arc(W/2*k,H/2*k,k*2,0,7);mctx.stroke(); // the den
 }
 // touch stick and buttons
 (function roamControls(){
-  const pad=$('roamPad'),stick=$('rStick'),knob=$('rKnob');let id=null,cx=0,cy=0;
+  const stick=$('rStick'),knob=$('rKnob');let id=null,cx=0,cy=0;
   const zone=$('rZone');
   zone.addEventListener('pointerdown',ev=>{if(!R)return;unlockAudio();id=ev.pointerId;cx=ev.clientX;cy=ev.clientY;zone.setPointerCapture(id);stick.style.left=cx+'px';stick.style.top=cy+'px';stick.hidden=false;R.joy.on=true;R.joy.x=R.joy.y=0;knob.style.transform='translate(-50%,-50%)'});
   zone.addEventListener('pointermove',ev=>{if(ev.pointerId!==id||!R)return;let dx=ev.clientX-cx,dy=ev.clientY-cy;const m=Math.hypot(dx,dy),max=48;if(m>max){dx*=max/m;dy*=max/m}R.joy.x=dx/max;R.joy.y=dy/max;knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`});
@@ -2356,6 +2492,7 @@ function roamMini(){
   sb.addEventListener('pointerdown',ev=>{ev.preventDefault();if(R)R.sprintHeld=true});
   ['pointerup','pointercancel','pointerleave'].forEach(t=>sb.addEventListener(t,()=>{if(R)R.sprintHeld=false}));
   $('rHissBtn').addEventListener('pointerdown',ev=>{ev.preventDefault();unlockAudio();roamHiss()});
+  $('rRestBtn').addEventListener('pointerdown',ev=>{ev.preventDefault();unlockAudio();roamRest()});
   $('rPauseBtn').addEventListener('click',()=>roamPause());
   addEventListener('keyup',ev=>{if(!R)return;const k=ev.key.length===1?ev.key.toLowerCase():ev.key;
     if(k==='ArrowLeft'||k==='a')R.keys.l=false;if(k==='ArrowRight'||k==='d')R.keys.r=false;if(k==='ArrowUp'||k==='w')R.keys.u=false;if(k==='ArrowDown'||k==='s')R.keys.d=false});
@@ -2623,7 +2760,7 @@ function renderGuide(){
         <li style="--c:${DOT.gunman}"><i></i><span><b>Hunter with a dane gun</b>When you are in a straight line with him he shouts and aims. A red line shows where. Turn off it before he fires. With a full bar, chase him off for 150.</span></li>
         <li style="--c:${DOT.walker}"><i></i><span><b>People on the road</b>They scream in Yoruba, Igbo, Hausa, Pidgin or English and run, but they tire fast. 20 points for a scare, 100 if you catch and swallow one.</span></li>
         <li style="--c:#eaf6ff"><i></i><span><b>Hiss (${coarse?'Hiss button':'H or Space'})</b>Blow a puff of breath ahead of you. People, animals and hunters in front freeze in fear for a moment. Recharges in 6 seconds.</span></li>
-        <li style="--c:#9ccc65"><i></i><span><b>Free Roam</b>One huge open bush with no levels. Start as a hatchling, keep your hunger bar up, and grow into an Ojola. Your snake is saved on this device.</span></li>
+        <li style="--c:#9ccc65"><i></i><span><b>Free Roam</b>One huge open bush with no levels. Start as a hatchling, keep your hunger bar up, and grow into an Ojola. Rest (R) to get energy back and heal, sleep through the night to make it pass, and when your skin goes dull rub against a rock or tree to shed it. Your snake is saved on this device.</span></li>
       </ul><h3 style="margin-top:12px">Power-ups</h3><ul>${POWERS.map(k=>`<li style="--c:${T[k].color}"><i></i><span><b>${T[k].label}</b>${T[k].desc}</span></li>`).join('')}</ul></div>
     </div>
     <div class="btns"><button class="btn primary" type="button" data-act="menu" data-primary>Back</button></div></div>`);
@@ -3168,7 +3305,7 @@ addEventListener('keydown',e=>{
   if(R&&G&&G.state==='roam'){unlockAudio();
     if(k==='ArrowLeft'||k==='a'){R.keys.l=true;e.preventDefault()}else if(k==='ArrowRight'||k==='d'){R.keys.r=true;e.preventDefault()}
     else if(k==='ArrowUp'||k==='w'){R.keys.u=true;e.preventDefault()}else if(k==='ArrowDown'||k==='s'){R.keys.d=true;e.preventDefault()}
-    else if(k===' '||k==='h'){e.preventDefault();roamHiss()}else if(k==='p'||k==='Escape'){e.preventDefault();roamPause()}else if(k==='m')toggleMute();
+    else if(k===' '||k==='h'){e.preventDefault();roamHiss()}else if(k==='r'){e.preventDefault();roamRest()}else if(k==='p'||k==='Escape'){e.preventDefault();roamPause()}else if(k==='m')toggleMute();
     return}
   if(R&&G&&G.state==='roampause'&&(k==='p'||k==='Escape')){e.preventDefault();screen('');G.state='roam';return}
   if(KEY[k]&&G&&G.state==='play'){e.preventDefault();unlockAudio();if(view==='rear'){if(REL[k])turnRel(REL[k])}else turn(KEY[k]);return}
